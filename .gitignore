@@ -1,0 +1,7 @@
+data/*
+
+results/*
+
+PytorchProjectFramework/accountant_graph/*
+PytorchProjectFramework/accountants/graphs/data/*
+PytorchProjectFramework/accountants/graphs/graph/*
