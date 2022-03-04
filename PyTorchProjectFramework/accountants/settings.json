@@ -1,0 +1,50 @@
+{
+  "setting_1": {
+    "epochs"
+   : 1000,
+    "num_examples"
+   : 60000,
+    "sampling_batch"
+   : 512,
+    "microbatches"
+   : 512,
+    "delta"
+    : 1.6666666666666667e-05
+  },
+  "setting_2": {
+    "epochs"
+    : 1000,
+    "num_examples"
+    : 60000,
+    "sampling_batch"
+    : 128,
+    "microbatches"
+    : 512,
+    "delta"
+    : 1.6666666666666667e-05
+  },
+  "setting_3": {
+    "epochs"
+    : 1000,
+    "num_examples"
+    : 10000,
+    "sampling_batch"
+    : 512,
+    "microbatches"
+    : 512,
+    "delta"
+    : 0.0001
+  },
+  "setting_4": {
+    "epochs"
+    : 1000,
+    "num_examples"
+    : 60000,
+    "sampling_batch"
+    : 512,
+    "microbatches"
+    : 512,
+    "delta"
+    : 1.6666666666666667e-05
+  }
+}
