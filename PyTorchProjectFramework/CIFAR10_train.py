@@ -84,7 +84,7 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer):
     elif optimizer_name == "SGD":
         optimizer = MNIST_optimizer.SGD_optimizer(model.parameters(),args.lr,)
 
-
+    # train_accuracy = np.array()
     # for batch_idx, (data, target) in enumerate(train_loader):
     for batch_idx, (data,target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
@@ -207,6 +207,16 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer):
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
                        100. * batch_idx / len(train_loader), loss.item()))
+            # Trainning Log
+            output = model(data)
+            loss = nn.CrossEntropyLoss()(output, target)
+            train_loss += loss.item()
+            prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
+            total += target.size(0)
+
+            # train_correct incremented by one if predicted right
+            train_correct += np.sum(prediction[1].cpu().numpy() == target.cpu().numpy())
+            # train_accuracy.append(train_correct / total)
             # losses = model.get_current_losses()
         #     visualizer.print_current_losses(epoch, batch_idx * len(data), len(train_loader.dataset), loss)
 
@@ -214,7 +224,7 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer):
 
         if args.dry_run:
             break
-
+    return train_correct / total
 
 if __name__ == '__main__':
     import multiprocessing

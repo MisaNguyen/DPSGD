@@ -5,3 +5,6 @@ results/*
 PytorchProjectFramework/accountant_graph/*
 PytorchProjectFramework/accountants/graphs/data/*
 PytorchProjectFramework/accountants/graphs/graph/*
+
+PytorchProjectFramework/graphs/graph/*
+PytorchProjectFramework/graphs/data/*

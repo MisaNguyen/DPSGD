@@ -23,6 +23,7 @@ def test(model, device, test_loader,epoch,visualizer):
     correct = 0
     test_correct = 0
     total = 0
+    # test_accuracy = np.array()
     with torch.no_grad():
         for batch_num, (data, target) in enumerate(test_loader):
             data, target = data.to(device), target.to(device)
@@ -37,7 +38,7 @@ def test(model, device, test_loader,epoch,visualizer):
             total += target.size(0)
             test_correct += np.sum(prediction[1].cpu().numpy() == target.cpu().numpy())
             # pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
-
+            # test_accuracy.append(test_correct / total)
             # input(pred)
             # input(target)
             # correct += pred.eq(target.view_as(pred)).sum().item()
@@ -51,6 +52,7 @@ def test(model, device, test_loader,epoch,visualizer):
     #     test_loss, correct, len(test_loader.dataset),
     #     100. * correct / len(test_loader.dataset)))
     # visualizer.plot_current_accuracy(epoch, 100*correct / len(test_loader.dataset))
+    return test_correct / total
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Perform model validation.')

@@ -8,6 +8,7 @@ from models.resnet_model import ResNet18,ResNet34,ResNet50,ResNet101,ResNet152
 # from models.densenet_model import densenet40_k12_cifar10
 from models.alexnet_model import AlexNet
 from datasets import MNIST_dataset, CIFAR10_dataset
+from utils.utils import generate_json_data_for_graph
 import MNIST_train, MNIST_validate
 import CIFAR10_train, CIFAR10_validate
 
@@ -64,6 +65,7 @@ def main():
             args.max_grad_norm = setting_data["max_grad_norm"]
             args.optimizer = setting_data["optimizer"]
 
+
     use_cuda = not args.no_cuda and torch.cuda.is_available()
 
     torch.manual_seed(args.seed)
@@ -94,12 +96,15 @@ def main():
 
     print('Initializing visualization...')
     # visualizer = Visualizer({"name": "MNIST DPSGD"})
-    visualizer = 0
+    visualizer = None
+    train_accuracy = []
+    test_accuracy = []
+    out_file_path = "./graphs/data"
     for epoch in range(1, args.epochs + 1):
         print("epoch %s:" % epoch)
-        CIFAR10_train.train(args, model, device, train_loader, args.optimizer, epoch,visualizer)
-        CIFAR10_validate.test(model, device, test_loader,epoch,visualizer)
-
+        train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, args.optimizer, epoch,visualizer))
+        test_accuracy.append(CIFAR10_validate.test(model, device, test_loader,epoch,visualizer))
+    generate_json_data_for_graph(out_file_path, args.load_setting, train_accuracy,test_accuracy)
 
     if args.save_model:
         torch.save(model.state_dict(), "mnist_cnn.pt")
