@@ -1,7 +1,7 @@
 
 import torch
 import argparse
-
+import json
 
 from models.Lenet_model import Net
 from models.resnet_model import ResNet18,ResNet34,ResNet50,ResNet101,ResNet152
@@ -40,7 +40,30 @@ def main():
                         help='Noise multiplier (default: 1.0)')
     parser.add_argument('--max-grad-norm', type=float, default=1.0, metavar='MGN',
                         help='Max gradian norm (default: 1.0)')
+    parser.add_argument('--optimizer', type=str, default="SGD", metavar='O',
+                        help='Name of optimizer (example: SGD, DPSGD,...)')
+    parser.add_argument('--load-setting', type=str, default="", metavar='LS',
+                        help='Name of setting (example: setting_1, setting_2,...')
     args = parser.parse_args()
+    if(args.load_setting != ""):
+        with open("settings.json", "r") as json_file:
+            json_data = json.load(json_file)
+            setting_data = json_data[args.load_setting]
+            # Loading data
+            args.batch_size = setting_data["batch_size"]
+            args.test_batch_size = setting_data["test_batch_size"]
+            args.epochs = setting_data["epochs"]
+            args.lr = setting_data["learning_rate"]
+            args.gamma = setting_data["gamma"]
+            args.no_cuda = setting_data["no_cuda"]
+            args.dry_run = setting_data["dry_run"]
+            args.seed = setting_data["seed"]
+            args.log_interval = setting_data["log_interval"]
+            args.save_model = setting_data["save_model"]
+            args.noise_multiplier = setting_data["noise_multiplier"]
+            args.max_grad_norm = setting_data["max_grad_norm"]
+            args.optimizer = setting_data["optimizer"]
+
     use_cuda = not args.no_cuda and torch.cuda.is_available()
 
     torch.manual_seed(args.seed)
@@ -66,7 +89,7 @@ def main():
     # optimizer = MNIST_optimizer.SGD_optimizer(args.lr,model)
     sigma = 6
     gradient_norm = 3
-    optimizer_name = "DPSGD"
+    # optimizer_name = "DPSGD"
     # optimizer_name = "SGD"
 
     print('Initializing visualization...')
@@ -74,7 +97,7 @@ def main():
     visualizer = 0
     for epoch in range(1, args.epochs + 1):
         print("epoch %s:" % epoch)
-        CIFAR10_train.train(args, model, device, train_loader, optimizer_name, epoch,visualizer)
+        CIFAR10_train.train(args, model, device, train_loader, args.optimizer, epoch,visualizer)
         CIFAR10_validate.test(model, device, test_loader,epoch,visualizer)
 
 

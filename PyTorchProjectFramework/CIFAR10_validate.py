@@ -31,7 +31,7 @@ def test(model, device, test_loader,epoch,visualizer):
 
             test_loss += loss.item()
             prediction = torch.max(output, 1)
-            print("pred:", prediction[1])
+            # print("pred:", prediction[1])
             # print("target:", target)
             # print("pred: %f, target: %f" % (prediction[1],target))
             total += target.size(0)

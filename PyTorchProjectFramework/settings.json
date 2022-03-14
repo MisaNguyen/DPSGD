@@ -1,0 +1,47 @@
+{
+  "setting_1": {
+    "batch_size": 32,
+    "test_batch_size": 1000,
+    "epochs": 50,
+    "learning_rate": 1.0,
+    "gamma": 0.7,
+    "no_cuda": false,
+    "dry_run": false,
+    "seed": 1,
+    "log_interval": 10,
+    "save_model": false,
+    "noise_multiplier": 1.0,
+    "max_grad_norm": 1.0,
+    "optimizer": "SGD"
+  },
+  "setting_2": {
+    "batch_size": 1,
+    "test_batch_size": 1000,
+    "epochs": 50,
+    "learning_rate": 0.001,
+    "gamma": 0.7,
+    "no_cuda": false,
+    "dry_run": false,
+    "seed": 1,
+    "log_interval": 100,
+    "save_model": false,
+    "noise_multiplier": 1.0,
+    "max_grad_norm": 0.001,
+    "optimizer": "DPSGD"
+  },
+  "setting_3": {
+    "batch_size": 32,
+    "test_batch_size": 1000,
+    "epochs": 50,
+    "learning_rate": 0.01,
+    "gamma": 0.7,
+    "no_cuda": false,
+    "dry_run": false,
+    "seed": 1,
+    "log_interval": 100,
+    "save_model": false,
+    "noise_multiplier": 1.0,
+    "max_grad_norm": 0.001,
+    "optimizer": "DPSGD"
+  }
+}

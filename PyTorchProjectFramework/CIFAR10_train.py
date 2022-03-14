@@ -3,7 +3,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 import torch.nn as nn
-from torch.optim.lr_scheduler import StepLR
+# from torch.optim.lr_scheduler import StepLR
 from utils.progression_bar import progress_bar
 from datasets import create_dataset
 from utils import parse_configuration
@@ -12,6 +12,12 @@ from models import create_model
 import time
 
 
+""" Schedulers """
+from scheduler.learning_rate_scheduler import StepLR
+from scheduler.gradient_norm_scheduler import StepGN_normal
+# from scheduler.noise_multiplier_scheduler import StepLR
+
+""" Optimizers """
 from optimizers import MNIST_optimizer
 """Create learning_rate sequence generator
     
@@ -103,15 +109,15 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer):
                 loss = nn.CrossEntropyLoss()(output, sample_y[None, ...])
                 # Loss back-propagation
                 loss.backward()
-                train_loss += loss.item()
-                prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
-                total += target.size(0)
-
-                # train_correct incremented by one if predicted right
-                train_correct += np.sum(prediction[1].cpu().numpy() == target.cpu().numpy())
-
-                progress_bar(batch_idx, len(train_loader), 'Loss: %.4f | Acc: %.3f%% (%d/%d)'
-                             % (train_loss / (batch_idx + 1), 100. * train_correct / total, train_correct, total))
+                # train_loss += loss.item()
+                # prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
+                # total += target.size(0)
+                #
+                # # train_correct incremented by one if predicted right
+                # train_correct += np.sum(prediction[1].cpu().numpy() == target.cpu().numpy())
+                #
+                # progress_bar(batch_idx, len(train_loader), 'Loss: %.4f | Acc: %.3f%% (%d/%d)'
+                #              % (train_loss / (batch_idx + 1), 100. * train_correct / total, train_correct, total))
                 # Clip each parameter's per-sample gradient
                 for param in model.parameters():
                     per_sample_grad = param.grad.detach().clone()
@@ -121,18 +127,18 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer):
 
 
             # Aggregate gradients
-
+            # model.to("cpu")
             for param in model.parameters():
                 # input(len(param.accumulated_grads))
-                # accumulated_grads = torch.stack(param.accumulated_grads, dim=0)
+                accumulated_grads = torch.stack(param.accumulated_grads, dim=0).sum(dim=0)
                 # input(param.grad.shape)
-
+                # print(accumulated_grads)
                 # input(param.size())
                 # input(param.grad.size())
                 # input(accumulated_grads.sum(dim=0).size())
 
-                param.grad = torch.stack(param.accumulated_grads, dim=0).sum(dim=0)
-
+                param.grad = accumulated_grads
+            # model.to(device)
         elif optimizer_name == "SGD":
             optimizer = MNIST_optimizer.SGD_optimizer(model.parameters(),args.lr)
             optimizer.zero_grad()
@@ -141,15 +147,6 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer):
             loss = nn.CrossEntropyLoss()(output, target)
             # Loss back-propagation
             loss.backward()
-            train_loss += loss.item()
-            prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
-            total += target.size(0)
-
-            # train_correct incremented by one if predicted right
-            train_correct += np.sum(prediction[1].cpu().numpy() == target.cpu().numpy())
-
-            progress_bar(batch_idx, len(train_loader), 'Loss: %.4f | Acc: %.3f%% (%d/%d)'
-                         % (train_loss / (batch_idx + 1), 100. * train_correct / total, train_correct, total))
 
         # Get scheduler
         scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
@@ -158,7 +155,18 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer):
         # Decrease learning rate using scheduler
         scheduler.step()
 
-
+        # Trainning Log
+        # output = model(data)
+        # loss = nn.CrossEntropyLoss()(output, target)
+        # train_loss += loss.item()
+        # prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
+        # total += target.size(0)
+        #
+        # # train_correct incremented by one if predicted right
+        # train_correct += np.sum(prediction[1].cpu().numpy() == target.cpu().numpy())
+        #
+        # progress_bar(batch_idx, len(train_loader), 'Loss: %.4f | Acc: %.3f%% (%d/%d)'
+        #              % (train_loss / (batch_idx + 1), 100. * train_correct / total, train_correct, total))
 
 
         # data, target = data.to(device), target.to(device)
@@ -195,10 +203,10 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer):
         # optimizer = MNIST_optimizer.DPSGD_
         # optimizer(model.parameters(),args.lr,sigma,gradient_norm)
 
-        # if batch_idx % args.log_interval == 0:
-        #     print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-        #         epoch, batch_idx * len(data), len(train_loader.dataset),
-        #                100. * batch_idx / len(train_loader), loss.item()))
+        if batch_idx % args.log_interval == 0:
+            print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+                epoch, batch_idx * len(data), len(train_loader.dataset),
+                       100. * batch_idx / len(train_loader), loss.item()))
             # losses = model.get_current_losses()
         #     visualizer.print_current_losses(epoch, batch_idx * len(data), len(train_loader.dataset), loss)
 
