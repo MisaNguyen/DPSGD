@@ -44,7 +44,7 @@ class _GNScheduler(object):
         self.last_epoch = last_epoch
 
         # Following https://github.com/pytorch/pytorch/issues/20124
-        # We would like to ensure that `lr_scheduler.step()` is called after
+        # We would like to ensure that `gn_scheduler.step()` is called after
         # `optimizer.step()`
         def with_counter(method):
             if getattr(method, '_with_counter', False):
@@ -123,14 +123,14 @@ class _GNScheduler(object):
             if not hasattr(self.optimizer.step, "_with_counter"):
                 warnings.warn("Seems like `optimizer.step()` has been overridden after gradient norm scheduler "
                               "initialization. Please, make sure to call `optimizer.step()` before "
-                              "`lr_scheduler.step()`. See more details at "
+                              "`gn_scheduler.step()`. See more details at "
                               "https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate", UserWarning)
 
-            # Just check if there were two first lr_scheduler.step() calls before optimizer.step()
+            # Just check if there were two first gn_scheduler.step() calls before optimizer.step()
             elif self.optimizer._step_count < 1:
                 warnings.warn("Detected call of `gn_scheduler.step()` before `optimizer.step()`. "
                               "In PyTorch 1.1.0 and later, you should call them in the opposite order: "
-                              "`optimizer.step()` before `lr_scheduler.step()`.  Failure to do this "
+                              "`optimizer.step()` before `gn_scheduler.step()`.  Failure to do this "
                               "will result in PyTorch skipping the first value of the learning rate schedule. "
                               "See more details at "
                               "https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate", UserWarning)
@@ -173,7 +173,7 @@ class LambdaGN(_GNScheduler):
     times a given function. When last_epoch=-1, sets initial gn as gn.
     Args:
         optimizer (Optimizer): Wrapped optimizer.
-        lr_lambda (function or list): A function which computes a multiplicative
+        gn_lambda (function or list): A function which computes a multiplicative
             factor given an integer parameter epoch, or a list of such
             functions, one for each group in optimizer.param_groups.
         last_epoch (int): The index of last epoch. Default: -1.
@@ -194,12 +194,12 @@ class LambdaGN(_GNScheduler):
         self.optimizer = optimizer
 
         if not isinstance(gn_lambda, list) and not isinstance(gn_lambda, tuple):
-            self.lr_lambdas = [gn_lambda] * len(optimizer.param_groups)
+            self.gn_lambdas = [gn_lambda] * len(optimizer.param_groups)
         else:
             if len(gn_lambda) != len(optimizer.param_groups):
-                raise ValueError("Expected {} lr_lambdas, but got {}".format(
+                raise ValueError("Expected {} gn_lambdas, but got {}".format(
                     len(optimizer.param_groups), len(gn_lambda)))
-            self.lr_lambdas = list(gn_lambda)
+            self.gn_lambdas = list(gn_lambda)
         super(LambdaGN, self).__init__(optimizer, last_epoch, verbose)
 
     def state_dict(self):
@@ -212,9 +212,9 @@ class LambdaGN(_GNScheduler):
         """
 
         state_dict = {key: value for key, value in self.__dict__.items() if key not in ('optimizer', 'gn_lambdas')}
-        state_dict['gn_lambdas'] = [None] * len(self.lr_lambdas)
+        state_dict['gn_lambdas'] = [None] * len(self.gn_lambdas)
 
-        for idx, fn in enumerate(self.lr_lambdas):
+        for idx, fn in enumerate(self.gn_lambdas):
             if not isinstance(fn, types.FunctionType):
                 state_dict['gn_lambdas'][idx] = fn.__dict__.copy()
 
@@ -228,23 +228,23 @@ class LambdaGN(_GNScheduler):
                 from a call to :meth:`state_dict`.
         """
 
-        lr_lambdas = state_dict.pop('gn_lambdas')
+        gn_lambdas = state_dict.pop('gn_lambdas')
         self.__dict__.update(state_dict)
         # Restore state_dict keys in order to prevent side effects
         # https://github.com/pytorch/pytorch/issues/32756
-        state_dict['gn_lambdas'] = lr_lambdas
+        state_dict['gn_lambdas'] = gn_lambdas
 
-        for idx, fn in enumerate(lr_lambdas):
+        for idx, fn in enumerate(gn_lambdas):
             if fn is not None:
                 self.gn_lambdas[idx].__dict__.update(fn)
 
-    def get_lr(self):
+    def get_gn(self):
         if not self._get_gn_called_within_step:
             warnings.warn("To get the last learning rate computed by the scheduler, "
-                          "please use `get_last_lr()`.")
+                          "please use `get_last_gn()`.")
 
         return [base_gn * lmbda(self.last_epoch)
-                for lmbda, base_gn in zip(self.lr_lambdas, self.base_gns)]
+                for lmbda, base_gn in zip(self.nm_lambdas, self.base_gns)]
 
 
 class StepGN(_GNScheduler):
