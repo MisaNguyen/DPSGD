@@ -45,6 +45,8 @@ def main():
                         help='Name of optimizer (example: SGD, DPSGD,...)')
     parser.add_argument('--load-setting', type=str, default="", metavar='LS',
                         help='Name of setting (example: setting_1, setting_2,...')
+    parser.add_argument('--enable-diminishing-gradient-norm', type=bool, default=False, metavar='DGN',
+                        help='Enable diminishing gradient norm mode')
     args = parser.parse_args()
     if(args.load_setting != ""):
         with open("settings.json", "r") as json_file:
@@ -64,6 +66,7 @@ def main():
             args.noise_multiplier = setting_data["noise_multiplier"]
             args.max_grad_norm = setting_data["max_grad_norm"]
             args.optimizer = setting_data["optimizer"]
+            args.enable_diminishing_gradient_norm = setting_data["diminishing_gradient_norm"]
 
 
     use_cuda = not args.no_cuda and torch.cuda.is_available()
@@ -99,7 +102,7 @@ def main():
     visualizer = None
     train_accuracy = []
     test_accuracy = []
-    out_file_path = "./graphs/data"
+    out_file_path = "./graphs/data/" + args.optimizer
     for epoch in range(1, args.epochs + 1):
         print("epoch %s:" % epoch)
         train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, args.optimizer, epoch,visualizer))

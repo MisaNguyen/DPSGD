@@ -10,7 +10,7 @@ if __name__ == "__main__":
     settings = ["setting_3"]
     for setting in settings:
         graph_path = "./graph/" + experiment
-        data_path  = "./data/"+ experiment + "/" + setting +".json"
+        data_path  = "./data/" + experiment + '/' + setting +".json"
         # Check whether the specified path exists or not
         isExist = os.path.exists(graph_path)
 
@@ -28,17 +28,17 @@ if __name__ == "__main__":
         print("Plotting graphs for setting : %s" % setting)
         epoch_index = [i for i in range(1, epochs+1)]
         # T_index = [N_c/s * i for i in range(1, epochs+1)]
-        index = T_index
+        index = epoch_index
         # print(eps_dpsgd)
         # input()
-        plt.plot(index, train_accuracy, label="train_accuracy")
-        plt.plot(index, test_accuracy, label="test_accuracy")
+        plt.plot(index, train_accuracy, label="train_accuracy (setting 3)")
+        plt.plot(index, test_accuracy, label="test_accuracy (setting 3)")
         # plt.plot(epoch_index, sigma, label="sigma")
-        plt.title('Train and test accuracy)
+        plt.title('Train and test accuracy')
         plt.xlabel('epoch')
         plt.ylabel('accuracy')
         plt.legend()
-        plt.savefig(graph_path + "/accuracy.png")
+        plt.savefig(graph_path + '/' + setting +".png")
         plt.show()
         # plt.clf()
         # plt.plot(index, sigma, label="sigma")

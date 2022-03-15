@@ -102,18 +102,18 @@ class _NMScheduler(object):
         # Compute Gradient Norm using chainable form of the scheduler
         raise NotImplementedError
 
-    def print_nm(self, is_verbose, group, gradient_norm, epoch=None):
+    def print_nm(self, is_verbose, group, noise_multiplier, epoch=None):
         """Display the current learning rate.
         """
         if is_verbose:
             if epoch is None:
                 print('Adjusting learning rate'
-                      ' of group {} to {:.4e}.'.format(group, gradient_norm))
+                      ' of group {} to {:.4e}.'.format(group, noise_multiplier))
             else:
                 epoch_str = ("%.2f" if isinstance(epoch, float) else
                              "%.5d") % epoch
                 print('Epoch {}: adjusting learning rate'
-                      ' of group {} to {:.4e}.'.format(epoch_str, group, gradient_norm))
+                      ' of group {} to {:.4e}.'.format(epoch_str, group, noise_multiplier))
 
 
     def step(self, epoch=None):
@@ -254,7 +254,7 @@ class StepNM(_NMScheduler):
     last_epoch=-1, sets initial nm as nm.
     Args:
         optimizer (Optimizer): Wrapped optimizer.
-        gradient_norm (float): Period of gradient decay.
+        noise_multiplier (float): Period of gradient decay.
         gamma (float): Multiplicative factor of learning rate decay.
             Default: 0.1.
         last_epoch (int): The index of last epoch. Default: -1.
@@ -272,37 +272,37 @@ nm        >>> # ...
         >>>     scheduler.step()
     """
 
-    def __init__(self, optimizer, gradient_norm, gamma=0.1, last_epoch=-1, verbose=False):
-        self.gradient_norm = gradient_norm
+    def __init__(self, optimizer, noise_multiplier, gamma=0.1, last_epoch=-1, verbose=False):
+        self.noise_multiplier = noise_multiplier
         self.gamma = gamma
         super(StepNM, self).__init__(optimizer, last_epoch, verbose)
 
     def get_nm(self):
         if not self._get_nm_called_within_step:
-            warnings.warn("To get the last gradient norm computed by the scheduler, "
+            warnings.warn("To get the last noise multiplier computed by the scheduler, "
                           "please use `get_last_nm()`.", UserWarning)
 
-        if (self.last_epoch == 0) or (self.last_epoch % self.gradient_norm != 0):
+        if (self.last_epoch == 0) or (self.last_epoch % self.noise_multiplier != 0):
             return [group['nm'] for group in self.optimizer.param_groups]
         return [group['nm'] * self.gamma
                 for group in self.optimizer.param_groups]
 
     def _get_closed_form_nm(self):
-        return [base_nm * self.gamma ** (self.last_epoch // self.gradient_norm)
+        return [base_nm * self.gamma ** (self.last_epoch // self.noise_multiplier)
                 for base_nm in self.base_nms]
 
 """
 UPDATE GRADIENT NORM NORMALLY (OUTSIDE OF THE OPTIMIZER)
 """
 
-class StepNMn_normal():
-    def __init__(self, gradient_norm, gamma=0.1, epoch = -1):
-        self.gradient_norm = gradient_norm
+class StepNM_normal():
+    def __init__(self, noise_multiplier, gamma=0.1, epoch = -1):
+        self.noise_multiplier = noise_multiplier
         self.gamma = gamma
         self.epoch = epoch
 
     def get_nm_after_epochs(self):
         if(self.epoch < 0):
             warnings.warn("epoch can not be set to negative", UserWarning)
-        # Gradient_norm = base gradient_norm * gamma^epoch
-        return self.gradient_norm * (self.gamma ** self.epoch)
+        # noise_multiplier = base noise_multiplier * gamma^epoch
+        return self.noise_multiplier * (self.gamma ** self.epoch)

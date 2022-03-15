@@ -1,5 +1,6 @@
 import torch
 import json
+import os
 # ref: https://github.com/pytorch/opacus/blob/5c83d59fc169e93667946204f7a6859827a38ace/opacus/optimizers/optimizer.py#L87
 def _generate_noise(
         std: float,
@@ -65,11 +66,19 @@ def _generate_noise(
         )
 
 
-def generate_json_data_for_graph(out_file_path: str,setting : str, train_accuracy : list, test_accuracy : list):
+def generate_json_data_for_graph(out_file_path: str,setting : str,train_accuracy : list, test_accuracy : list):
     json_output = {
         "setting": setting,
+        "optimizer": optimizer,
         "train_accuracy": train_accuracy,
         "test_accuracy" : test_accuracy
     }
+    isExist = os.path.exists(out_file_path)
+
+    if not isExist:
+        # Create a new directory because it does not exist
+        os.makedirs(out_file_path)
+        print("The new directory is created: %s" % out_file_path)
+
     with open(out_file_path + '/' + setting + '.json', "w") as data_file:
         json.dump(json_output, data_file)
