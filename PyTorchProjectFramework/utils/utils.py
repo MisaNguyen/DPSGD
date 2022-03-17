@@ -69,7 +69,6 @@ def _generate_noise(
 def generate_json_data_for_graph(out_file_path: str,setting : str,train_accuracy : list, test_accuracy : list):
     json_output = {
         "setting": setting,
-        "optimizer": optimizer,
         "train_accuracy": train_accuracy,
         "test_accuracy" : test_accuracy
     }
