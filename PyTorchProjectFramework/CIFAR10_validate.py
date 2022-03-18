@@ -3,11 +3,11 @@ import torch
 import torch.nn as nn
 import numpy as np
 
-import torch.nn.functional as F
-from datasets import create_dataset
+# import torch.nn.functional as F
+# from datasets import create_dataset
 from utils.progression_bar import progress_bar
-from models import create_model
-import os
+# from models import create_model
+# import os
 
 """Performs validation of a specified model.
     
