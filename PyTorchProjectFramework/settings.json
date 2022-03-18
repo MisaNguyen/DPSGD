@@ -2,7 +2,7 @@
   "setting_1": {
     "batch_size": 32,
     "test_batch_size": 1000,
-    "epochs": 50,
+    "epochs": 200,
     "learning_rate": 0.001,
     "gamma": 0.7,
     "no_cuda": false,
@@ -12,7 +12,7 @@
     "save_model": false,
     "noise_multiplier": 1.0,
     "max_grad_norm": 0.0001,
-    "optimizer": "DPSGD",
+    "optimizer": "SGD",
     "diminishing_gradient_norm": false
   },
   "setting_2": {
