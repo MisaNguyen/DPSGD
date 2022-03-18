@@ -63,8 +63,7 @@
     "optimizer": "SGD",
     "diminishing_gradient_norm": false
   },
-  ,
-  "setting_4": {
+  "setting_5": {
     "batch_size": 128,
     "test_batch_size": 1000,
     "epochs": 50,
