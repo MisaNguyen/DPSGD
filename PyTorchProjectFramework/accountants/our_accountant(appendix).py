@@ -10,17 +10,13 @@ from gdp_accountant_tensor import compute_eps_poisson,compute_mu_poisson, comput
 import os
 # Compute the value of gamma
 def Compute_gamma(alpha_bar,sigma):
+    C_0 = 2/(1-alpha_bar) # 2/(1-alpha)
     C_1 = pow(2,4)*alpha_bar/(1-alpha_bar) # 2^4*alpha/(1-alpha)
     C_2 = sigma/pow(1-np.sqrt(alpha_bar),2) # sigma/(1-sqrt(alpha))^2
     C_3 = (1/(sigma*(1-alpha_bar) - 2 * np.exp(1)* np.sqrt(alpha_bar)))*np.exp(3)/sigma # 1/(sigma*(1-alpha))
     C_4 = np.exp(3/pow(sigma,2))
     C_5 = 2/(1-alpha_bar)
-    # print("C_1",C_1)
-    # print("C_2",C_2)
-    # print("C_3",C_3)
-    # print("C_4",C_4)
-    # print("C_5",C_5)
-    return C_1*(C_2+C_3)*C_4 + C_5
+    return C_0 + C_1*(C_2+C_3)*C_4 + C_5
 
 # Compute upper bound on CONSTANT sample size
 def Compute_upperbound_s(N_c,K,eps,sigma,theta):
@@ -218,26 +214,55 @@ def compute_lower_T(gamma,eps, K, N, theta=1):
     return (gamma * theta * theta * k * k)/eps
 
 
-def compute_eps_from_sigma_and_delta(sigma,delta,K,N_c,s):
+def compute_eps_from_sigma_and_delta(sigma,delta,K,N_c,s,theta = 1):
     # sigma >= sqrt(2(eps+ln(1/delta))/eps)
     # sigma^2*eps >= 2(eps+ln(1/delta))
     # sigma^2* eps - 2 eps > = ln(1/delta)
-    # eps => 2 *(eps+ ln(1/delta))/ (sigma^2 -2) (this means sigma >= sqrt(2))
+    # eps => 2 *(ln(1/delta))/ (sigma^2 -2) (this means sigma >= sqrt(2))
+    eps_min = 2 *np.log(1/delta)/ (sigma*sigma -2)
+    alpha_bar = Compute_alpha_bar(eps_min,N_c,K,gamma=2) # Start with gamma=2
+    # print(alpha_bar)
+    gamma = 0
+    new_gamma = Compute_gamma(alpha_bar,sigma)
+    # print(new_gamma)
+    # Compute until gamma is converge
+    # print(eps_min)
+    while(new_gamma - gamma >= 0.0001*gamma):
+        gamma = new_gamma
 
-    eps_min = 2*np.log(1/delta)/ (sigma*sigma -2)
-    gamma_min = 2
-    # gamma = new_gamma
-    # eps = gamma*pow(theta,2)*K/pow(N_c,2)*s
-    # # print("eps = %f" % eps)
-    # sigma = np.sqrt(2*(eps + np.log(1/delta))/eps)
+        eps = gamma * pow(theta,2) * K / pow(N_c,2)*s
+        # print(eps_min)
+        # input(eps)
+        # print("eps = %f" % eps)
+        # sigma = np.sqrt(2*(eps + np.log(1/delta))/eps)
 
-    alpha_bar = Compute_alpha_bar(eps_min,N_c,K,gamma_min)
-    input(alpha_bar)
+        alpha_bar = Compute_alpha_bar(eps,N_c,K,gamma)
+        if (alpha_bar >= 1):
+            break
+        new_gamma = Compute_gamma(alpha_bar,sigma)
     # if (alpha_bar >= 1):
 
         # break
-    new_gamma = Compute_gamma(alpha_bar,sigma)
-    return new_gamma
+    # new_gamma = Compute_gamma(alpha_bar,sigma)
+    RHS_condition1 = Compute_g(np.sqrt(2*np.log(1/delta)/eps))/theta * N_c
+    # print("1",RHS_condition1)
+
+    # print("2",s_ub)
+    if (s > RHS_condition1):
+        print("ERROR : s must be smaller than or equal to" , RHS_condition1)
+        return None, None
+
+    # Condition 2:
+    RHS_condition2 = gamma*Compute_h(sigma)*K/N_c
+    if(eps > RHS_condition2):
+        print("ERROR : eps must be smaller than or equal to" , RHS_condition2)
+        return None, None
+    # Condition 3:
+    RHS_condition3 = np.sqrt(2*(eps + np.log(1/delta))/eps)
+    if(sigma < RHS_condition3):
+        print("ERROR : sigma must be larger than or equal to" , RHS_condition3)
+        return None
+    return eps
 
 """
 Setting sample:
@@ -277,6 +302,7 @@ if __name__ == "__main__":
         K = N_c * epochs
         T = K/s
         print(compute_eps_from_sigma_and_delta(sigma,delta,K,N_c,s))
+        print(compute_eps_uniform(epochs, sigma, N_c, s, delta))
 # if __name__ == "__main__":
 #     # N_c,K,delta,s = setting_3()
 #     setting_file_name = "settings_sample_size_exp"
