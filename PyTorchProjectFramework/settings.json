@@ -1,6 +1,6 @@
 {
   "setting_1": {
-    "batch_size": 32,
+    "batch_size": 64,
     "test_batch_size": 1000,
     "epochs": 200,
     "learning_rate": 0.001,
@@ -8,11 +8,11 @@
     "no_cuda": false,
     "dry_run": false,
     "seed": 1,
-    "log_interval": 10,
+    "log_interval": 100,
     "save_model": false,
-    "noise_multiplier": 1.0,
-    "max_grad_norm": 0.0001,
-    "optimizer": "SGD",
+    "noise_multiplier": 2.0,
+    "max_grad_norm": 0.001,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false
   },
   "setting_2": {
@@ -60,7 +60,7 @@
     "save_model": false,
     "noise_multiplier": 1.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false
   },
   "setting_5": {

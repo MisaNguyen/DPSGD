@@ -212,47 +212,47 @@ def DP_calculator_CSS(N_c,K,delta,s,theta = 1):
 
     return eps,sigma
 
-# def setting_1(): #MNIST
-#     N_c = 60000
-#     K = 10*N_c
-#     # eps_min = 0.05
-#     delta = 1/N_c
-#     # sigma = 12
-#     s = 300
-#     return N_c,K,delta,s
-#
-# def setting_2(): #Libsvm
-#     N_c = 10000 # 10K
-#     K = 5*N_c
-#     # eps_min = 0.05
-#     delta = 1/N_c
-#     # sigma = 30
-#     s = 26
-#     return N_c,K,delta,s
-#
-# def setting_3(): #DPSGD - MNIST, baseline = 98.30
-#     # Learning rate : 0.1 -> 0.052, decays after every 10 epochs
-#     N_c = 60000 # 10K
-#     K = 12*N_c
-#     # eps_min = 0.05
-#     delta = pow(10,-5)
-#     # sigma = 30
-#     s = 1830
-#     return N_c,K,delta,s
-#
-# def setting_4(): #DPSGD - CIFAR10, baseline = 86%
-#     # Learning rate : 0.1 -> 0.052, decays after every 10 epochs
-#     N_c = 60000 # 10K
-#     K = 16*N_c
-#     # eps_min = 0.05
-#     delta = pow(10,-5)
-#     # sigma = 30
-#     s = 600
-#     return N_c,K,delta,s
+
+def compute_lower_T(gamma,eps, K, N, theta=1):
+    k = K/N
+    return (gamma * theta * theta * k * k)/eps
+
+
+def compute_eps_from_sigma_and_delta(sigma,delta,K,N_c,s):
+    # sigma >= sqrt(2(eps+ln(1/delta))/eps)
+    # sigma^2*eps >= 2(eps+ln(1/delta))
+    # sigma^2* eps - 2 eps > = ln(1/delta)
+    # eps => 2 *(eps+ ln(1/delta))/ (sigma^2 -2) (this means sigma >= sqrt(2))
+
+    eps_min = 2*np.log(1/delta)/ (sigma*sigma -2)
+    gamma_min = 2
+    # gamma = new_gamma
+    # eps = gamma*pow(theta,2)*K/pow(N_c,2)*s
+    # # print("eps = %f" % eps)
+    # sigma = np.sqrt(2*(eps + np.log(1/delta))/eps)
+
+    alpha_bar = Compute_alpha_bar(eps_min,N_c,K,gamma_min)
+    input(alpha_bar)
+    # if (alpha_bar >= 1):
+
+        # break
+    new_gamma = Compute_gamma(alpha_bar,sigma)
+    return new_gamma
+
+"""
+Setting sample:
+    "sampling_batch": 64,
+    "num_examples": 60000,
+    "epochs": 50,
+    "learning_rate": 0.001,
+    "noise_multiplier": 1.0,
+    "max_grad_norm": 0.001,
+"""
 if __name__ == "__main__":
     # N_c,K,delta,s = setting_3()
     setting_file_name = "settings_sample_size_exp"
-    settings = ["setting_1","setting_2","setting_3","setting_4","setting_5","setting_6"]
+    # settings = ["setting_1","setting_2","setting_3","setting_4","setting_5","setting_6"]
+    settings = ["setting_1"]
     with open("./%s.json" % setting_file_name, "r") as json_file:
         json_data = json.load(json_file)
 
@@ -263,145 +263,173 @@ if __name__ == "__main__":
         epochs = setting_data["epochs"]
         N_c = setting_data["num_examples"]
         s = setting_data["sampling_batch"]
-        delta = setting_data["delta"]
+        sigma = setting_data["noise_multiplier"]
+        delta = 1/N_c
+        learning_rate = setting_data["learning_rate"]
         print ("Loading setting: %s" % setting)
         json_output = setting_data
         data_path = "./graphs/data/" + setting_file_name + '/appendix'
         isExist = os.path.exists(data_path)
-
         if not isExist:
             # Create a new directory because it does not exist
             os.makedirs(data_path)
             print("The new directory is created: %s" % data_path)
-        eps_dpsgd_arr = []
-        sigma_arr = []
-        eps_fdp_arr = []
-        mu_fdp_arr = []
-        print("Setting %s loaded" % setting)
-        for epoch in range(1,epochs+1):
-            # print("epoch: %d" % epoch)
-            K = N_c * epoch
-            # if(N_c != None):
-            eps_dpsgd, sigma = DP_calculator_CSS(N_c, K, delta, s)
-            T = K/s
-            if(eps_dpsgd != None):
-                # print("-"*20)
-                # print("N_c=",N_c)
-                # print("K=",K)
-                # print("epsilon=",eps)
-                # print("delta=",delta)
-                # print("sigma=",sigma)
-                # print("T=",T)
-                # print("s_i=",s)
-                # print("-"*20)
-                eps_dpsgd_arr.append(eps_dpsgd)
-                sigma_arr.append(sigma)
-
-
-                # Compute actual eps-fdp value
-                # eps_fdp = compute_eps_poisson(epoch, sigma, N_c, s, delta)
-                # mu_fdp = compute_mu_poisson(epoch, sigma, N_c, s)
-                eps_fdp = compute_eps_uniform(epoch, sigma, N_c, s, delta)
-                mu_fdp = compute_mu_uniform(epoch, sigma, N_c, s)
-                eps_fdp_arr.append(eps_fdp)
-                mu_fdp_arr.append(mu_fdp)
-            else:
-                print("invalid eps epoch:",epoch)
-        json_output["sigma"]= sigma_arr
-        json_output_test["sigma"]= sigma_arr
-        # input(json_output_test["setting_1"]["sigma"])
-        json_output["eps_dpsgd"] = eps_dpsgd_arr
-
-        json_output["eps_fdp"] = eps_fdp_arr
-        json_output["mu_fdp"]= mu_fdp_arr
-        with open(data_path + '/' + setting + '.json', "w") as data_file:
-            json.dump(json_output, data_file)
-            # N_c = 60000
-    with open('./settings_main_theorem(test).json', "w") as data_file:
-        # input(json_output_test["setting_6"])
-        json.dump(json_output_test, data_file)
-    # delta = 1/N_c
-    # eps_arr = [i/1000 for i in range(100,1000)] # 0.01 -> 1.0
-    # gamma = []
-    # gamma_alphasquare = []
-    # gamma_alphasquare_mins = []
-    # gamma_alphasquare_mins_eps = []
-    # test = []
-    # sigmas = []
-    # GAM_item = 0
-    # tmp = 0
-    # for eps in eps_arr:
-    #     sigma = np.sqrt(2*np.log(1/delta)/eps)
-    #     # print(item)
-    #     # print(sigma)
-    #     alpha_bar = [i/1000 for i in range(1000)] # 0.01 -> 0.5
-    #     # print(alpha_bar)
-    #     GAM = np.inf
-    #     x = 0
-    #     for item in alpha_bar:
-    #         g = Compute_gamma(item,sigma)
-    # if(sigma <= 2*np.exp(1)*np.sqrt(item)/(1-item)):
-    #             continue
-    #         # print(g)
-    #         # print(g/pow(item,2))
-    #         # gamma.append(g)
-    #         if (g < 0):
-    #             continue
-    #             # input()
-    #         if(GAM > g/pow(item,2)):
-    #             GAM = g/pow(item,2)
-    #             GAM_item = item
-    #             x = item
-    #             # input(GAM)
-    #     # if(eps >= 0.5):
-    #     #     print("GAM",GAM)
-    #     #     print("alpha_bar",x)
-    #     #     print("gamma", Compute_gamma(x,sigma))
-    #     #     print("sigma",sigma)
-    #     #     input()
-    #     # if(tmp < GAM*eps):
-    #     #     tmp = GAM*eps
-    #     # else:
-    #     #     print("eps_drop",eps)
-    #     #     print("alpha_bar_drop",x)
-    #     #     input()
-    #     test.append(GAM_item)
-    #     sigmas.append(sigma)
-    #     gamma_alphasquare_mins.append(GAM)
-    #     gamma_alphasquare_mins_eps.append(GAM*eps)
-    # fig, axes = plt.subplots(nrows=2, ncols=2)
-
-    # axes[0][0].plot(eps_arr, gamma_alphasquare_mins)
-    # axes[0][0].set_title('N_c = 60000, delta = 1/N_c')
-    # axes[0][0].set_xlabel('eps')
-    # axes[0][0].set_ylabel('gamma/alpha_bar^2')
-
-    # axes[0][1].plot(eps_arr, gamma_alphasquare_mins_eps)
-    # axes[0][1].set_title('N_c = 60000, delta = 1/N_c')
-    # axes[0][1].set_xlabel('eps')
-    # axes[0][1].set_ylabel('eps*gamma/alpha_bar^2')
-
-    # axes[1][1].plot(sigmas, test)
-    # axes[1][1].set_title('N_c = 60000, delta = 1/N_c')
-    # axes[1][1].set_xlabel('sigma')
-    # axes[1][1].set_ylabel('alpha_bar')
-    # eps = 0.564
-    # sigma = np.sqrt(2*np.log(1/delta)/eps)
-    # alpha_bar = [i/1000 for i in range(450)]
-    # a = []
-    # for item in alpha_bar:
-    #     g = Compute_gamma(item,sigma)
-    #     if(sigma <= 2*np.exp(1)*np.sqrt(item))/(1-item):
-    #         continue
-    #     # print(g)
-    #     # print(g/pow(item,2))
-    #     # gamma.append(g)
-    #     if (g < 0):
-    #         continue
-    #     a.append(item)
-    #     gamma_alphasquare.append(g/pow(item,2))
-    # axes[1][0].plot(a, gamma_alphasquare)
-    # axes[1][0].set_title('eps = 0.8, N_c = 60000, delta = 1/N_c')
-    # axes[1][0].set_xlabel('alpha_bar')
-    # axes[1][0].set_ylabel('gamma/alpha_bar^2')
-    # plt.show()
+        K = N_c * epochs
+        T = K/s
+        print(compute_eps_from_sigma_and_delta(sigma,delta,K,N_c,s))
+# if __name__ == "__main__":
+#     # N_c,K,delta,s = setting_3()
+#     setting_file_name = "settings_sample_size_exp"
+#     settings = ["setting_1","setting_2","setting_3","setting_4","setting_5","setting_6"]
+#     with open("./%s.json" % setting_file_name, "r") as json_file:
+#         json_data = json.load(json_file)
+#
+#     json_output_test = json_data
+#     for setting in settings:
+#         setting_data = json_data[setting]
+#         # Loading data
+#         epochs = setting_data["epochs"]
+#         N_c = setting_data["num_examples"]
+#         s = setting_data["sampling_batch"]
+#         delta = setting_data["delta"]
+#         print ("Loading setting: %s" % setting)
+#         json_output = setting_data
+#         data_path = "./graphs/data/" + setting_file_name + '/appendix'
+#         isExist = os.path.exists(data_path)
+#
+#         if not isExist:
+#             # Create a new directory because it does not exist
+#             os.makedirs(data_path)
+#             print("The new directory is created: %s" % data_path)
+#         eps_dpsgd_arr = []
+#         sigma_arr = []
+#         eps_fdp_arr = []
+#         mu_fdp_arr = []
+#         print("Setting %s loaded" % setting)
+#         for epoch in range(1,epochs+1):
+#             # print("epoch: %d" % epoch)
+#             K = N_c * epoch
+#             # if(N_c != None):
+#             eps_dpsgd, sigma = DP_calculator_CSS(N_c, K, delta, s)
+#             T = K/s
+#             if(eps_dpsgd != None):
+#                 # print("-"*20)
+#                 # print("N_c=",N_c)
+#                 # print("K=",K)
+#                 # print("epsilon=",eps)
+#                 # print("delta=",delta)
+#                 # print("sigma=",sigma)
+#                 # print("T=",T)
+#                 # print("s_i=",s)
+#                 # print("-"*20)
+#                 eps_dpsgd_arr.append(eps_dpsgd)
+#                 sigma_arr.append(sigma)
+#
+#
+#                 # Compute actual eps-fdp value
+#                 # eps_fdp = compute_eps_poisson(epoch, sigma, N_c, s, delta)
+#                 # mu_fdp = compute_mu_poisson(epoch, sigma, N_c, s)
+#                 eps_fdp = compute_eps_uniform(epoch, sigma, N_c, s, delta)
+#                 mu_fdp = compute_mu_uniform(epoch, sigma, N_c, s)
+#                 eps_fdp_arr.append(eps_fdp)
+#                 mu_fdp_arr.append(mu_fdp)
+#             else:
+#                 print("invalid eps epoch:",epoch)
+#         json_output["sigma"]= sigma_arr
+#         json_output_test["sigma"]= sigma_arr
+#         # input(json_output_test["setting_1"]["sigma"])
+#         json_output["eps_dpsgd"] = eps_dpsgd_arr
+#
+#         json_output["eps_fdp"] = eps_fdp_arr
+#         json_output["mu_fdp"]= mu_fdp_arr
+#         with open(data_path + '/' + setting + '.json', "w") as data_file:
+#             json.dump(json_output, data_file)
+#             # N_c = 60000
+#     with open('./settings_main_theorem(test).json', "w") as data_file:
+#         # input(json_output_test["setting_6"])
+#         json.dump(json_output_test, data_file)
+#     # delta = 1/N_c
+#     # eps_arr = [i/1000 for i in range(100,1000)] # 0.01 -> 1.0
+#     # gamma = []
+#     # gamma_alphasquare = []
+#     # gamma_alphasquare_mins = []
+#     # gamma_alphasquare_mins_eps = []
+#     # test = []
+#     # sigmas = []
+#     # GAM_item = 0
+#     # tmp = 0
+#     # for eps in eps_arr:
+#     #     sigma = np.sqrt(2*np.log(1/delta)/eps)
+#     #     # print(item)
+#     #     # print(sigma)
+#     #     alpha_bar = [i/1000 for i in range(1000)] # 0.01 -> 0.5
+#     #     # print(alpha_bar)
+#     #     GAM = np.inf
+#     #     x = 0
+#     #     for item in alpha_bar:
+#     #         g = Compute_gamma(item,sigma)
+#     # if(sigma <= 2*np.exp(1)*np.sqrt(item)/(1-item)):
+#     #             continue
+#     #         # print(g)
+#     #         # print(g/pow(item,2))
+#     #         # gamma.append(g)
+#     #         if (g < 0):
+#     #             continue
+#     #             # input()
+#     #         if(GAM > g/pow(item,2)):
+#     #             GAM = g/pow(item,2)
+#     #             GAM_item = item
+#     #             x = item
+#     #             # input(GAM)
+#     #     # if(eps >= 0.5):
+#     #     #     print("GAM",GAM)
+#     #     #     print("alpha_bar",x)
+#     #     #     print("gamma", Compute_gamma(x,sigma))
+#     #     #     print("sigma",sigma)
+#     #     #     input()
+#     #     # if(tmp < GAM*eps):
+#     #     #     tmp = GAM*eps
+#     #     # else:
+#     #     #     print("eps_drop",eps)
+#     #     #     print("alpha_bar_drop",x)
+#     #     #     input()
+#     #     test.append(GAM_item)
+#     #     sigmas.append(sigma)
+#     #     gamma_alphasquare_mins.append(GAM)
+#     #     gamma_alphasquare_mins_eps.append(GAM*eps)
+#     # fig, axes = plt.subplots(nrows=2, ncols=2)
+#
+#     # axes[0][0].plot(eps_arr, gamma_alphasquare_mins)
+#     # axes[0][0].set_title('N_c = 60000, delta = 1/N_c')
+#     # axes[0][0].set_xlabel('eps')
+#     # axes[0][0].set_ylabel('gamma/alpha_bar^2')
+#
+#     # axes[0][1].plot(eps_arr, gamma_alphasquare_mins_eps)
+#     # axes[0][1].set_title('N_c = 60000, delta = 1/N_c')
+#     # axes[0][1].set_xlabel('eps')
+#     # axes[0][1].set_ylabel('eps*gamma/alpha_bar^2')
+#
+#     # axes[1][1].plot(sigmas, test)
+#     # axes[1][1].set_title('N_c = 60000, delta = 1/N_c')
+#     # axes[1][1].set_xlabel('sigma')
+#     # axes[1][1].set_ylabel('alpha_bar')
+#     # eps = 0.564
+#     # sigma = np.sqrt(2*np.log(1/delta)/eps)
+#     # alpha_bar = [i/1000 for i in range(450)]
+#     # a = []
+#     # for item in alpha_bar:
+#     #     g = Compute_gamma(item,sigma)
+#     #     if(sigma <= 2*np.exp(1)*np.sqrt(item))/(1-item):
+#     #         continue
+#     #     # print(g)
+#     #     # print(g/pow(item,2))
+#     #     # gamma.append(g)
+#     #     if (g < 0):
+#     #         continue
+#     #     a.append(item)
+#     #     gamma_alphasquare.append(g/pow(item,2))
+#     # axes[1][0].plot(a, gamma_alphasquare)
+#     # axes[1][0].set_title('eps = 0.8, N_c = 60000, delta = 1/N_c')
+#     # axes[1][0].set_xlabel('alpha_bar')
+#     # axes[1][0].set_ylabel('gamma/alpha_bar^2')
+#     # plt.show()

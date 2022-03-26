@@ -128,16 +128,18 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer):
 
             # Aggregate gradients
             # model.to("cpu")
-            for param in model.parameters():
-                # input(len(param.accumulated_grads))
-                # accumulated_grads = torch.stack(param.accumulated_grads, dim=0).sum(dim=0)
-                # input(param.grad.shape)
-                # print(accumulated_grads)
-                # input(param.size())
-                # input(param.grad.size())
-                # input(accumulated_grads.sum(dim=0).size())
+            with torch.no_grad():
+                for param in model.parameters():
+                    # input(len(param.accumulated_grads))
+                    # accumulated_grads = torch.stack(param.accumulated_grads, dim=0).sum(dim=0)
+                    # input(param.grad.shape)
+                    # print(accumulated_grads)
+                    # input(param.size())
+                    # input(param.grad.size())
+                    # input(accumulated_grads.sum(dim=0).size())
 
-                param.grad = torch.stack(param.accumulated_grads, dim=0).sum(dim=0)
+                    # param.grad = torch.sum(torch.stack(param.accumulated_grads), dim=0)
+                    param.grad = torch.stack(param.accumulated_grads, dim=0).sum(dim=0)
             # model.to(device)
         elif optimizer_name == "SGD":
             optimizer = MNIST_optimizer.SGD_optimizer(model.parameters(),args.lr)
