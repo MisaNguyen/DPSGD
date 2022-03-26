@@ -10,7 +10,7 @@ from torch.optim.lr_scheduler import StepLR
 # import time
 
 
-from optimizers import MNIST_optimizer
+from optimizers import DPSGD_optimizer
 """Create learning_rate sequence generator
     
 Input params:

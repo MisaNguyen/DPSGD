@@ -2,7 +2,7 @@ import abc
 from typing import Callable
 
 # from opacus.optimizers import DPOptimizer
-from PyTorchProjectFramework.optimizers.MNIST_optimizer import DPSGD as DPOptimizer
+from PyTorchProjectFramework.optimizers.DPSGD_optimizer import DPSGD as DPOptimizer
 
 class IAccountant(abc.ABC):
     @abc.abstractmethod

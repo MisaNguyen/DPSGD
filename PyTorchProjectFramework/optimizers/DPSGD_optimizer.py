@@ -84,13 +84,18 @@ def dpsgd(params: List[Tensor],
             else:
                 d_p = buf
             #Add dpsgd condition:
-        # print(d_p)
+        # print("Before",d_p)
         # input(torch.normal(mean=torch.Tensor([0.0]),
         #                    std=noise_multiplier * max_grad_norm).to(device=torch.device("cuda:0")))
+        # input(d_p)
         d_p += torch.normal(mean=torch.Tensor([0.0]),
                                    std=noise_multiplier * max_grad_norm).to(device=torch.device("cuda:0"))
+        # input(d_p.shape)
+        # print("after",d_p)
+        # input("HERE")
+        # input(param)
         param.add_(d_p, alpha=-lr)
-        param.grad = None  # Reset for next iteratio
+        # param.grad = None  # Reset for next iteratio
         # # Clipping
         # per_sample_grad = d_p.detach().clone()
         # torch.nn.utils.clip_grad_norm_(per_sample_grad, max_norm=max_grad_norm)  # in-place

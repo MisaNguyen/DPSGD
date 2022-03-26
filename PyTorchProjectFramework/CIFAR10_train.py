@@ -18,7 +18,7 @@ from scheduler.gradient_norm_scheduler import StepGN_normal
 # from scheduler.noise_multiplier_scheduler import StepLR
 
 """ Optimizers """
-from optimizers import MNIST_optimizer
+from optimizers import DPSGD_optimizer
 """Create learning_rate sequence generator
     
 Input params:
@@ -79,10 +79,10 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer):
     total = 0
     # Get optimizer
     if optimizer_name == "DPSGD":
-        optimizer = MNIST_optimizer.DPSGD_optimizer(model.parameters(),args.lr,
+        optimizer = DPSGD_optimizer.DPSGD_optimizer(model.parameters(),args.lr,
                                                     args.noise_multiplier,args.max_grad_norm)
     elif optimizer_name == "SGD":
-        optimizer = MNIST_optimizer.SGD_optimizer(model.parameters(),args.lr,)
+        optimizer = DPSGD_optimizer.SGD_optimizer(model.parameters(),args.lr,)
 
     # train_accuracy = np.array()
     # for batch_idx, (data, target) in enumerate(train_loader):
@@ -90,16 +90,19 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer):
         data, target = data.to(device), target.to(device)
 
         if optimizer_name == "DPSGD":
-            optimizer = MNIST_optimizer.DPSGD_optimizer(model.parameters(),args.lr,
+            optimizer = DPSGD_optimizer.DPSGD_optimizer(model.parameters(),args.lr,
                                                         args.noise_multiplier,args.max_grad_norm)
+            # Reset the sum_grads
             for param in model.parameters():
-                param.accumulated_grads = []
+                param.accumulated_grads = None
             # input(len(batch[0]))
             # input(len(batch[1]))
+
             for sample_idx in range(0,len(data)):
                 sample_x, sample_y = data[sample_idx],target[sample_idx]
             # sample_y = target[sample_idx]
 
+                # Reset gradients to zero
                 optimizer.zero_grad()
                 # Calculate the loss
                 output = model(sample_x[None, ...]) # input as batch size = 1
@@ -109,6 +112,8 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer):
                 loss = nn.CrossEntropyLoss()(output, sample_y[None, ...])
                 # Loss back-propagation
                 loss.backward()
+
+
                 # train_loss += loss.item()
                 # prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
                 # total += target.size(0)
@@ -122,33 +127,47 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer):
                 for param in model.parameters():
                     per_sample_grad = param.grad.detach().clone()
                     torch.nn.utils.clip_grad_norm_(per_sample_grad, max_norm=args.max_grad_norm)  # in-place
-                    param.accumulated_grads.append(per_sample_grad)
+                    # input(param.accumulated_grads)
+                    if(param.accumulated_grads == None):
+                        param.accumulated_grads = per_sample_grad
+                    else:
+                        param.accumulated_grads.add_(per_sample_grad)
+                    # input(param.accumulated_grads)
+                    # input(param.accumulated_grads)
+                    # param.accumulated_grads.append(per_sample_grad)
                     # print(torch.stack(param.accumulated_grads, dim=0).shape)
 
 
             # Aggregate gradients
             # model.to("cpu")
-            with torch.no_grad():
-                for param in model.parameters():
-                    # input(len(param.accumulated_grads))
-                    # accumulated_grads = torch.stack(param.accumulated_grads, dim=0).sum(dim=0)
-                    # input(param.grad.shape)
-                    # print(accumulated_grads)
-                    # input(param.size())
-                    # input(param.grad.size())
-                    # input(accumulated_grads.sum(dim=0).size())
+            # with torch.no_grad():
+            for param in model.parameters():
+                param.grad = param.accumulated_grads
+                # input(len(param.accumulated_grads))
+                # accumulated_grads = torch.stack(param.accumulated_grads, dim=0).sum(dim=0)
+                # input(param.grad.shape)
+                # print(accumulated_grads)
+                # input(param.size())
+                # input(param.grad.size())
+                # input(accumulated_grads.sum(dim=0).size())
 
-                    # param.grad = torch.sum(torch.stack(param.accumulated_grads), dim=0)
-                    param.grad = torch.stack(param.accumulated_grads, dim=0).sum(dim=0)
+                # param.grad = torch.sum(torch.stack(param.accumulated_grads), dim=0)
+                # param.grad = torch.stack(param.accumulated_grads, dim=0).sum(dim=0)
             # model.to(device)
         elif optimizer_name == "SGD":
-            optimizer = MNIST_optimizer.SGD_optimizer(model.parameters(),args.lr)
+            optimizer = DPSGD_optimizer.SGD_optimizer(model.parameters(),args.lr)
             optimizer.zero_grad()
+            # for param in model.parameters():
+            #     input(param.grad)
+            #     break
             # Calculate the loss
             output = model(data)
             loss = nn.CrossEntropyLoss()(output, target)
             # Loss back-propagation
             loss.backward()
+            # for param in model.parameters():
+            #     input(param.grad)
+            #     break
 
         # Get scheduler
         scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)

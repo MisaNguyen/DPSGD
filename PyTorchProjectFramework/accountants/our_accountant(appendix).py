@@ -277,12 +277,13 @@ if __name__ == "__main__":
     # N_c,K,delta,s = setting_3()
     setting_file_name = "settings_sample_size_exp"
     # settings = ["setting_1","setting_2","setting_3","setting_4","setting_5","setting_6"]
-    settings = ["setting_1"]
+    settings = ["setting_1","setting_2","setting_3","setting_4"]
     with open("./%s.json" % setting_file_name, "r") as json_file:
         json_data = json.load(json_file)
 
     json_output_test = json_data
     for setting in settings:
+        print("Setting: %s" % setting)
         setting_data = json_data[setting]
         # Loading data
         epochs = setting_data["epochs"]

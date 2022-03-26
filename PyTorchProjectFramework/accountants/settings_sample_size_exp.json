@@ -9,40 +9,31 @@
     "max_grad_norm": 0.001
   },
   "setting_2": {
-    "epochs"
-    : 1000,
+    "sampling_batch": 128,
     "num_examples"
     : 60000,
-    "sampling_batch"
-    : 32,
-    "microbatches"
-    : 512,
-    "delta"
-    : 1.6666666666666667e-05
+    "epochs": 50,
+    "learning_rate": 0.001,
+    "noise_multiplier": 10.0,
+    "max_grad_norm": 0.001
   },
   "setting_3": {
-    "epochs"
-    : 1000,
-    "num_examples"
-    : 50000,
-    "sampling_batch"
-    : 64,
-    "microbatches"
-    : 512,
-    "delta"
-    : 1.6666666666666667e-05
-  },
-  "setting_4": {
-    "epochs"
-    : 1000,
+    "sampling_batch": 256,
     "num_examples"
     : 60000,
-    "sampling_batch"
-    : 128,
-    "microbatches"
-    : 512,
-    "delta"
-    : 1.6666666666666667e-05
+    "epochs": 50,
+    "learning_rate": 0.001,
+    "noise_multiplier": 10.0,
+    "max_grad_norm": 0.001
+  },
+  "setting_4": {
+    "sampling_batch": 512,
+    "num_examples"
+    : 60000,
+    "epochs": 50,
+    "learning_rate": 0.001,
+    "noise_multiplier": 10.0,
+    "max_grad_norm": 0.001
   },
   "setting_5": {
     "epochs"
