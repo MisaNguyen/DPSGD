@@ -90,8 +90,8 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer):
         data, target = data.to(device), target.to(device)
 
         if optimizer_name == "DPSGD":
-            optimizer = DPSGD_optimizer.DPSGD_optimizer(model.parameters(),args.lr,
-                                                        args.noise_multiplier,args.max_grad_norm)
+            # optimizer = DPSGD_optimizer.DPSGD_optimizer(model.parameters(),args.lr,
+            #                                             args.noise_multiplier,args.max_grad_norm)
             # Reset the sum_grads
             for param in model.parameters():
                 param.accumulated_grads = None
@@ -155,7 +155,7 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer):
                 # param.grad = torch.stack(param.accumulated_grads, dim=0).sum(dim=0)
             # model.to(device)
         elif optimizer_name == "SGD":
-            optimizer = DPSGD_optimizer.SGD_optimizer(model.parameters(),args.lr)
+            # optimizer = DPSGD_optimizer.SGD_optimizer(model.parameters(),args.lr)
             optimizer.zero_grad()
             # for param in model.parameters():
             #     input(param.grad)
@@ -170,7 +170,7 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer):
             #     break
 
         # Get scheduler
-        scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
+        scheduler = StepLR(optimizer, step_size=10, gamma=args.gamma)
         # Calculate gradient step
         optimizer.step()
         # Decrease learning rate using scheduler

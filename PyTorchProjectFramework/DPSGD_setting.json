@@ -12,7 +12,7 @@
     "save_model": false,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false
   },
   "setting_2": {
@@ -28,7 +28,7 @@
     "save_model": false,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false
   },
   "setting_3": {
@@ -44,7 +44,7 @@
     "save_model": false,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false
   },
   "setting_4": {
@@ -60,7 +60,7 @@
     "save_model": false,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false
   },
   "setting_5": {
@@ -76,7 +76,7 @@
     "save_model": false,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false
   },
   "setting_6": {
@@ -92,7 +92,7 @@
     "save_model": false,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false
   },
   "setting_7": {
@@ -108,7 +108,7 @@
     "save_model": false,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false
   },
   "setting_8": {
@@ -124,7 +124,7 @@
     "save_model": false,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false
   }
 }

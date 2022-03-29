@@ -103,6 +103,7 @@ def main():
     train_accuracy = []
     test_accuracy = []
     out_file_path = "./graphs/data/" + args.optimizer
+    print("Saving data to: %s" % out_file_path)
     for epoch in range(1, args.epochs + 1):
         print("epoch %s:" % epoch)
         train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, args.optimizer, epoch,visualizer))

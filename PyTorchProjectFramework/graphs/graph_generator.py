@@ -5,11 +5,12 @@ import os
 import json
 if __name__ == "__main__":
     # loading SGD data
-    experiment = "SGD"
+
     # setting_file_name = "settings_main_theorem(test)"
     # settings = ["setting_1","setting_2","setting_3"]
-    settings = ["setting_1"]
+    settings = ["setting_2","setting_3","setting_4"]
     for setting in settings:
+        experiment = "SGD"
         graph_path = "./graph/" + experiment
         data_path  = "./data/" + experiment + '/' + setting +".json"
         # Check whether the specified path exists or not
@@ -27,11 +28,11 @@ if __name__ == "__main__":
             SGD_epochs = len(SGD_train_accuracy)
 
     # loading DPSGD data
-    experiment = "DPSGD"
+        experiment = "DPSGD"
     # setting_file_name = "settings_main_theorem(test)"
     # settings = ["setting_1","setting_2","setting_3"]
-    settings = ["setting_1"]
-    for setting in settings:
+    # settings = ["setting_1"]
+    # for setting in settings:
         graph_path = "./graph/" + experiment
         data_path  = "./data/" + experiment + '/' + setting +".json"
         # Check whether the specified path exists or not
@@ -48,24 +49,24 @@ if __name__ == "__main__":
             DPSGD_test_accuracy = data["test_accuracy"]
             DPSGD_epochs = len(DPSGD_train_accuracy)
 
-    print("Plotting graphs for setting : %s" % setting)
-    DPSGD_epoch_index = [i for i in range(1, DPSGD_epochs+1)]
-    SGD_epoch_index = [i for i in range(1, SGD_epochs+1)]
-    # T_index = [N_c/s * i for i in range(1, epochs+1)]
-    # index = epoch_index
-    # print(eps_dpsgd)
-    # input()
-    plt.plot(DPSGD_epoch_index, DPSGD_train_accuracy, label="DPSGD_train_accuracy (setting 1)")
-    plt.plot(DPSGD_epoch_index, DPSGD_test_accuracy, label="DPSGD_test_accuracy (setting 1)")
-    plt.plot(SGD_epoch_index, SGD_train_accuracy, label="SGD_train_accuracy (setting 1)")
-    plt.plot(SGD_epoch_index, SGD_test_accuracy, label="SGD_test_accuracy (setting 1)")
-    # plt.plot(epoch_index, sigma, label="sigma")
-    plt.title('Train and test accuracy')
-    plt.xlabel('epoch')
-    plt.ylabel('accuracy')
-    plt.legend()
-    plt.savefig(graph_path + '/' + setting +".png")
-    plt.show()
+        print("Plotting graphs for setting : %s" % setting)
+        DPSGD_epoch_index = [i for i in range(1, DPSGD_epochs+1)]
+        SGD_epoch_index = [i for i in range(1, SGD_epochs+1)]
+        # T_index = [N_c/s * i for i in range(1, epochs+1)]
+        # index = epoch_index
+        # print(eps_dpsgd)
+        # input()
+        plt.plot(DPSGD_epoch_index, DPSGD_train_accuracy, label="DPSGD_train_accuracy (setting 1)")
+        plt.plot(DPSGD_epoch_index, DPSGD_test_accuracy, label="DPSGD_test_accuracy (setting 1)")
+        plt.plot(SGD_epoch_index, SGD_train_accuracy, label="SGD_train_accuracy (setting 1)")
+        plt.plot(SGD_epoch_index, SGD_test_accuracy, label="SGD_test_accuracy (setting 1)")
+        # plt.plot(epoch_index, sigma, label="sigma")
+        plt.title('Train and test accuracy')
+        plt.xlabel('epoch')
+        plt.ylabel('accuracy')
+        plt.legend()
+        plt.savefig(graph_path + '/' + setting +".png")
+        plt.show()
     # plt.clf()
     # plt.plot(index, sigma, label="sigma")
     # plt.title('sigma over T ("delta = %f, s = %f" )' % (delta,s))
