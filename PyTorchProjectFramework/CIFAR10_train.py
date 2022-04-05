@@ -180,11 +180,11 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer,mo
             """
             Diminishing gradient norm mode.
             """
-            if (mode == "DGN"):
-                new_noise_multiplier =
-                new_max_grad_norm =
-                optimizer = DPSGD_optimizer(model.parameters(),args.lr,
-                                                            args.noise_multiplier,args.max_grad_norm)
+            # if (mode == "DGN"):
+            #     new_noise_multiplier =
+            #     new_max_grad_norm =
+            #     optimizer = DPSGD_optimizer(model.parameters(),args.lr,
+            #                                                 args.noise_multiplier,args.max_grad_norm)
 
             # model.to(device)
         elif (optimizer_name == "SGD" or optimizer_name == "Adam") :
