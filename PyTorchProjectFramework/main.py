@@ -6,7 +6,8 @@ import json
 from models.Lenet_model import Net
 from models.resnet_model import ResNet18,ResNet34,ResNet50,ResNet101,ResNet152
 # from models.densenet_model import densenet40_k12_cifar10
-from models.alexnet_model import AlexNet
+# from models.alexnet_model import AlexNet
+from models.alexnet_simple import AlexNet
 from datasets import MNIST_dataset, CIFAR10_dataset
 from utils.utils import generate_json_data_for_graph
 import MNIST_train, MNIST_validate
@@ -68,10 +69,12 @@ def main():
             args.optimizer = setting_data["optimizer"]
             args.enable_diminishing_gradient_norm = setting_data["diminishing_gradient_norm"]
 
-
+    mode = None
+    if (args.enable_diminishing_gradient_norm == True):
+        mode = "DGN"
     use_cuda = not args.no_cuda and torch.cuda.is_available()
 
-    torch.manual_seed(args.seed)
+    # torch.manual_seed(args.seed)
 
     device = torch.device("cuda" if use_cuda else "cpu")
     # TODO:
@@ -90,7 +93,7 @@ def main():
     # input(len(test_kwargs))
     # model = Net().to(device)
     # model = densenet40_k12_cifar10().to(device)
-    model = AlexNet().to(device)
+    model = AlexNet(num_classes=10).to(device)
     # optimizer = MNIST_optimizer.SGD_optimizer(args.lr,model)
     sigma = 6
     gradient_norm = 3
@@ -106,7 +109,7 @@ def main():
     print("Saving data to: %s" % out_file_path)
     for epoch in range(1, args.epochs + 1):
         print("epoch %s:" % epoch)
-        train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, args.optimizer, epoch,visualizer))
+        train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, args.optimizer, epoch,visualizer,mode))
         test_accuracy.append(CIFAR10_validate.test(model, device, test_loader,epoch,visualizer))
     generate_json_data_for_graph(out_file_path, args.load_setting, train_accuracy,test_accuracy)
 

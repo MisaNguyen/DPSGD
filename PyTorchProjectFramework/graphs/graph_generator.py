@@ -8,7 +8,9 @@ if __name__ == "__main__":
 
     # setting_file_name = "settings_main_theorem(test)"
     # settings = ["setting_1","setting_2","setting_3"]
-    settings = ["setting_2","setting_3","setting_4"]
+    settings = ["setting_1","setting_2","setting_3","setting_4"]
+    # settings = ["setting_5","setting_6","setting_7","setting_8"]
+    # settings = ["setting_9"]
     for setting in settings:
         experiment = "SGD"
         graph_path = "./graph/" + experiment
@@ -28,6 +30,8 @@ if __name__ == "__main__":
             SGD_epochs = len(SGD_train_accuracy)
 
     # loading DPSGD data
+    #     print("Testing")
+        # setting = "setting_1"
         experiment = "DPSGD"
     # setting_file_name = "settings_main_theorem(test)"
     # settings = ["setting_1","setting_2","setting_3"]
@@ -56,10 +60,10 @@ if __name__ == "__main__":
         # index = epoch_index
         # print(eps_dpsgd)
         # input()
-        plt.plot(DPSGD_epoch_index, DPSGD_train_accuracy, label="DPSGD_train_accuracy (setting 1)")
-        plt.plot(DPSGD_epoch_index, DPSGD_test_accuracy, label="DPSGD_test_accuracy (setting 1)")
-        plt.plot(SGD_epoch_index, SGD_train_accuracy, label="SGD_train_accuracy (setting 1)")
-        plt.plot(SGD_epoch_index, SGD_test_accuracy, label="SGD_test_accuracy (setting 1)")
+        plt.plot(DPSGD_epoch_index, DPSGD_train_accuracy, label="DPSGD_train_accuracy %s" % setting)
+        plt.plot(DPSGD_epoch_index, DPSGD_test_accuracy, label="DPSGD_train_accuracy %s" % setting)
+        plt.plot(SGD_epoch_index, SGD_train_accuracy, label="SGD_train_accuracy %s" % setting)
+        plt.plot(SGD_epoch_index, SGD_test_accuracy, label="SGD_train_accuracy %s" % setting)
         # plt.plot(epoch_index, sigma, label="sigma")
         plt.title('Train and test accuracy')
         plt.xlabel('epoch')

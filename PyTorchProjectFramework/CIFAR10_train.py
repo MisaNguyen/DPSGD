@@ -1,6 +1,7 @@
 import argparse
 import numpy as np
 import torch
+import torchvision
 # import torch.nn.functional as F
 import torch.nn as nn
 # from torch.optim.lr_scheduler import StepLR
@@ -11,6 +12,8 @@ import torch.nn as nn
 # from models import create_model
 # import time
 
+import matplotlib.pyplot as plt
+
 
 """ Schedulers """
 from scheduler.learning_rate_scheduler import StepLR
@@ -18,7 +21,7 @@ from scheduler.gradient_norm_scheduler import StepGN_normal
 # from scheduler.noise_multiplier_scheduler import StepLR
 
 """ Optimizers """
-from optimizers import DPSGD_optimizer
+from optimizers import *
 """Create learning_rate sequence generator
     
 Input params:
@@ -72,25 +75,37 @@ Input params:
     export: Whether to export the final model (default=True).
 """
 
-def train(args, model, device, train_loader, optimizer_name, epoch,visualizer):
+
+
+def imshow(img):
+    img = img / 2 + 0.5     # unnormalize
+    npimg = img.numpy()
+    plt.imshow(np.transpose(npimg, (1, 2, 0)))
+    plt.show()
+
+def train(args, model, device, train_loader, optimizer_name, epoch,visualizer,mode):
     model.train()
     train_loss = 0
     train_correct = 0
     total = 0
+    output = 0
     # Get optimizer
+
     if optimizer_name == "DPSGD":
-        optimizer = DPSGD_optimizer.DPSGD_optimizer(model.parameters(),args.lr,
+        optimizer = DPSGD_optimizer(model.parameters(),args.lr,
                                                     args.noise_multiplier,args.max_grad_norm)
     elif optimizer_name == "SGD":
-        optimizer = DPSGD_optimizer.SGD_optimizer(model.parameters(),args.lr,)
-
+        # optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
+        optimizer = SGD_optimizer(model.parameters(),args.lr)
+    elif optimizer_name == "Adam":
+        optimizer = Adam_optimizer(model.parameters(), args.lr)
     # train_accuracy = np.array()
     # for batch_idx, (data, target) in enumerate(train_loader):
     for batch_idx, (data,target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
 
         if optimizer_name == "DPSGD":
-            # optimizer = DPSGD_optimizer.DPSGD_optimizer(model.parameters(),args.lr,
+            # optimizer = DPSGD_optimizer(model.parameters(),args.lr,
             #                                             args.noise_multiplier,args.max_grad_norm)
             # Reset the sum_grads
             for param in model.parameters():
@@ -105,11 +120,22 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer):
                 # Reset gradients to zero
                 optimizer.zero_grad()
                 # Calculate the loss
+                previous_output = output
                 output = model(sample_x[None, ...]) # input as batch size = 1
                 # input(output.shape)
                 # input(target.shape)
                 # input(sample_y)
                 loss = nn.CrossEntropyLoss()(output, sample_y[None, ...])
+                if np.isnan(loss.cpu().detach().numpy()):
+                    print("NaN loss")
+                    print(batch_idx)
+                    print(sample_x[None, ...])
+                    print(sample_y[None, ...])
+                    # imshow(torchvision.utils.make_grid(sample_x.cpu()))
+                    print(output)
+                    print(previous_output)
+                    input()
+
                 # Loss back-propagation
                 loss.backward()
 
@@ -136,8 +162,6 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer):
                     # input(param.accumulated_grads)
                     # param.accumulated_grads.append(per_sample_grad)
                     # print(torch.stack(param.accumulated_grads, dim=0).shape)
-
-
             # Aggregate gradients
             # model.to("cpu")
             # with torch.no_grad():
@@ -153,9 +177,19 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer):
 
                 # param.grad = torch.sum(torch.stack(param.accumulated_grads), dim=0)
                 # param.grad = torch.stack(param.accumulated_grads, dim=0).sum(dim=0)
+            """
+            Diminishing gradient norm mode.
+            """
+            if (mode == "DGN"):
+                new_noise_multiplier =
+                new_max_grad_norm =
+                optimizer = DPSGD_optimizer(model.parameters(),args.lr,
+                                                            args.noise_multiplier,args.max_grad_norm)
+
             # model.to(device)
-        elif optimizer_name == "SGD":
-            # optimizer = DPSGD_optimizer.SGD_optimizer(model.parameters(),args.lr)
+        elif (optimizer_name == "SGD" or optimizer_name == "Adam") :
+
+            # optimizer = SGD_optimizer(model.parameters(),args.lr)
             optimizer.zero_grad()
             # for param in model.parameters():
             #     input(param.grad)
@@ -163,14 +197,21 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer):
             # Calculate the loss
             output = model(data)
             loss = nn.CrossEntropyLoss()(output, target)
+            # loss = F.cross_entropy(output, target)
             # Loss back-propagation
             loss.backward()
+            if np.isnan(loss.cpu().detach().numpy()):
+                print("NaN loss")
+                print(batch_idx)
+                print(output)
+                print(target)
+                input()
             # for param in model.parameters():
             #     input(param.grad)
             #     break
 
         # Get scheduler
-        scheduler = StepLR(optimizer, step_size=10, gamma=args.gamma)
+        scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
         # Calculate gradient step
         optimizer.step()
         # Decrease learning rate using scheduler
@@ -220,19 +261,20 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer):
         # loss_object = torch.nn.NLLLoss()
         # lsoftmax = torch.nn.LogSoftmax(dim=-1)
         # loss = torch.nn.NLLLoss()(lsoftmax(output), target)
-        #TODO: add optimizer, sample_size_sequence, batch_size_sequence
-        # optimizer = MNIST_optimizer.DPSGD_
-        # optimizer(model.parameters(),args.lr,sigma,gradient_norm)
 
         if batch_idx % args.log_interval == 0:
+            print("Training using %s optimizer" % optimizer_name)
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
                        100. * batch_idx / len(train_loader), loss.item()))
             # Trainning Log
             output = model(data)
+
             loss = nn.CrossEntropyLoss()(output, target)
             train_loss += loss.item()
             prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
+            print(prediction[1])
+            print(target)
             total += target.size(0)
 
             # train_correct incremented by one if predicted right

@@ -271,15 +271,6 @@ class DPSGD(Optimizer):
 """
 Optimizer callers
 """
-def Adadelta_optimizer(model_parameters,learning_rate):
-    optimizer = optim.Adadelta(model_parameters, lr=learning_rate)
-    return optimizer
-
-# Note: Should choose small learning_rate
-def SGD_optimizer(model_parameters,learning_rate):
-    optimizer = optim.SGD(model_parameters, lr=learning_rate)
-    return optimizer
-
 
 # def custom_SGD_optimizer(learning_rate,model):
 #     pass

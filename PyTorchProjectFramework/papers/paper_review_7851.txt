@@ -1,0 +1,122 @@
+1) Summarize the contributions made in the paper with your own words. Aim for precision
+and conciseness. This part of the review serves the purpose of showing to the MR and the
+authors how much you understood of the paper and what you think the paper is about. This is
+not the point to evaluate the contributions for their strengths or correctness. Merely provide a
+summary of what the contributions are, in a few sentences.
+    Exp: “This paper discusses that existing methods on including classifiers in a cGAN biases the
+         generator in generating easy to classify images. Therefore, they propose a way to include
+         classifiers in a cGAN to improve its performance in a principled manner. To do so, they
+         decompose the joint probability distribution by the Bayes rule that results in linking classifiers to
+         conditional discriminators. The proposed formulation shows that a joint generator model can be
+         trained from two directions: a conditional discriminator and an un-conditional discriminator with a
+         classifier. They combine the formulation of these two routes and propose a new method called
+         Energy-based cGAN (ECGAN). ECGAN shows how to use a classifier for cGANs, and it
+         explains other variants of cGANs such as ContraGAN, ACGAN, and ProjGAN as variations of its
+         framework. They empirically show that ECGAN outperforms existing cGANs by achieving higher
+         FID (and similar ones) score on two sets of datasets (CIFAR10, Tiny ImageNet).”
+
+    My writing: To my knowledge, this is the first paper which combines Secure Aggregation with RDP.
+    Moreover, a new DP mechanism is implemented in order to accomplish that goal and the performance comparison with
+    Gaussian Mechanism is very good.
+
+2) Novelty, relevance, significance. Assuming the contributions of the paper stand, are they
+   relevant for our community? Are they new? A precise justification is needed if the answer is no
+   (or partially no, e.g., citations of precise results in earlier papers), so that the authors know how
+   to fix the paper if it is fixable. Are the results sufficiently interesting to make this a sufficiently
+   “complete” (or, one may say, significant) paper? Note that significance does not necessarily
+   mean solving a major open problem. Small, interesting results can also be significant. Science
+   is incremental. But there has to be a detectable, positive increment of sufficient interest.
+   Regarding relevance, keep in mind that the machine learning community has traditionally been
+   quite open-minded to new ideas from different areas. So, think whether this result could benefit
+   some sub-area of ML, or a part of the community, down the line.
+
+    example: “Representation learning of molecules has become an important problem in computational
+    chemistry and pharmacy. Yet, a known problem is that existing methods cannot well represent
+    structural motifs. Existing methods do .... but they suffer from high complexity. This paper is the
+    first to connect the theory of spectral semi-snippets with graph representation learning. This
+    theory allows to compactly represent motifs, and the paper demonstrates how to exploit this
+    idea in a parametrized form, which, with some more re-writing, leads to a model that runs in
+    linear instead of cubic time in the size of the graph. This idea is to my knowledge completely
+    novel in the graph representation literature and may inspire further such models.”
+
+    my writting: To my knowledge, this is the first paper which combines Secure Aggregation with RDP.
+    Moreover, a new DP mechanism is implemented in order to accomplish that goal and the performance comparison with
+    Gaussian Mechanism is very good.
+
+
+ 3) Soundness. A paper ideally makes claims, which should be well supported, either by
+    theoretical arguments, or by experimental results. Either say, the paper is sound, or list the
+    problems. Only list major problems. Any problem listed needs a justification: do not just say that
+    a result is incorrect, include an explanation of why you think it is incorrect. For example, a proof
+    may have some gaps, an experiment may fail to support a claim because of its design or
+    outcome (or the lack of its outcome). For experimental papers, the paper may fail to use a
+    sound experimental design (e.g., the data collection, or hyperparameter selection may have
+    problems).
+
+    “The proof of Lemma 3 has a mistake. Equation (25) only holds for nonnegative numbers, but it
+    is needed for all reals. This makes Lemma 3 only valid for x in the range [..]. Theorem 2 relies
+    on Lemma 3, and then only holds in a limited range of [...]. Since Theorem 2 is the main result
+    of the paper, this is a major point weakening the contribution of the paper.”
+
+    I can not judge whether this paper sound or not because:
+                     1) I am not familiar with RMP proofs and I do not see flaws in your proofs either. However, in table 1, for the communication cost improvement, you show that you achieve the communication cost of O(d(log(d \epsilon^2_DP/n))) while the other methods have the communication cost of O(d(log(d/epsilon^2_DP))). From my perspective, this is a huge improvement because epsilon is very small in many case. That's why I prefer to see the proof for this improvement in a more detail description.
+                     2) It would be better if you have experiments for accuracy comparison between methods.
+                     3) Which Gaussian mechanism did you compared with in section 2.1?
+  4) Quality of writing/presentation. Is the paper well organized and clearly written? Does it do a
+     good job at explaining the novelty and the results? Does the paper include enough information
+     needed to support the claims it makes? There is an overlap here with soundness: Sometimes
+     soundness cannot be decided if the claims in the paper are not well supported, sometimes it
+     can still be decided (e.g. by the reviewer doing additional work; we do not expect though
+     reviewers doing this work). In cases like this, note on the previous item that soundness cannot
+     be decided for reasons explained under this heading. For experimental papers, it is a
+     presentation issue if the paper did not include enough details to reproduce the experimental
+     results with a reasonable effort. A superbly written experimental paper explains: (1) why were
+     the experimental conditions selected the way they were selected; (2) the subsequent choices of
+     what to measure and what to plot (including perhaps what is not shown); (3) how the results
+     obtained substantiate the claims made. The paper should follow standard, best practices (e.g.,
+     includes error bars, better yet, uses box plots or something similar unless you suspect near
+     Gaussian variables, etc.)
+        This paper well organized and clearly written.
+   5) Literature. Is the paper appropriately placed into contemporary literature? If not, be specific
+      about what is missing. Note that oftentimes it is a question of judgment of whether a result
+      should be mentioned as papers are subject to page limits. The must-mention results are directly
+      relevant to the topic of the paper. If you ask authors to include other papers, you will need to
+      declare (privately, see below) whether you are an author of any of the recommended papers. It
+      is OK to recommend relevant papers authored by yourself, however, it is not OK to recommend
+      papers that are not relevant to be included. When in doubt, it is better to err on the side of not
+      recommending your own papers (or ask the MR). It is not reasonable to expect a paper to refer
+      to unpublished works that appeared within one month before the submission deadline.
+      Concurrent works should be referred to, but cannot be held against the paper in terms of
+      novelty. Often, these are delicate decisions and reviewers should consult their meta reviewer
+      (MR) for guidance.
+        This paper is appropriately placed into contemporary literature.
+        However, it lacks of gaussian mechanism papers such as Gaussian Differential Privacy, Jinshuo Dong,
+        Aaron Roth, Weijie J. Su (https://arxiv.org/abs/1905.02383.)
+    6) Basis of review. Declare how much of the paper you read. E.g., “I read the full paper, including
+       all the proofs.”. The goal is to ensure full coverage of all parts of the paper by the reviewers and
+       the MR.
+        I only read the main body of the paper (6 sections)
+
+    7) Summary
+       List the strong and weak points of the paper, but also provide further input to whether (and why)
+       you think the strengths or the weaknesses are dominating. For each point, indicate the
+       importance of the point at hand: is this a major (important, critical) strength/weakness, or a
+       minor one?
+       When evaluating these points take into account that some things are easy, while others are
+       harder to fix. Include a justification. Remember, that the goal is to publish innovative, interesting,
+       correct, good papers. Could this paper be one of those worthy of being published at ICML?
+       In general, reviewers are not expected to make accept/reject recommendations, this will be the
+       job of the MRs based on all the information they have, including this summary. [We make an
+       exception to this in Phase 1, see below.]
+        Strong points:
+        - New DP mechanism is proposed in order to combine Differential Privacy with Secure Aggregation method in Federated Learning
+        - The communication cost is greatly improved
+        - The new mechanism has good performance compared with Gaussian mechanism.
+        Weak points:
+        - Lack of experiments: testing accuracy performance experiments (with and without Secure Aggregation).
+        - Lack of Gaussian mechanisms literature.
+
+    8) Miscellaneous minor issues
+       List any typos, grammar, etc. issues which you view as minor but should be addressed in the
+       final version of the paper
+       - Line 171: "Note that Algorithm 2 builds on Algorithm 2,", I think this is a redundancy.
