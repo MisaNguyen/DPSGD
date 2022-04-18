@@ -12,7 +12,7 @@
     "save_model": false,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
     "is_individual_clipping": false
   },
@@ -29,7 +29,7 @@
     "save_model": false,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
     "is_individual_clipping": false
   },
@@ -46,7 +46,7 @@
     "save_model": false,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
     "is_individual_clipping": false
   },
@@ -63,7 +63,7 @@
     "save_model": false,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
     "is_individual_clipping": false
   },
@@ -80,7 +80,7 @@
     "save_model": false,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
     "is_individual_clipping": false
   },
@@ -97,7 +97,7 @@
     "save_model": false,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
     "is_individual_clipping": false
   },
@@ -114,7 +114,7 @@
     "save_model": false,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
     "is_individual_clipping": false
   },
@@ -131,7 +131,7 @@
     "save_model": false,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
     "is_individual_clipping": false
   },
@@ -148,7 +148,7 @@
     "save_model": false,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
     "is_individual_clipping": false
   },
@@ -165,7 +165,7 @@
     "save_model": false,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
     "is_individual_clipping": false
   },
@@ -182,7 +182,7 @@
     "save_model": false,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
     "is_individual_clipping": false
   },
@@ -199,7 +199,7 @@
     "save_model": false,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
     "is_individual_clipping": false
   },
@@ -216,7 +216,7 @@
     "save_model": false,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
     "is_individual_clipping": false
   },
@@ -233,7 +233,7 @@
     "save_model": false,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
     "is_individual_clipping": false
   },
@@ -250,7 +250,7 @@
     "save_model": false,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
     "is_individual_clipping": false
   },
@@ -267,7 +267,7 @@
     "save_model": false,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
     "is_individual_clipping": false
   },
@@ -284,7 +284,7 @@
     "save_model": false,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
     "is_individual_clipping": false
   },
@@ -301,7 +301,7 @@
     "save_model": false,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
     "is_individual_clipping": false
   },
@@ -318,7 +318,7 @@
     "save_model": false,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
     "is_individual_clipping": false
   },
@@ -335,7 +335,7 @@
     "save_model": false,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001,
-    "optimizer": "SGD",
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
     "is_individual_clipping": false
   }
