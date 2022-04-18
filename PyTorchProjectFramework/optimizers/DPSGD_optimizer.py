@@ -87,7 +87,7 @@ def dpsgd(params: List[Tensor],
         # print("Before",d_p)
         # input(torch.normal(mean=torch.Tensor([0.0]),
         #                    std=noise_multiplier * max_grad_norm).to(device=torch.device("cuda:0")))
-        # input(d_p)
+        # input(d_p.shape)
         d_p += torch.normal(mean=torch.Tensor([0.0]),
                                    std=noise_multiplier * max_grad_norm).to(device=torch.device("cuda:0"))
         # input(d_p.shape)

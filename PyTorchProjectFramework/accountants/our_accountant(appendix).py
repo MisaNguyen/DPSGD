@@ -10,13 +10,13 @@ from gdp_accountant_tensor import compute_eps_poisson,compute_mu_poisson, comput
 import os
 # Compute the value of gamma
 def Compute_gamma(alpha_bar,sigma):
-    C_0 = 2/(1-alpha_bar) # 2/(1-alpha)
+    # C_0 = 2/(1-alpha_bar) # 2/(1-alpha)
     C_1 = pow(2,4)*alpha_bar/(1-alpha_bar) # 2^4*alpha/(1-alpha)
     C_2 = sigma/pow(1-np.sqrt(alpha_bar),2) # sigma/(1-sqrt(alpha))^2
     C_3 = (1/(sigma*(1-alpha_bar) - 2 * np.exp(1)* np.sqrt(alpha_bar)))*np.exp(3)/sigma # 1/(sigma*(1-alpha))
     C_4 = np.exp(3/pow(sigma,2))
     C_5 = 2/(1-alpha_bar)
-    return C_0 + C_1*(C_2+C_3)*C_4 + C_5
+    return C_1*(C_2+C_3)*C_4 + C_5
 
 # Compute upper bound on CONSTANT sample size
 def Compute_upperbound_s(N_c,K,eps,sigma,theta):
@@ -219,29 +219,43 @@ def compute_eps_from_sigma_and_delta(sigma,delta,K,N_c,s,theta = 1):
     # sigma^2*eps >= 2(eps+ln(1/delta))
     # sigma^2* eps - 2 eps > = ln(1/delta)
     # eps => 2 *(ln(1/delta))/ (sigma^2 -2) (this means sigma >= sqrt(2))
-    eps_min = 2 *np.log(1/delta)/ (sigma*sigma -2)
-    alpha_bar = Compute_alpha_bar(eps_min,N_c,K,gamma=2) # Start with gamma=2
+    eps_min_1 = 2 *np.log(1/delta)/ (sigma*sigma -2)
+    eps_min_2 = 2 * pow(theta,2) * K / pow(N_c,2)*s
+    print("-"*20)
+    print("eps_min_1", eps_min_1)
+    print("eps_min_2", eps_min_2)
+    print("-"*20)
+    alpha_bar = Compute_alpha_bar(eps_min_2,N_c,K,gamma=2) # Start with gamma=2
     # print(alpha_bar)
     gamma = 0
     new_gamma = Compute_gamma(alpha_bar,sigma)
+    print("new_gamma",new_gamma)
     # print(new_gamma)
     # Compute until gamma is converge
     # print(eps_min)
     while(new_gamma - gamma >= 0.0001*gamma):
         gamma = new_gamma
 
-        eps = gamma * pow(theta,2) * K / pow(N_c,2)*s
+        eps_min_2 = gamma * pow(theta,2) * K / pow(N_c,2)*s
+        print("eps =", eps_min_2)
+        """
+        Draft:
+        # Eps = gamma *theta^2 * k / N_c *s <= 2 *np.log(1/delta)/ (sigma*sigma -2)
+        # N_c >= gamma *theta^2 * k/s * (sigma^2-2)/np.log(1/delta))
+        # N_c >= gamma *theta^2 * k * (sigma^2-2) / (2*s*np.log(1/delta))
+        """
+        # input(np.sqrt(gamma *pow(theta,2) * K * (sigma*sigma-2) / (2*s*np.log(1/delta))))
         # print(eps_min)
         # input(eps)
         # print("eps = %f" % eps)
         # sigma = np.sqrt(2*(eps + np.log(1/delta))/eps)
 
-        alpha_bar = Compute_alpha_bar(eps,N_c,K,gamma)
+        alpha_bar = Compute_alpha_bar(eps_min_2,N_c,K,gamma)
         if (alpha_bar >= 1):
             break
         new_gamma = Compute_gamma(alpha_bar,sigma)
     # if (alpha_bar >= 1):
-
+    eps = max(eps_min_1,eps_min_2)
         # break
     # new_gamma = Compute_gamma(alpha_bar,sigma)
     RHS_condition1 = Compute_g(np.sqrt(2*np.log(1/delta)/eps))/theta * N_c
@@ -250,7 +264,7 @@ def compute_eps_from_sigma_and_delta(sigma,delta,K,N_c,s,theta = 1):
     # print("2",s_ub)
     if (s > RHS_condition1):
         print("ERROR : s must be smaller than or equal to" , RHS_condition1)
-        return None, None
+        return None
 
     # Condition 2:
     RHS_condition2 = gamma*Compute_h(sigma)*K/N_c
@@ -275,12 +289,18 @@ Setting sample:
 """
 if __name__ == "__main__":
     # N_c,K,delta,s = setting_3()
-    setting_file_name = "settings_sample_size_exp"
+    # setting_file_name = "settings_sample_size_exp"
+    setting_file_name = "settings_ICML_table_4"
+    # setting_file_name = "settings_ICML_N_1000000"
     # settings = ["setting_1","setting_2","setting_3","setting_4","setting_5","setting_6"]
-    settings = ["setting_1","setting_2","setting_3","setting_4"]
+    # settings = ["setting_1","setting_2","setting_3","setting_4","setting_5","setting_6","setting_7"]
+    # settings = ["setting_1","setting_3","setting_4","setting_5","setting_6","setting_7","setting_8","setting_9"]
+    settings = ["setting_min_T", "setting_min_T_conjecture"]
     with open("./%s.json" % setting_file_name, "r") as json_file:
         json_data = json.load(json_file)
-
+    latex_output_dpsgd = "Our DPA (appendix)"
+    latex_output_fdp = "Guassian DP accountant"
+    latex_output_factor = "Multiplication factor"
     json_output_test = json_data
     for setting in settings:
         print("Setting: %s" % setting)
@@ -302,8 +322,28 @@ if __name__ == "__main__":
             print("The new directory is created: %s" % data_path)
         K = N_c * epochs
         T = K/s
-        print(compute_eps_from_sigma_and_delta(sigma,delta,K,N_c,s))
-        print(compute_eps_uniform(epochs, sigma, N_c, s, delta))
+        our_eps = compute_eps_from_sigma_and_delta(sigma,delta,K,N_c,s)
+        fdp_eps = compute_eps_uniform(epochs, sigma, N_c, s, delta)
+        if (our_eps!= None):
+            latex_output_dpsgd = latex_output_dpsgd + " & " + str(round(our_eps,4))
+        else:
+            latex_output_dpsgd = latex_output_dpsgd + " & N/a"
+        if (fdp_eps != None):
+            latex_output_fdp = latex_output_fdp + " & " + str(round(fdp_eps,4))
+        else:
+            latex_output_fdp = latex_output_fdp + " & N/a"
+        print("our epsilon(appendix):", our_eps)
+        print("fdp epsilon:", fdp_eps)
+        if(our_eps != None and latex_output_fdp != None):
+            print("multi factor:", our_eps/fdp_eps)
+            latex_output_factor = latex_output_factor + " & " + str(round(our_eps/fdp_eps,4))
+        else:
+            latex_output_factor = latex_output_factor + " & N/a"
+    print(latex_output_dpsgd +"\\\\ \\hline")
+    print(latex_output_fdp +"\\\\ \\hline")
+    print(latex_output_factor +"\\\\ \\hline")
+
+""" Old main"""
 # if __name__ == "__main__":
 #     # N_c,K,delta,s = setting_3()
 #     setting_file_name = "settings_sample_size_exp"

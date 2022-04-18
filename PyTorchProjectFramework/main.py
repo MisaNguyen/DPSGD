@@ -7,7 +7,8 @@ from models.Lenet_model import Net
 from models.resnet_model import ResNet18,ResNet34,ResNet50,ResNet101,ResNet152
 # from models.densenet_model import densenet40_k12_cifar10
 # from models.alexnet_model import AlexNet
-from models.alexnet_simple import AlexNet
+# from models.alexnet_simple import AlexNet
+from models.simple_dla import SimpleDLA
 from datasets import MNIST_dataset, CIFAR10_dataset
 from utils.utils import generate_json_data_for_graph
 import MNIST_train, MNIST_validate
@@ -48,9 +49,16 @@ def main():
                         help='Name of setting (example: setting_1, setting_2,...')
     parser.add_argument('--enable-diminishing-gradient-norm', type=bool, default=False, metavar='DGN',
                         help='Enable diminishing gradient norm mode')
+    parser.add_argument('--enable-individual-clipping', type=bool, default=False, metavar='IC',
+                        help='Enable individual clippng mode')
     args = parser.parse_args()
+
+    #Add setting path here
+    # settings_file = "settings"
+    settings_file = "settings_lr_exp_cifar10"
+
     if(args.load_setting != ""):
-        with open("settings.json", "r") as json_file:
+        with open(settings_file +".json", "r") as json_file:
             json_data = json.load(json_file)
             setting_data = json_data[args.load_setting]
             # Loading data
@@ -68,10 +76,10 @@ def main():
             args.max_grad_norm = setting_data["max_grad_norm"]
             args.optimizer = setting_data["optimizer"]
             args.enable_diminishing_gradient_norm = setting_data["diminishing_gradient_norm"]
-
-    mode = None
-    if (args.enable_diminishing_gradient_norm == True):
-        mode = "DGN"
+            args.enable_individual_clipping = setting_data["is_individual_clipping"]
+    print("Mode: DGN (%s), IC (%s)" %  (args.enable_diminishing_gradient_norm, args.enable_individual_clipping))
+    # if (args.enable_diminishing_gradient_norm == True):
+    #     mode = "DGN"
     use_cuda = not args.no_cuda and torch.cuda.is_available()
 
     # torch.manual_seed(args.seed)
@@ -93,7 +101,8 @@ def main():
     # input(len(test_kwargs))
     # model = Net().to(device)
     # model = densenet40_k12_cifar10().to(device)
-    model = AlexNet(num_classes=10).to(device)
+    # model = AlexNet(num_classes=10).to(device)
+    model = SimpleDLA().to(device)
     # optimizer = MNIST_optimizer.SGD_optimizer(args.lr,model)
     sigma = 6
     gradient_norm = 3
@@ -105,11 +114,17 @@ def main():
     visualizer = None
     train_accuracy = []
     test_accuracy = []
-    out_file_path = "./graphs/data/" + args.optimizer
+    out_file_path = "./graphs/data/" + settings_file + "/" + args.optimizer
+    if (args.enable_diminishing_gradient_norm == True):
+        out_file_path = out_file_path + "/DGN"
+    if (args.enable_individual_clipping == True):
+        out_file_path = out_file_path + "/IC"
     print("Saving data to: %s" % out_file_path)
     for epoch in range(1, args.epochs + 1):
         print("epoch %s:" % epoch)
-        train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, args.optimizer, epoch,visualizer,mode))
+        train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, args.optimizer, epoch,visualizer,
+                                                  args.enable_diminishing_gradient_norm,
+                                                  args.enable_individual_clipping))
         test_accuracy.append(CIFAR10_validate.test(model, device, test_loader,epoch,visualizer))
     generate_json_data_for_graph(out_file_path, args.load_setting, train_accuracy,test_accuracy)
 

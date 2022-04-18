@@ -3,7 +3,7 @@
     "sampling_batch": 64,
     "num_examples"
     : 60000,
-    "epochs": 50,
+    "epochs": 200,
     "learning_rate": 0.001,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001
@@ -12,7 +12,7 @@
     "sampling_batch": 128,
     "num_examples"
     : 60000,
-    "epochs": 50,
+    "epochs": 200,
     "learning_rate": 0.001,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001
@@ -21,7 +21,7 @@
     "sampling_batch": 256,
     "num_examples"
     : 60000,
-    "epochs": 50,
+    "epochs": 200,
     "learning_rate": 0.001,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001
@@ -30,33 +30,9 @@
     "sampling_batch": 512,
     "num_examples"
     : 60000,
-    "epochs": 50,
+    "epochs": 200,
     "learning_rate": 0.001,
     "noise_multiplier": 10.0,
     "max_grad_norm": 0.001
-  },
-  "setting_5": {
-    "epochs"
-    : 1000,
-    "num_examples"
-    : 60000,
-    "sampling_batch"
-    : 256,
-    "microbatches"
-    : 512,
-    "delta"
-    : 1.6666666666666667e-05
-  },
-  "setting_6": {
-    "epochs"
-    : 1000,
-    "num_examples"
-    : 60000,
-    "sampling_batch"
-    : 512,
-    "microbatches"
-    : 512,
-    "delta"
-    : 1.6666666666666667e-05
   }
 }

@@ -83,12 +83,13 @@ def imshow(img):
     plt.imshow(np.transpose(npimg, (1, 2, 0)))
     plt.show()
 
-def train(args, model, device, train_loader, optimizer_name, epoch,visualizer,mode):
+def train(args, model, device, train_loader, optimizer_name, epoch,visualizer,is_diminishing_gradient_norm, is_individual):
     model.train()
     train_loss = 0
     train_correct = 0
     total = 0
     output = 0
+    loss = 0
     # Get optimizer
 
     if optimizer_name == "DPSGD":
@@ -105,88 +106,107 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer,mo
         data, target = data.to(device), target.to(device)
 
         if optimizer_name == "DPSGD":
-            # optimizer = DPSGD_optimizer(model.parameters(),args.lr,
-            #                                             args.noise_multiplier,args.max_grad_norm)
-            # Reset the sum_grads
-            for param in model.parameters():
-                param.accumulated_grads = None
-            # input(len(batch[0]))
-            # input(len(batch[1]))
+            if(is_individual == True):
+                # optimizer = DPSGD_optimizer(model.parameters(),args.lr,
+                #                                             args.noise_multiplier,args.max_grad_norm)
+                # Reset the sum_grads
+                for param in model.parameters():
+                    param.accumulated_grads = None
+                # input(len(batch[0]))
+                # input(len(batch[1]))
 
-            for sample_idx in range(0,len(data)):
-                sample_x, sample_y = data[sample_idx],target[sample_idx]
-            # sample_y = target[sample_idx]
+                for sample_idx in range(0,len(data)):
+                    sample_x, sample_y = data[sample_idx],target[sample_idx]
+                # sample_y = target[sample_idx]
 
-                # Reset gradients to zero
+                    # Reset gradients to zero
+                    optimizer.zero_grad()
+                    # Calculate the loss
+                    previous_output = output
+                    previous_loss = loss
+                    output = model(sample_x[None, ...]) # input as batch size = 1
+                    # input(output.shape)
+                    # input(target.shape)
+                    # input(sample_y)
+                    loss = nn.CrossEntropyLoss()(output, sample_y[None, ...])
+                    # if np.isnan(loss.cpu().detach().numpy()):
+                    #     print("NaN loss")
+                    #     print(batch_idx)
+                    #     print(sample_x[None, ...])
+                    #     print(sample_y[None, ...])
+                    #     # imshow(torchvision.utils.make_grid(sample_x.cpu()))
+                    #     print(output)
+                    #     print("previous loss", previous_loss)
+                    #     print("previous output", previous_output)
+                    #     input()
+
+                    # Loss back-propagation
+                    loss.backward()
+
+
+                    # train_loss += loss.item()
+                    # prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
+                    # total += target.size(0)
+                    #
+                    # # train_correct incremented by one if predicted right
+                    # train_correct += np.sum(prediction[1].cpu().numpy() == target.cpu().numpy())
+                    #
+                    # progress_bar(batch_idx, len(train_loader), 'Loss: %.4f | Acc: %.3f%% (%d/%d)'
+                    #              % (train_loss / (batch_idx + 1), 100. * train_correct / total, train_correct, total))
+                    # Clip each parameter's per-sample gradient
+                    for param in model.parameters():
+                        per_sample_grad = param.grad.detach().clone()
+                        torch.nn.utils.clip_grad_norm_(per_sample_grad, max_norm=args.max_grad_norm)  # in-place
+                        # input(param.accumulated_grads)
+                        if(param.accumulated_grads == None):
+                            param.accumulated_grads = per_sample_grad
+                        else:
+                            param.accumulated_grads.add_(per_sample_grad)
+                        # input(param.accumulated_grads)
+                        # input(param.accumulated_grads)
+                        # param.accumulated_grads.append(per_sample_grad)
+                        # print(torch.stack(param.accumulated_grads, dim=0).shape)
+                # Aggregate gradients
+                # model.to("cpu")
+                # with torch.no_grad():
+                for param in model.parameters():
+                    param.grad = param.accumulated_grads
+                    # input(len(param.accumulated_grads))
+                    # accumulated_grads = torch.stack(param.accumulated_grads, dim=0).sum(dim=0)
+                    # input(param.grad.shape)
+                    # print(accumulated_grads)
+                    # input(param.size())
+                    # input(param.grad.size())
+                    # input(accumulated_grads.sum(dim=0).size())
+
+                    # param.grad = torch.sum(torch.stack(param.accumulated_grads), dim=0)
+                    # param.grad = torch.stack(param.accumulated_grads, dim=0).sum(dim=0)
+                """
+                Diminishing gradient norm mode.
+                """
+                # if (mode == True):
+                #     new_noise_multiplier =
+                #     new_max_grad_norm =
+                #     optimizer = DPSGD_optimizer(model.parameters(),args.lr,
+                #                                                 args.noise_multiplier,args.max_grad_norm)
+
+                # model.to(device)
+            else:
                 optimizer.zero_grad()
                 # Calculate the loss
                 previous_output = output
-                output = model(sample_x[None, ...]) # input as batch size = 1
+                previous_loss = loss
+                output = model(data) # input as batch size = 1
                 # input(output.shape)
                 # input(target.shape)
                 # input(sample_y)
-                loss = nn.CrossEntropyLoss()(output, sample_y[None, ...])
-                if np.isnan(loss.cpu().detach().numpy()):
-                    print("NaN loss")
-                    print(batch_idx)
-                    print(sample_x[None, ...])
-                    print(sample_y[None, ...])
-                    # imshow(torchvision.utils.make_grid(sample_x.cpu()))
-                    print(output)
-                    print(previous_output)
-                    input()
-
-                # Loss back-propagation
+                loss = nn.CrossEntropyLoss()(output, target)
                 loss.backward()
 
-
-                # train_loss += loss.item()
-                # prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
-                # total += target.size(0)
-                #
-                # # train_correct incremented by one if predicted right
-                # train_correct += np.sum(prediction[1].cpu().numpy() == target.cpu().numpy())
-                #
-                # progress_bar(batch_idx, len(train_loader), 'Loss: %.4f | Acc: %.3f%% (%d/%d)'
-                #              % (train_loss / (batch_idx + 1), 100. * train_correct / total, train_correct, total))
-                # Clip each parameter's per-sample gradient
-                for param in model.parameters():
-                    per_sample_grad = param.grad.detach().clone()
-                    torch.nn.utils.clip_grad_norm_(per_sample_grad, max_norm=args.max_grad_norm)  # in-place
-                    # input(param.accumulated_grads)
-                    if(param.accumulated_grads == None):
-                        param.accumulated_grads = per_sample_grad
-                    else:
-                        param.accumulated_grads.add_(per_sample_grad)
-                    # input(param.accumulated_grads)
-                    # input(param.accumulated_grads)
-                    # param.accumulated_grads.append(per_sample_grad)
-                    # print(torch.stack(param.accumulated_grads, dim=0).shape)
-            # Aggregate gradients
-            # model.to("cpu")
-            # with torch.no_grad():
-            for param in model.parameters():
-                param.grad = param.accumulated_grads
-                # input(len(param.accumulated_grads))
-                # accumulated_grads = torch.stack(param.accumulated_grads, dim=0).sum(dim=0)
-                # input(param.grad.shape)
-                # print(accumulated_grads)
-                # input(param.size())
-                # input(param.grad.size())
-                # input(accumulated_grads.sum(dim=0).size())
-
-                # param.grad = torch.sum(torch.stack(param.accumulated_grads), dim=0)
-                # param.grad = torch.stack(param.accumulated_grads, dim=0).sum(dim=0)
-            """
-            Diminishing gradient norm mode.
-            """
-            # if (mode == "DGN"):
-            #     new_noise_multiplier =
-            #     new_max_grad_norm =
-            #     optimizer = DPSGD_optimizer(model.parameters(),args.lr,
-            #                                                 args.noise_multiplier,args.max_grad_norm)
-
-            # model.to(device)
+                #Batch clipping
+                torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=args.max_grad_norm) # in-place computation
+                # for param in model.parameters():
+                #     torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
         elif (optimizer_name == "SGD" or optimizer_name == "Adam") :
 
             # optimizer = SGD_optimizer(model.parameters(),args.lr)
@@ -200,12 +220,12 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer,mo
             # loss = F.cross_entropy(output, target)
             # Loss back-propagation
             loss.backward()
-            if np.isnan(loss.cpu().detach().numpy()):
-                print("NaN loss")
-                print(batch_idx)
-                print(output)
-                print(target)
-                input()
+            # if np.isnan(loss.cpu().detach().numpy()):
+            #     print("NaN loss")
+            #     print(batch_idx)
+            #     print(output)
+            #     print(target)
+            #     input()
             # for param in model.parameters():
             #     input(param.grad)
             #     break
@@ -273,8 +293,8 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer,mo
             loss = nn.CrossEntropyLoss()(output, target)
             train_loss += loss.item()
             prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
-            print(prediction[1])
-            print(target)
+            # print(prediction[1])
+            # print(target)
             total += target.size(0)
 
             # train_correct incremented by one if predicted right

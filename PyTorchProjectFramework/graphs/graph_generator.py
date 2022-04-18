@@ -8,9 +8,9 @@ if __name__ == "__main__":
 
     # setting_file_name = "settings_main_theorem(test)"
     # settings = ["setting_1","setting_2","setting_3"]
-    settings = ["setting_1","setting_2","setting_3","setting_4"]
+    # settings = ["setting_1","setting_2","setting_3","setting_4"]
     # settings = ["setting_5","setting_6","setting_7","setting_8"]
-    # settings = ["setting_9"]
+    settings = ["setting_16"]
     for setting in settings:
         experiment = "SGD"
         graph_path = "./graph/" + experiment
@@ -35,7 +35,7 @@ if __name__ == "__main__":
         experiment = "DPSGD"
     # setting_file_name = "settings_main_theorem(test)"
     # settings = ["setting_1","setting_2","setting_3"]
-    # settings = ["setting_1"]
+        setting = "setting_14"
     # for setting in settings:
         graph_path = "./graph/" + experiment
         data_path  = "./data/" + experiment + '/' + setting +".json"

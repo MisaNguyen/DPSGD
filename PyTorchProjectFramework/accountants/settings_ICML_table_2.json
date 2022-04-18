@@ -1,0 +1,74 @@
+{
+  "setting_1": {
+    "sampling_batch": 1,
+    "num_examples"
+    : 10000,
+    "epochs": 5,
+    "learning_rate": 0.001,
+    "noise_multiplier": 19.29962,
+    "max_grad_norm": 0.05
+  },
+  "setting_2": {
+    "sampling_batch": 5,
+    "num_examples"
+    : 10000,
+    "epochs": 5,
+    "learning_rate": 0.001,
+    "noise_multiplier": 19.29962,
+    "max_grad_norm": 0.05
+  },
+  "setting_3": {
+    "sampling_batch": 10,
+    "num_examples"
+    : 10000,
+    "epochs": 5,
+    "learning_rate": 0.001,
+    "noise_multiplier": 19.29962,
+    "max_grad_norm": 0.05
+  },
+  "setting_4": {
+    "sampling_batch": 15,
+    "num_examples"
+    : 10000,
+    "epochs": 5,
+    "learning_rate": 0.001,
+    "noise_multiplier": 19.29962,
+    "max_grad_norm": 0.05
+  },
+  "setting_5": {
+    "sampling_batch": 20,
+    "num_examples"
+    : 10000,
+    "epochs": 5,
+    "learning_rate": 0.001,
+    "noise_multiplier": 19.29962,
+    "max_grad_norm": 0.05
+  },
+  "setting_6": {
+    "sampling_batch": 26,
+    "num_examples"
+    : 10000,
+    "epochs": 5,
+    "learning_rate": 0.001,
+    "noise_multiplier": 19.29962,
+    "max_grad_norm": 0.05
+  },
+  "setting_min_T": {
+  "sampling_batch": 8.759234613414133,
+  "num_examples"
+  : 10000,
+  "epochs": 5,
+  "learning_rate": 0.001,
+  "noise_multiplier": 19.29962,
+  "max_grad_norm": 0.05
+  },
+  "setting_min_T_conjecture": {
+    "sampling_batch": 99.04248562806039,
+    "num_examples"
+    : 10000,
+    "epochs": 5,
+    "learning_rate": 0.001,
+    "noise_multiplier": 19.29962,
+    "max_grad_norm": 0.05
+  }
+}

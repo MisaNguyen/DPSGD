@@ -1,0 +1,101 @@
+{
+  "setting_1": {
+    "sampling_batch": 1,
+    "num_examples"
+    : 500000,
+    "epochs": 5,
+    "learning_rate": 0.001,
+    "noise_multiplier": 10,
+    "max_grad_norm": 0.05
+  },
+  "setting_2": {
+    "sampling_batch": 8,
+    "num_examples"
+    : 500000,
+    "epochs": 5,
+    "learning_rate": 0.001,
+    "noise_multiplier": 10,
+    "max_grad_norm": 0.05
+  },
+  "setting_3": {
+    "sampling_batch": 16,
+    "num_examples"
+    : 500000,
+    "epochs": 5,
+    "learning_rate": 0.001,
+    "noise_multiplier": 10,
+    "max_grad_norm": 0.05
+  },
+  "setting_4": {
+    "sampling_batch": 32,
+    "num_examples"
+    : 500000,
+    "epochs": 5,
+    "learning_rate": 0.001,
+    "noise_multiplier": 10,
+    "max_grad_norm": 0.05
+  },
+  "setting_5": {
+    "sampling_batch": 64,
+    "num_examples"
+    : 500000,
+    "epochs": 5,
+    "learning_rate": 0.001,
+    "noise_multiplier": 10,
+    "max_grad_norm": 0.05
+  },
+  "setting_6": {
+    "sampling_batch": 128,
+    "num_examples"
+    : 500000,
+    "epochs": 5,
+    "learning_rate": 0.001,
+    "noise_multiplier": 10,
+    "max_grad_norm": 0.05
+  },
+  "setting_7": {
+    "sampling_batch": 256,
+    "num_examples"
+    : 500000,
+    "epochs": 5,
+    "learning_rate": 0.001,
+    "noise_multiplier": 10,
+    "max_grad_norm": 0.05
+  },
+  "setting_8": {
+    "sampling_batch": 512,
+    "num_examples"
+    : 500000,
+    "epochs": 5,
+    "learning_rate": 0.001,
+    "noise_multiplier": 10,
+    "max_grad_norm": 0.05
+  },
+  "setting_9": {
+    "sampling_batch": 1024,
+    "num_examples"
+    : 500000,
+    "epochs": 5,
+    "learning_rate": 0.001,
+    "noise_multiplier": 10,
+    "max_grad_norm": 0.05
+  },
+  "setting_min_T": {
+    "sampling_batch": 3098.122108620337,
+    "num_examples"
+    : 10000,
+    "epochs": 5,
+    "learning_rate": 0.001,
+    "noise_multiplier": 10,
+    "max_grad_norm": 0.05
+  },
+  "setting_min_T_conjecture": {
+    "sampling_batch": 107121.33369309655,
+    "num_examples"
+    : 10000,
+    "epochs": 5,
+    "learning_rate": 0.001,
+    "noise_multiplier": 10,
+    "max_grad_norm": 0.05
+  }
+}
