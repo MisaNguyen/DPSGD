@@ -94,7 +94,8 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer,is
 
     if optimizer_name == "DPSGD":
         optimizer = DPSGD_optimizer(model.parameters(),args.lr,
-                                                    args.noise_multiplier,args.max_grad_norm)
+                                                    args.noise_multiplier,args.max_grad_norm,
+                                    args.batch_size)
     elif optimizer_name == "SGD":
         # optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
         optimizer = SGD_optimizer(model.parameters(),args.lr)
@@ -106,6 +107,9 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer,is
         data, target = data.to(device), target.to(device)
 
         if optimizer_name == "DPSGD":
+            """
+            Individual-clipping
+            """
             if(is_individual == True):
                 # optimizer = DPSGD_optimizer(model.parameters(),args.lr,
                 #                                             args.noise_multiplier,args.max_grad_norm)
@@ -129,6 +133,7 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer,is
                     # input(target.shape)
                     # input(sample_y)
                     loss = nn.CrossEntropyLoss()(output, sample_y[None, ...])
+
                     # if np.isnan(loss.cpu().detach().numpy()):
                     #     print("NaN loss")
                     #     print(batch_idx)
@@ -170,7 +175,7 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer,is
                 # model.to("cpu")
                 # with torch.no_grad():
                 for param in model.parameters():
-                    param.grad = param.accumulated_grads
+                    param.grad = torch.mul(param.accumulated_grads,1/args.batch_size)
                     # input(len(param.accumulated_grads))
                     # accumulated_grads = torch.stack(param.accumulated_grads, dim=0).sum(dim=0)
                     # input(param.grad.shape)
@@ -189,9 +194,11 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer,is
                 #     new_max_grad_norm =
                 #     optimizer = DPSGD_optimizer(model.parameters(),args.lr,
                 #                                                 args.noise_multiplier,args.max_grad_norm)
-
                 # model.to(device)
             else:
+                """
+                Batch-clipping
+                """
                 optimizer.zero_grad()
                 # Calculate the loss
                 previous_output = output

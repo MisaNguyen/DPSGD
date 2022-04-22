@@ -7,9 +7,11 @@ if __name__ == "__main__":
     # loading SGD data
     settings_path = "settings_lr_exp_cifar10"
     # setting_file_name = "settings_main_theorem(test)"
-    # settings = ["setting_" + str(i) for i in range(1,6)]
-    settings = ["setting_" + str(i) for i in range(16,21)]
-    lr = 0.0001
+    settings = ["setting_" + str(i) for i in range(1,6)]
+    # settings = ["setting_" + str(i) for i in range(6,11)]
+    # settings = ["setting_" + str(i) for i in range(11,16)]
+    # settings = ["setting_" + str(i) for i in range(16,21)]
+    lr = 0.1
     s = 32
 
     # settings = ["setting_1","setting_2","setting_3","setting_4"]
@@ -48,7 +50,7 @@ if __name__ == "__main__":
         plt.ylabel('accuracy')
         plt.legend()
         s = s*2
-    plt.savefig(graph_path + '/lr_' + str(lr) +".png")
+    plt.savefig(graph_path + '/' + experiment + '_lr_' + str(lr) +".png")
     plt.show()
     # plt.clf()
     # plt.plot(index, sigma, label="sigma")

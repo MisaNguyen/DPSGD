@@ -1,4 +1,21 @@
 {
+  "setting_0": {
+    "batch_size": 5,
+    "test_batch_size": 1000,
+    "epochs": 10,
+    "learning_rate": 0.1,
+    "gamma": 1,
+    "no_cuda": false,
+    "dry_run": false,
+    "seed": 1,
+    "log_interval": 10,
+    "save_model": false,
+    "noise_multiplier": 10.0,
+    "max_grad_norm": 0.025,
+    "optimizer": "DPSGD",
+    "diminishing_gradient_norm": false,
+    "is_individual_clipping": true
+  },
   "setting_1": {
     "batch_size": 32,
     "test_batch_size": 1000,

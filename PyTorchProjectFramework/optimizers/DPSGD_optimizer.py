@@ -50,7 +50,8 @@ def dpsgd(params: List[Tensor],
         dampening: float,
         nesterov: bool,
         noise_multiplier: float,
-          max_grad_norm: float,):
+          max_grad_norm: float,
+          batch_size: float):
     r"""Functional API that performs SGD algorithm computation.
     See :class:`~torch.optim.SGD` for details.
     """
@@ -83,18 +84,35 @@ def dpsgd(params: List[Tensor],
                 d_p = d_p.add(buf, alpha=momentum)
             else:
                 d_p = buf
-            #Add dpsgd condition:
+        """
+        Add dpsgd condition:
+        """
+
         # print("Before",d_p)
         # input(torch.normal(mean=torch.Tensor([0.0]),
         #                    std=noise_multiplier * max_grad_norm).to(device=torch.device("cuda:0")))
+        """
+        We divide the noise by batch size because d_p is the mean of gradients of the input batch.
+        """
+        # input(torch.normal(mean=torch.Tensor([0.0]),
+        #                    std=noise_multiplier * max_grad_norm).to(device=torch.device("cuda:0")).mul_(1/batch_size))
         # input(d_p.shape)
-        d_p += torch.normal(mean=torch.Tensor([0.0]),
-                                   std=noise_multiplier * max_grad_norm).to(device=torch.device("cuda:0"))
+        """
+        Add Gaussian noise to gradients
+        """
+        d_p = d_p + torch.normal(
+                mean=torch.Tensor([0.0]),
+                std=noise_multiplier * max_grad_norm).to(device=torch.device("cuda:0")
+                                                         ).mul_(1/batch_size)
+
         # input(d_p.shape)
         # print("after",d_p)
         # input("HERE")
         # input(param)
-        param.add_(d_p, alpha=-lr)
+        """
+        Gradient descent step
+        """
+        param.add_(d_p, alpha=-lr) # in-place
         # param.grad = None  # Reset for next iteratio
         # # Clipping
         # per_sample_grad = d_p.detach().clone()
@@ -180,7 +198,7 @@ def dpsgd(params: List[Tensor],
 class DPSGD(Optimizer):
 
     def __init__(self, params, lr=0.1, momentum=0, dampening=0,
-                 weight_decay=0, nesterov=False, *, maximize=False, noise_multiplier=1.0, max_grad_norm=1):
+                 weight_decay=0, nesterov=False, *, maximize=False, noise_multiplier=1.0, max_grad_norm=1, batch_size=1):
         if lr < 0.0:
             raise ValueError("Invalid learning rate: {}".format(lr))
         if momentum < 0.0:
@@ -191,10 +209,11 @@ class DPSGD(Optimizer):
             raise ValueError("Invalid sigma value: {}".format(noise_multiplier))
         if max_grad_norm < 0.0:
             raise ValueError("Invalid gradient_norm value: {}".format(max_grad_norm))
-
+        if batch_size < 0.0:
+            raise ValueError("Invalid batch_size value: {}".format(batch_size))
         defaults = dict(lr=lr, momentum=momentum, dampening=dampening,
                         weight_decay=weight_decay, nesterov=nesterov, maximize=maximize,
-                        noise_multiplier=noise_multiplier,max_grad_norm=max_grad_norm)
+                        noise_multiplier=noise_multiplier,max_grad_norm=max_grad_norm,batch_size=batch_size)
         if nesterov and (momentum <= 0 or dampening != 0):
             raise ValueError("Nesterov momentum requires a momentum and zero dampening")
         super(DPSGD, self).__init__(params, defaults)
@@ -231,6 +250,7 @@ class DPSGD(Optimizer):
             lr = group['lr']
             noise_multiplier = group['noise_multiplier']
             max_grad_norm = group['max_grad_norm']
+            batch_size = group['batch_size']
             # input(group.keys())
             for p in group['params']:
                 # input(len(p))
@@ -258,7 +278,8 @@ class DPSGD(Optimizer):
                   dampening=dampening,
                   nesterov=nesterov,
                   noise_multiplier=noise_multiplier,
-                  max_grad_norm=max_grad_norm,)
+                  max_grad_norm=max_grad_norm,
+                  batch_size=batch_size,)
 
             # update momentum_buffers in state
             for p, momentum_buffer in zip(params_with_grad, momentum_buffer_list):
@@ -275,8 +296,9 @@ Optimizer callers
 # def custom_SGD_optimizer(learning_rate,model):
 #     pass
 # # DPSGD optimizer
-def DPSGD_optimizer(model_parameters,learning_rate,noise_multiplier,max_grad_norm):
-    optimizer = DPSGD(model_parameters, lr=learning_rate,noise_multiplier=noise_multiplier,max_grad_norm=max_grad_norm)
+def DPSGD_optimizer(model_parameters,learning_rate,noise_multiplier,max_grad_norm,batch_size):
+    optimizer = DPSGD(model_parameters, lr=learning_rate,noise_multiplier=noise_multiplier,
+                      max_grad_norm=max_grad_norm,batch_size=batch_size)
     return optimizer
 
 
