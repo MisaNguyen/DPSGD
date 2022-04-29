@@ -100,14 +100,18 @@ def dpsgd(params: List[Tensor],
         """
         Add Gaussian noise to gradients
         """
-        d_p = d_p + torch.normal(
-                mean=torch.Tensor([0.0]),
-                std=noise_multiplier * max_grad_norm).to(device=torch.device("cuda:0")
-                                                         ).mul_(1/batch_size)
+        dist = torch.distributions.normal.Normal(torch.tensor(0.0),
+                                                 torch.tensor((noise_multiplier * max_grad_norm)))
+        noise = dist.rsample(d_p.shape).to(device=torch.device("cuda:0")).mul_(1/batch_size)
+        # # print("d_p",d_p)
+        # # input()
+        # # print("Noise",noise)
+        # # input()
+        d_p.add_(noise)
 
         # input(d_p.shape)
-        # print("after",d_p)
-        # input("HERE")
+        # print\
+        #     ("HERE")
         # input(param)
         """
         Gradient descent step

@@ -1,0 +1,2 @@
+opacus CIFAR10: https://opacus.ai/tutorials/building_image_classifier
+Clipping methods: https://stackoverflow.com/questions/54716377/how-to-do-gradient-clipping-in-pytorch

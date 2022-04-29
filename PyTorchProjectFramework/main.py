@@ -56,7 +56,7 @@ def main():
     #Add setting path here
     # settings_file = "settings"
     settings_file = "settings_lr_exp_cifar10_dpsgd"
-
+    print("Running setting: %s.json" % settings_file)
     if(args.load_setting != ""):
         with open(settings_file +".json", "r") as json_file:
             json_data = json.load(json_file)

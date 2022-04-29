@@ -270,7 +270,7 @@ def compute_eps_from_sigma_and_delta(sigma,delta,K,N_c,s,theta = 1):
     RHS_condition2 = gamma*Compute_h(sigma)*K/N_c
     if(eps > RHS_condition2):
         print("ERROR : eps must be smaller than or equal to" , RHS_condition2)
-        return None, None
+        return None
     # Condition 3:
     RHS_condition3 = np.sqrt(2*(eps + np.log(1/delta))/eps)
     if(sigma < RHS_condition3):
@@ -287,15 +287,20 @@ Setting sample:
     "noise_multiplier": 1.0,
     "max_grad_norm": 0.001,
 """
+
+"""
+MAIN MODULE
+"""
 if __name__ == "__main__":
     # N_c,K,delta,s = setting_3()
     # setting_file_name = "settings_sample_size_exp"
-    setting_file_name = "settings_ICML_table_4"
+    setting_file_name = "settings"
     # setting_file_name = "settings_ICML_N_1000000"
     # settings = ["setting_1","setting_2","setting_3","setting_4","setting_5","setting_6"]
     # settings = ["setting_1","setting_2","setting_3","setting_4","setting_5","setting_6","setting_7"]
     # settings = ["setting_1","setting_3","setting_4","setting_5","setting_6","setting_7","setting_8","setting_9"]
-    settings = ["setting_min_T", "setting_min_T_conjecture"]
+    # settings = ["setting_min_T", "setting_min_T_conjecture"]
+    settings = ["setting_1"]
     with open("./%s.json" % setting_file_name, "r") as json_file:
         json_data = json.load(json_file)
     latex_output_dpsgd = "Our DPA (appendix)"

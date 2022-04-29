@@ -1,15 +1,12 @@
 {
   "setting_1": {
-    "epochs"
-   : 1000,
+    "sampling_batch": 512,
     "num_examples"
-   : 60000,
-    "sampling_batch"
-   : 512,
-    "microbatches"
-   : 512,
-    "delta"
-    : 1.6666666666666667e-05
+    : 60000,
+    "epochs": 50,
+    "learning_rate": 0.001,
+    "noise_multiplier": 3.6,
+    "max_grad_norm": 0.001
   },
   "setting_2": {
     "epochs"

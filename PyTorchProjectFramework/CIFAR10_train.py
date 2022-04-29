@@ -14,6 +14,8 @@ import torch.nn as nn
 
 import matplotlib.pyplot as plt
 
+"""Opacus"""
+# from opacus.utils.batch_memory_manager import BatchMemoryManager
 
 """ Schedulers """
 from scheduler.learning_rate_scheduler import StepLR
@@ -160,9 +162,13 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer,is
                     #              % (train_loss / (batch_idx + 1), 100. * train_correct / total, train_correct, total))
                     # Clip each parameter's per-sample gradient
                     for param in model.parameters():
+                        # Clip the sample grad
+                        param.register_hook(lambda grad: torch.clamp(grad, -args.max_grad_norm, args.max_grad_norm))
+                        # Detach the sample gradient
                         per_sample_grad = param.grad.detach().clone()
-                        torch.nn.utils.clip_grad_norm_(per_sample_grad, max_norm=args.max_grad_norm)  # in-place
+                        # torch.nn.utils.clip_grad_norm_(per_sample_grad, max_norm=args.max_grad_norm)  # in-place
                         # input(param.accumulated_grads)
+                        # Add sample's gradient to sum_grad
                         if(param.accumulated_grads == None):
                             param.accumulated_grads = per_sample_grad
                         else:
@@ -201,8 +207,8 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer,is
                 """
                 optimizer.zero_grad()
                 # Calculate the loss
-                previous_output = output
-                previous_loss = loss
+                # previous_output = output
+                # previous_loss = loss
                 output = model(data) # input as batch size = 1
                 # input(output.shape)
                 # input(target.shape)
@@ -212,6 +218,9 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer,is
 
                 #Batch clipping
                 torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=args.max_grad_norm) # in-place computation
+                # torch.nn.utils.clip_grad_value_(model.parameters(), max_norm=args.max_grad_norm) # in-place computation
+                # for p in model.parameters():
+                #     p.register_hook(lambda grad: torch.clamp(grad, -args.max_grad_norm, args.max_grad_norm))
                 # for param in model.parameters():
                 #     torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
         elif (optimizer_name == "SGD" or optimizer_name == "Adam") :
@@ -225,7 +234,7 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer,is
             output = model(data)
             loss = nn.CrossEntropyLoss()(output, target)
             # loss = F.cross_entropy(output, target)
-            # Loss back-propagation
+            # Loss back-propagation = Calculate gradients
             loss.backward()
             # if np.isnan(loss.cpu().detach().numpy()):
             #     print("NaN loss")
@@ -298,8 +307,10 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer,is
             output = model(data)
 
             loss = nn.CrossEntropyLoss()(output, target)
+
             train_loss += loss.item()
             prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
+
             # print(prediction[1])
             # print(target)
             total += target.size(0)
