@@ -12,7 +12,7 @@
     "save_model": false,
     "noise_multiplier": 2.0,
     "max_grad_norm": 1.0,
-    "optimizer": "DPSGD",
+    "optimizer": "SGD",
     "diminishing_gradient_norm": false,
     "is_individual_clipping": false
   },

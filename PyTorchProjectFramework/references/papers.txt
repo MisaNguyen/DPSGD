@@ -1,0 +1,14 @@
+Communication-Efficient Learning of Deep Networks
+from Decentralized Data
+http://proceedings.mlr.press/v54/mcmahan17a/mcmahan17a.pdf
+
+FEDERATED LEARNING FOR MOBILE KEYBOARD PREDICTION
+https://arxiv.org/pdf/1811.03604.pdf
+
+The Power of Interpolation: Understanding the Effectiveness of SGD in
+Modern Over-parametrized Learning
+http://proceedings.mlr.press/v80/ma18a/ma18a.pdf
+
+Fast and Faster Convergence of SGD for Over-Parameterized Models
+(and an Accelerated Perceptron)
+http://proceedings.mlr.press/v89/vaswani19a/vaswani19a-supp.pdf
