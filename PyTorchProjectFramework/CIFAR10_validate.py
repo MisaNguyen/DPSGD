@@ -37,9 +37,9 @@ def test(model, device, test_loader,epoch,visualizer):
             # print("pred: %f, target: %f" % (prediction[1],target))
             total += target.size(0)
             test_correct += np.sum(prediction[1].cpu().numpy() == target.cpu().numpy())
-            if(test_correct/ total < 0.2):
-                print("predict:",prediction)
-                print("target:",target)
+            # if(test_correct/ total < 0.2):
+            #     print("predict:",prediction)
+            #     print("target:",target)
             # pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
             # test_accuracy.append(test_correct / total)
             # input(pred)
