@@ -107,7 +107,10 @@ def train(args, model, device, train_loader, optimizer_name, epoch,visualizer,is
     # for batch_idx, (data, target) in enumerate(train_loader):
     for batch_idx, (data,target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
-
+        # print(data.shape)
+        # print(data.shape[0])
+        # print(data.shape[1])
+        # input()
         if optimizer_name == "DPSGD":
             """
             Individual-clipping

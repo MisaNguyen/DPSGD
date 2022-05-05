@@ -5,7 +5,7 @@ import os
 import json
 if __name__ == "__main__":
     # loading SGD data
-    settings_path = "settings_lr_exp_cifar10_dpsgd"
+    settings_path = "settings_clipping_exp_cifar10_dpsgd"
     # setting_file_name = "settings_main_theorem(test)"
     # settings = ["setting_" + str(i) for i in range(1,6)]
     # settings = ["setting_" + str(i) for i in range(6,11)]
@@ -14,8 +14,9 @@ if __name__ == "__main__":
     lr = 0.1
     s = 512
     draw_IC_case = False
-    settings = ["setting_0_c1_s2","setting_0_noclip"]
+    # settings = ["setting_0_c1_s2","setting_0_noclip"]
     # settings = ["setting_1","setting_2","setting_3","setting_4"]
+    settings = ["setting_1","setting_2"]
     # settings = ["setting_5","setting_6","setting_7","setting_8"]
     # settings = ["setting_16"]
     for setting in settings:
@@ -36,7 +37,7 @@ if __name__ == "__main__":
             DPSGD_train_accuracy = data["train_accuracy"]
             DPSGD_test_accuracy = data["test_accuracy"]
             DPSGD_epochs = len(DPSGD_train_accuracy)
-        setting = "setting_0_c01_s2"
+        # setting = "setting_0_c01_s2"
         ic_data_path = "./data/" + settings_path + '/' + experiment + '/IC/' + setting +".json"
         with open(ic_data_path, "r") as data_file:
             data = json.load(data_file)

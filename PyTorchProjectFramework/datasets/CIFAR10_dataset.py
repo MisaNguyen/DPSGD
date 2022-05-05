@@ -84,3 +84,8 @@ def create_dataset(train_kwargs,test_kwargs):
         print(labels[:10])
         break
     return train_loader, test_loader
+
+if __name__ == "__main__":
+    train_kwargs = {'batch_size': 16}
+    test_kwargs = {'batch_size': 1000}
+    create_dataset(train_kwargs,test_kwargs)
