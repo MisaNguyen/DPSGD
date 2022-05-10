@@ -5,22 +5,24 @@ import os
 import json
 if __name__ == "__main__":
     # loading SGD data
-    settings_path = "settings_lr_exp_cifar10_dpsgd"
+    settings_path = "settings_clipping_exp_cifar10_dpsgd"
     # setting_file_name = "settings_main_theorem(test)"
-    settings = ["setting_" + str(i) for i in range(1,6)]
+    # settings = ["setting_" + str(i) for i in range(1,6)]
     # settings = ["setting_" + str(i) for i in range(6,11)]
     # settings = ["setting_" + str(i) for i in range(11,16)]
     # settings = ["setting_" + str(i) for i in range(16,21)]
     lr = 0.1
-    C = 0.1
-    s = 32
+    Cs = [0.1,0.05,0.01,0.005]
+    sigma = 2
+    s = 512
     draw_IC_case = True
     # settings = ["setting_0_c1_s2","setting_0_noclip"]
     # settings = ["setting_1","setting_2","setting_3","setting_4"]
     # settings = ["setting_1","setting_2"]
-    # settings = ["setting_5","setting_6","setting_7","setting_8"]
+    settings = ["setting_5","setting_10","setting_15","setting_20"]
     # settings = ["setting_16"]
-    for setting in settings:
+    for setting_idx, setting in enumerate(settings):
+        C = Cs[setting_idx]
         experiment = "DPSGD"
         graph_path = "./graph/" + settings_path + '/' + experiment
         data_path  = "./data/" + settings_path + '/' + experiment + '/' + setting +".json"
@@ -49,23 +51,24 @@ if __name__ == "__main__":
         DPSGD_epoch_index = [i for i in range(1, DPSGD_epochs+1)]
 
         plt.subplot(1, 2, 1)
-        plt.plot(DPSGD_epoch_index, DPSGD_train_accuracy, label="BC, s= %f" % (s))
+        plt.plot(DPSGD_epoch_index, DPSGD_train_accuracy, label="BC, C= %f" % (C))
         if(draw_IC_case):
-            plt.plot(DPSGD_epoch_index, IC_DPSGD_train_accuracy, label="IC, s= %f" % (s))
+            plt.plot(DPSGD_epoch_index, IC_DPSGD_train_accuracy, label="IC, C= %f" % (C))
         plt.title('Train accuracy, lr = %f' % lr)
         plt.legend()
 
         plt.subplot(1, 2, 2)
-        plt.plot(DPSGD_epoch_index, DPSGD_test_accuracy, label="BC,s= %f" % (s))
+        plt.plot(DPSGD_epoch_index, DPSGD_test_accuracy, label="BC,C= %f" % (C))
         if(draw_IC_case):
-            plt.plot(DPSGD_epoch_index, IC_DPSGD_test_accuracy, label="IC, s= %f" % (s))
+            plt.plot(DPSGD_epoch_index, IC_DPSGD_test_accuracy, label="IC, C= %f" % (C))
 
-        plt.title('Test accuracy, lr = %f' % lr)
+        plt.title('Test accuracy, lr = %f, s = %f, sigma = %f' % (lr,s,sigma))
         plt.xlabel('epoch')
         plt.ylabel('accuracy')
         plt.legend()
-        s = s*2
-    plt.savefig(graph_path + '/dpsgd_lr_' + str(lr) +".png")
+        # s = s*2
+    file_name = '/dpsgd_C_comparing_lr_' + str(lr) + '_sigma_' + str(sigma)
+    plt.savefig(graph_path + file_name +".png",dpi=2000)
     plt.show()
     # plt.clf()
     # plt.plot(index, sigma, label="sigma")
