@@ -12,14 +12,14 @@ if __name__ == "__main__":
     # settings = ["setting_" + str(i) for i in range(11,16)]
     # settings = ["setting_" + str(i) for i in range(16,21)]
     lr = 0.1
-    Cs = [0.1,0.05,0.01,0.005]
+    Cs = [1.0,0.5,0.1,0.05,0.01,0.005]
     sigma = 2
     s = 512
-    draw_IC_case = True
+    draw_IC_case = False
     # settings = ["setting_0_c1_s2","setting_0_noclip"]
     # settings = ["setting_1","setting_2","setting_3","setting_4"]
     # settings = ["setting_1","setting_2"]
-    settings = ["setting_5","setting_10","setting_15","setting_20"]
+    settings = ["setting_30", "setting_25", "setting_5","setting_10","setting_15","setting_20"]
     # settings = ["setting_16"]
     for setting_idx, setting in enumerate(settings):
         C = Cs[setting_idx]

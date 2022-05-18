@@ -9,13 +9,15 @@ if __name__ == "__main__":
     # loading SGD data
     settings_path = "settings_clipping_exp_cifar10_dpsgd"
     # setting_file_name = "settings_main_theorem(test)"
-    settings = ["setting_" + str(i) for i in range(1,6)]
+    # settings = ["setting_" + str(i) for i in range(1,6)]
     # settings = ["setting_" + str(i) for i in range(6,11)]
     # settings = ["setting_" + str(i) for i in range(11,16)]
     # settings = ["setting_" + str(i) for i in range(16,21)]
+    # settings = ["setting_" + str(i) for i in range(21,26)]
+    settings = ["setting_" + str(i) for i in range(26,31)]
     lr = 0.1
-    Cs = [0.1,0.05,0.01,0.005]
-    C = Cs[0]
+    Cs = [0.1,0.05,0.01,0.005,0.5,1.0]
+    C = Cs[5]
     sigma = 2
     s = 32
     draw_DPSGD_IC_case = False
