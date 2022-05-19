@@ -5,11 +5,15 @@ import torch
 
 from torchvision import datasets, transforms
 
-# functions to show an image
+import os
+import sys
 
-
+from datasets.data_sampler import get_data_loaders
 
 def create_dataset(train_kwargs,test_kwargs):
+    # file_dir = os.path.dirname(".")
+    # print(file_dir)
+    # sys.path.append(file_dir)
     print('==> Preparing data..')
     # train_transform = transforms.Compose([transforms.ToTensor()])
 
@@ -56,12 +60,18 @@ def create_dataset(train_kwargs,test_kwargs):
     testset = datasets.CIFAR10(
         root='../data', train=False, download=True, transform=transform_test)
 
-    train_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)
+    # train_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)
     test_loader = torch.utils.data.DataLoader(testset, **test_kwargs)
+    print(train_kwargs['batch_size'])
+    print(train_kwargs['microbatch_size'])
+    minibatch_loader, microbatch_loader = get_data_loaders(train_kwargs['batch_size'],
+                                                           train_kwargs['microbatch_size'],
+                                                           len(trainset)) # iteration = training set size = 1 epoch
+    train_minibatch_loader = minibatch_loader(trainset)
 
     # Checking the dataset
     print('Training Set:\n')
-    for images, labels in train_loader:
+    for images, labels in train_minibatch_loader:
         print('Image batch dimensions:', images.size())
         print('Image label dimensions:', labels.size())
         print(labels[:10])
@@ -78,12 +88,13 @@ def create_dataset(train_kwargs,test_kwargs):
 
     # Checking the dataset
     print('\nTesting Set:')
-    for images, labels in train_loader:
+    for images, labels in test_loader:
         print('Image batch dimensions:', images.size())
         print('Image label dimensions:', labels.size())
         print(labels[:10])
         break
-    return train_loader, test_loader
+    # return train_loader, test_loader
+    return train_minibatch_loader, microbatch_loader, test_loader
 
 if __name__ == "__main__":
     train_kwargs = {'batch_size': 16}

@@ -13,7 +13,7 @@ import torch.nn as nn
 # import time
 
 import matplotlib.pyplot as plt
-from torch.utils.data import TensorDataset
+
 """Opacus"""
 # from opacus.utils.batch_memory_manager import BatchMemoryManager
 
@@ -147,10 +147,7 @@ def params(optimizer: Optimizer) -> List[nn.Parameter]:
 """
 END OPACUS code
 """
-# def train(args, model, device, train_loader, optimizer_name, epoch,
-#           visualizer,is_diminishing_gradient_norm, is_individual):
-def train(args, model, device, train_minibatch_loader, microbatch_loader, optimizer_name, epoch,
-          visualizer,is_diminishing_gradient_norm, is_individual):
+def train(args, model, device, train_loader, optimizer_name, epoch,visualizer,is_diminishing_gradient_norm, is_individual):
     model.train()
     train_loss = 0
     train_correct = 0
@@ -159,7 +156,7 @@ def train(args, model, device, train_minibatch_loader, microbatch_loader, optimi
     loss = 0
     # Get optimizer
 
-    iteration = 0
+
     if optimizer_name == "DPSGD":
         optimizer = DPSGD_optimizer(model.parameters(),args.lr,
                                                     args.noise_multiplier,args.max_grad_norm,
@@ -178,9 +175,9 @@ def train(args, model, device, train_minibatch_loader, microbatch_loader, optimi
     # train_accuracy = np.array()
     # for batch_idx, (data, target) in enumerate(train_loader):
 
-    for (data,target) in train_minibatch_loader:
+    for batch_idx, (data,target) in enumerate(train_loader):
         # count = 0
-        iteration += 1
+
         data, target = data.to(device), target.to(device)
         # print(data.shape)
         # print(data.shape[0])
@@ -199,8 +196,8 @@ def train(args, model, device, train_minibatch_loader, microbatch_loader, optimi
                 # input(len(batch[0]))
                 # input(len(batch[1]))
 
-                for X_microbatch, y_microbatch in microbatch_loader(TensorDataset(data, target)):
-                    # sample_x, sample_y = data[sample_idx],target[sample_idx]
+                for sample_idx in range(0,len(data)):
+                    sample_x, sample_y = data[sample_idx],target[sample_idx]
                 # sample_y = target[sample_idx]
                 #     for param in model.parameters():
                 #         param.grad_sample = None
@@ -218,11 +215,11 @@ def train(args, model, device, train_minibatch_loader, microbatch_loader, optimi
                     # Calculate the loss
                     previous_output = output
                     previous_loss = loss
-                    output = model(X_microbatch) # input as batch size = 1
+                    output = model(sample_x[None, ...]) # input as batch size = 1
                     # input(output.shape)
                     # input(target.shape)
                     # input(sample_y)
-                    loss = nn.CrossEntropyLoss()(output, y_microbatch)
+                    loss = nn.CrossEntropyLoss()(output, sample_y[None, ...])
 
                     # if np.isnan(loss.cpu().detach().numpy()):
                     #     print("NaN loss")
@@ -451,19 +448,11 @@ def train(args, model, device, train_minibatch_loader, microbatch_loader, optimi
         # lsoftmax = torch.nn.LogSoftmax(dim=-1)
         # loss = torch.nn.NLLLoss()(lsoftmax(output), target)
 
-        # if batch_idx % args.log_interval == 0:
-        if iteration % args.log_interval == 0:
-            # print(batch_idx)
-            # print(len(data))
-            # print(len(train_minibatch_loader))
+        if batch_idx % args.log_interval == 0:
             print("Training using %s optimizer" % optimizer_name)
-            print('Train Epoch: %d, [Iteration %d/%d] [Loss: %f]' % (epoch,iteration, len(train_minibatch_loader), loss.item()))
-            # print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-            #     epoch, batch_idx/100  * len(data), len(train_minibatch_loader.dataset),
-            #            100. * batch_idx / len(train_minibatch_loader), loss.item()))
-            # print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-            #     epoch, batch_idx/100  * len(data), len(train_minibatch_loader.dataset),
-            #            100. * batch_idx / len(train_minibatch_loader), loss.item()))
+            print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+                epoch, batch_idx * len(data), len(train_loader.dataset),
+                       100. * batch_idx / len(train_loader), loss.item()))
             # Trainning Log
             output = model(data)
 

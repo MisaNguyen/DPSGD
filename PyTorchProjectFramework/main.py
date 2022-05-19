@@ -21,6 +21,8 @@ def main():
     parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
     parser.add_argument('--batch-size', type=int, default=64, metavar='N',
                         help='input batch size for training (default: 64)')
+    parser.add_argument('--microbatch-size', type=int, default=1, metavar='MS',
+                        help='input microbatch batch size for training (default: 1)')
     parser.add_argument('--test-batch-size', type=int, default=1000, metavar='N',
                         help='input batch size for testing (default: 1000)')
     parser.add_argument('--epochs', type=int, default=50, metavar='N',
@@ -63,6 +65,7 @@ def main():
             setting_data = json_data[args.load_setting]
             # Loading data
             args.batch_size = setting_data["batch_size"]
+            args.microbatch_size = setting_data["microbatch_size"]
             args.test_batch_size = setting_data["test_batch_size"]
             args.epochs = setting_data["epochs"]
             args.lr = setting_data["learning_rate"]
@@ -86,11 +89,13 @@ def main():
 
     device = torch.device("cuda" if use_cuda else "cpu")
     # TODO:
-    train_kwargs = {'batch_size': args.batch_size}
+    train_kwargs = {'batch_size': args.batch_size,
+                    'microbatch_size': args.microbatch_size,
+                    'epochs': args.epochs}
     test_kwargs = {'batch_size': args.test_batch_size}
 
     # train_loader, test_loader = MNIST_dataset.create_dataset(train_kwargs,test_kwargs)
-    train_loader, test_loader = CIFAR10_dataset.create_dataset(train_kwargs,test_kwargs)
+    train_minibatch_loader, microbatch_loader, test_loader = CIFAR10_dataset.create_dataset(train_kwargs,test_kwargs)
     if use_cuda:
         cuda_kwargs = {'num_workers': 1,
                        'pin_memory': True,
@@ -122,7 +127,8 @@ def main():
     print("Saving data to: %s" % out_file_path)
     for epoch in range(1, args.epochs + 1):
         print("epoch %s:" % epoch)
-        train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, args.optimizer, epoch,visualizer,
+        train_accuracy.append(CIFAR10_train.train(args, model, device, train_minibatch_loader, microbatch_loader,
+                                                  args.optimizer, epoch,visualizer,
                                                   args.enable_diminishing_gradient_norm,
                                                   args.enable_individual_clipping))
         test_accuracy.append(CIFAR10_validate.test(model, device, test_loader,epoch,visualizer))
