@@ -12,7 +12,7 @@
     "log_interval": 100,
     "save_model": false,
     "noise_multiplier": 6.0,
-    "max_grad_norm": 3,
+    "max_grad_norm": 3.0,
     "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true

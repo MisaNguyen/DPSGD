@@ -286,7 +286,7 @@ def train(args, model, device, train_minibatch_loader, microbatch_loader, optimi
                         # param.register_hook(lambda grad: torch.clamp(grad, -args.max_grad_norm, args.max_grad_norm))
                         # Detach the sample gradient
                         per_sample_grad = param.grad.detach().clone()
-                        # torch.nn.utils.clip_grad_norm_(per_sample_grad, max_norm=args.max_grad_norm)  # in-place
+                        torch.nn.utils.clip_grad_norm_(per_sample_grad, max_norm=args.max_grad_norm)  # in-place
                         # input(param.accumulated_grads)
                         # Add sample's gradient to accumulated_grads
                         if(param.accumulated_grads == None):
@@ -314,11 +314,11 @@ def train(args, model, device, train_minibatch_loader, microbatch_loader, optimi
                     """
                     Add Gaussian noise to gradients
                     """
-                    # dist = torch.distributions.normal.Normal(torch.tensor(0.0),
-                    #                                          torch.tensor((args.noise_multiplier * args.max_grad_norm)))
-                    # noise = dist.rsample(param.accumulated_grads.shape).to(device=torch.device("cuda:0"))
-                    # param.grad = (param.accumulated_grads + noise) / args.batch_size
-                    param.grad = param.accumulated_grads  / args.batch_size
+                    dist = torch.distributions.normal.Normal(torch.tensor(0.0),
+                                                             torch.tensor((args.noise_multiplier * args.max_grad_norm)))
+                    noise = dist.rsample(param.accumulated_grads.shape).to(device=torch.device("cuda:0"))
+                    param.grad = (param.accumulated_grads + noise) / args.batch_size
+                    # param.grad = param.accumulated_grads  / args.batch_size
                     # print(param.accumulated_grads)
                     param.accumulated_grads = None
                     # print(param.grad)
