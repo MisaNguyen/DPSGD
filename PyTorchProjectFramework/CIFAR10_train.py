@@ -152,7 +152,7 @@ END OPACUS code
 # def train(args, model, device, train_loader, optimizer_name, epoch,
 #           visualizer,is_diminishing_gradient_norm, is_individual):
 def train(args, model, device, train_minibatch_loader, microbatch_loader, test_loader,
-          optimizer_name,visualizer,is_diminishing_gradient_norm, is_individual):
+          optimizer_name,wvisualizer,is_diminishing_gradient_norm, is_individual):
     model.train()
     train_loss = 0
     train_correct = 0
@@ -460,7 +460,7 @@ def train(args, model, device, train_minibatch_loader, microbatch_loader, test_l
             # print(len(data))
             # print(len(train_minibatch_loader))
             print("Training using %s optimizer" % optimizer_name)
-            print('Train Epoch: %d, [Iteration %d/%d] [Loss: %f]' % (epoch,iteration, len(train_minibatch_loader), loss.item()))
+            print('[Iteration %d/%d] [Loss: %f]' % (iteration, len(train_minibatch_loader), loss.item()))
             # print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
             #     epoch, batch_idx/100  * len(data), len(train_minibatch_loader.dataset),
             #            100. * batch_idx / len(train_minibatch_loader), loss.item()))
