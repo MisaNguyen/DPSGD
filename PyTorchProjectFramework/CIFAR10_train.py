@@ -492,7 +492,7 @@ def train(args, model, device, train_minibatch_loader, microbatch_loader, test_l
 
         if args.dry_run:
             break
-    return train_accuracy,test_accuracy
+    return train_accuracy, test_accuracy
 
 if __name__ == '__main__':
     import multiprocessing
