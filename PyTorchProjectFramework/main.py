@@ -25,8 +25,8 @@ def main():
                         help='input microbatch batch size for training (default: 1)')
     parser.add_argument('--test-batch-size', type=int, default=1000, metavar='N',
                         help='input batch size for testing (default: 1000)')
-    parser.add_argument('--epochs', type=int, default=50, metavar='N',
-                        help='number of epochs to train (default: 14)')
+    parser.add_argument('--iterations', type=int, default=1000, metavar='N',
+                        help='number of iterations to train (default: 1000)')
     parser.add_argument('--lr', type=float, default=1.0, metavar='LR',
                         help='learning rate (default: 1.0)')
     parser.add_argument('--gamma', type=float, default=0.7, metavar='M',
@@ -67,7 +67,7 @@ def main():
             args.batch_size = setting_data["batch_size"]
             args.microbatch_size = setting_data["microbatch_size"]
             args.test_batch_size = setting_data["test_batch_size"]
-            args.epochs = setting_data["epochs"]
+            args.iterations = setting_data["iterations"]
             args.lr = setting_data["learning_rate"]
             args.gamma = setting_data["gamma"]
             args.no_cuda = setting_data["no_cuda"]
@@ -91,7 +91,7 @@ def main():
     # TODO:
     train_kwargs = {'batch_size': args.batch_size,
                     'microbatch_size': args.microbatch_size,
-                    'epochs': args.epochs}
+                    'iterations': args.iterations}
     test_kwargs = {'batch_size': args.test_batch_size}
 
     # train_loader, test_loader = MNIST_dataset.create_dataset(train_kwargs,test_kwargs)
@@ -117,7 +117,7 @@ def main():
     print('Initializing visualization...')
     # visualizer = Visualizer({"name": "MNIST DPSGD"})
     visualizer = None
-    train_accuracy = []
+    # train_accuracy = []
     test_accuracy = []
     out_file_path = "./graphs/data/" + settings_file + "/" + args.optimizer
     if (args.enable_diminishing_gradient_norm == True):
@@ -125,13 +125,13 @@ def main():
     if (args.enable_individual_clipping == True):
         out_file_path = out_file_path + "/IC"
     print("Saving data to: %s" % out_file_path)
-    for epoch in range(1, args.epochs + 1):
-        print("epoch %s:" % epoch)
-        train_accuracy.append(CIFAR10_train.train(args, model, device, train_minibatch_loader, microbatch_loader,
-                                                  args.optimizer, epoch,visualizer,
-                                                  args.enable_diminishing_gradient_norm,
-                                                  args.enable_individual_clipping))
-        test_accuracy.append(CIFAR10_validate.test(model, device, test_loader,epoch,visualizer))
+    # for epoch in range(1, args.epochs + 1):
+    #     print("epoch %s:" % epoch)
+    train_accuracy, test_accuracy = CIFAR10_train.train(args, model, device, train_minibatch_loader, microbatch_loader, test_loader
+                                              args.optimizer,visualizer,
+                                              args.enable_diminishing_gradient_norm,
+                                              args.enable_individual_clipping)
+    # test_accuracy.append(CIFAR10_validate.test(model, device, test_loader,visualizer))
     generate_json_data_for_graph(out_file_path, args.load_setting, train_accuracy,test_accuracy)
 
     if args.save_model:

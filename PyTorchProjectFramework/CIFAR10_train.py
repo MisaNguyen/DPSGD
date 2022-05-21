@@ -14,6 +14,8 @@ import torch.nn as nn
 
 import matplotlib.pyplot as plt
 from torch.utils.data import TensorDataset
+
+import CIFAR10_validate
 """Opacus"""
 # from opacus.utils.batch_memory_manager import BatchMemoryManager
 
@@ -149,7 +151,8 @@ END OPACUS code
 """
 # def train(args, model, device, train_loader, optimizer_name, epoch,
 #           visualizer,is_diminishing_gradient_norm, is_individual):
-def train(args, model, device, train_minibatch_loader, microbatch_loader, optimizer_name, epoch,
+def train(args, model, device, train_minibatch_loader, microbatch_loader, test_loader,
+          optimizer_name, epoch,
           visualizer,is_diminishing_gradient_norm, is_individual):
     model.train()
     train_loss = 0
@@ -158,7 +161,8 @@ def train(args, model, device, train_minibatch_loader, microbatch_loader, optimi
     output = 0
     loss = 0
     # Get optimizer
-
+    train_accuracy = []
+    test_accuracy = []
     iteration = 0
     if optimizer_name == "DPSGD":
         optimizer = DPSGD_optimizer(model.parameters(),args.lr,
@@ -478,6 +482,8 @@ def train(args, model, device, train_minibatch_loader, microbatch_loader, optimi
 
             # train_correct incremented by one if predicted right
             train_correct += np.sum(prediction[1].cpu().numpy() == target.cpu().numpy())
+            train_accuracy.append(train_correct/total)
+            test_accuracy.append(CIFAR10_validate.test(model, device, test_loader,visualizer))
             # train_accuracy.append(train_correct / total)
             # losses = model.get_current_losses()
         #     visualizer.print_current_losses(epoch, batch_idx * len(data), len(train_loader.dataset), loss)
@@ -486,7 +492,7 @@ def train(args, model, device, train_minibatch_loader, microbatch_loader, optimi
 
         if args.dry_run:
             break
-    return train_correct / total
+    return train_accuracy,test_accuracy
 
 if __name__ == '__main__':
     import multiprocessing
