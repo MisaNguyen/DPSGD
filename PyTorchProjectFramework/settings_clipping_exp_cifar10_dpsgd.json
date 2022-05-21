@@ -3,7 +3,7 @@
     "batch_size": 512,
     "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -21,7 +21,7 @@
     "batch_size": 32, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -39,7 +39,7 @@
     "batch_size": 64, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -57,7 +57,7 @@
     "batch_size": 128, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -75,7 +75,7 @@
     "batch_size": 256, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -93,7 +93,7 @@
     "batch_size": 512, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -111,7 +111,7 @@
     "batch_size": 32, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -129,7 +129,7 @@
     "batch_size": 64, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -147,7 +147,7 @@
     "batch_size": 128, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -165,7 +165,7 @@
     "batch_size": 256, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -183,7 +183,7 @@
     "batch_size": 512, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -201,7 +201,7 @@
     "batch_size": 32, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -219,7 +219,7 @@
     "batch_size": 64, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -237,7 +237,7 @@
     "batch_size": 128, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -255,7 +255,7 @@
     "batch_size": 256, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -273,7 +273,7 @@
     "batch_size": 512, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -291,7 +291,7 @@
     "batch_size": 32, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -309,7 +309,7 @@
     "batch_size": 64, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -327,7 +327,7 @@
     "batch_size": 128, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -345,7 +345,7 @@
     "batch_size": 256, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -363,7 +363,7 @@
     "batch_size": 512, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -381,7 +381,7 @@
     "batch_size": 32, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -399,7 +399,7 @@
     "batch_size": 64, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -417,7 +417,7 @@
     "batch_size": 128, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -435,7 +435,7 @@
     "batch_size": 256, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -453,7 +453,7 @@
     "batch_size": 512, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -471,7 +471,7 @@
     "batch_size": 32, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -489,7 +489,7 @@
     "batch_size": 64, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -507,7 +507,7 @@
     "batch_size": 128, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -525,7 +525,7 @@
     "batch_size": 256, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,
@@ -543,7 +543,7 @@
     "batch_size": 512, 
  "microbatch_size": 1,
     "test_batch_size": 1000,
-    "iterations": 10000
+    "iterations": 10000,
     "learning_rate": 0.1,
     "gamma": 0.9,
     "no_cuda": false,

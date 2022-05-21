@@ -128,7 +128,7 @@ def main():
     # for epoch in range(1, args.epochs + 1):
     #     print("epoch %s:" % epoch)
     train_accuracy, test_accuracy = CIFAR10_train.train(args, model, device, train_minibatch_loader, microbatch_loader,
-                                                        test_loader, args.optimizer,visualizer,
+                                                        test_loader, args.optimizer, visualizer,
                                               args.enable_diminishing_gradient_norm,
                                               args.enable_individual_clipping)
     # test_accuracy.append(CIFAR10_validate.test(model, device, test_loader,visualizer))
