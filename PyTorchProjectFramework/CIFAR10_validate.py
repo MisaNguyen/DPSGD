@@ -17,7 +17,7 @@ Input params:
         the system-specific, dataset-specific and 
         model-specific settings.
 """
-def test(model, device, test_loader,epoch,visualizer):
+def test(model, device, test_loader):
     model.eval()
     test_loss = 0
     correct = 0

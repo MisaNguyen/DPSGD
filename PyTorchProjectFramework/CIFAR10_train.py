@@ -482,7 +482,7 @@ def train(args, model, device, train_minibatch_loader, microbatch_loader, test_l
             # train_correct incremented by one if predicted right
             train_correct += np.sum(prediction[1].cpu().numpy() == target.cpu().numpy())
             train_accuracy.append(train_correct/total)
-            test_accuracy.append(CIFAR10_validate.test(model, device, test_loader,visualizer))
+            test_accuracy.append(CIFAR10_validate.test(model, device, test_loader,visualizer=None))
             # train_accuracy.append(train_correct / total)
             # losses = model.get_current_losses()
         #     visualizer.print_current_losses(epoch, batch_idx * len(data), len(train_loader.dataset), loss)
