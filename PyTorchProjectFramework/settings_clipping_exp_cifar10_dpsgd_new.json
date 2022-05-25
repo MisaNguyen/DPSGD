@@ -19,7 +19,7 @@
   },
   "setting_1": {
     "batch_size": 32, 
- "microbatch_size": 1,
+    "microbatch_size": 1,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -30,10 +30,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 0.1,
+    "max_grad_norm": 1,
     "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_2": {
     "batch_size": 64, 
@@ -48,10 +48,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 0.1,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 1.0,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_3": {
     "batch_size": 128, 
@@ -66,10 +66,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 0.1,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 1.0,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_4": {
     "batch_size": 256, 
@@ -84,10 +84,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 0.1,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 1.0,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_5": {
     "batch_size": 512, 
@@ -102,10 +102,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 0.1,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 1.0,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_6": {
     "batch_size": 32, 
@@ -120,10 +120,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 0.05,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 1.5,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_7": {
     "batch_size": 64, 
@@ -138,10 +138,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 0.05,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 1.5,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_8": {
     "batch_size": 128, 
@@ -156,10 +156,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 0.05,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 1.5,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_9": {
     "batch_size": 256, 
@@ -174,10 +174,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 0.05,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 1.5,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_10": {
     "batch_size": 512, 
@@ -192,10 +192,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 0.05,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 1.5,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_11": {
     "batch_size": 32, 
@@ -210,10 +210,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 0.01,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 2.0,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_12": {
     "batch_size": 64, 
@@ -228,10 +228,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 0.01,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 2.0,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_13": {
     "batch_size": 128, 
@@ -246,10 +246,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 0.01,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 2.0,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_14": {
     "batch_size": 256, 
@@ -264,10 +264,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 0.01,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 2.0,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_15": {
     "batch_size": 512, 
@@ -282,10 +282,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 0.01,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 2.0,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_16": {
     "batch_size": 32, 
@@ -300,10 +300,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 0.005,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 2.5,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_17": {
     "batch_size": 64, 
@@ -318,10 +318,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 0.005,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 2.5,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_18": {
     "batch_size": 128, 
@@ -336,10 +336,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 0.005,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 2.5,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_19": {
     "batch_size": 256, 
@@ -354,10 +354,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 0.005,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 2.5,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_20": {
     "batch_size": 512, 
@@ -372,10 +372,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 0.005,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 2.5,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_21": {
     "batch_size": 32, 
@@ -390,10 +390,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 0.5,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 3,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_22": {
     "batch_size": 64, 
@@ -408,10 +408,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 0.5,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 3,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_23": {
     "batch_size": 128, 
@@ -426,10 +426,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 0.5,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 3,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_24": {
     "batch_size": 256, 
@@ -444,10 +444,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 0.5,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 3,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_25": {
     "batch_size": 512, 
@@ -462,10 +462,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 0.5,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 3,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_26": {
     "batch_size": 32, 
@@ -480,10 +480,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 1.0,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 3.5,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_27": {
     "batch_size": 64, 
@@ -498,10 +498,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 1,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 3.5,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_28": {
     "batch_size": 128, 
@@ -516,10 +516,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 1,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 3.5,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_29": {
     "batch_size": 256, 
@@ -534,10 +534,10 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 1,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 3.5,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_30": {
     "batch_size": 512, 
@@ -552,27 +552,9 @@
     "log_interval": 10,
     "save_model": false,
     "noise_multiplier": 2.0,
-    "max_grad_norm": 1,
-    "optimizer": "DPDPSGD",
+    "max_grad_norm": 3.5,
+    "optimizer": "DPSGD",
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
-  },
-  "setting_31": {
-    "batch_size": 512,
-    "microbatch_size": 1,
-    "test_batch_size": 1000,
-    "iterations": 10000,
-    "learning_rate": 0.1,
-    "gamma": 0.9,
-    "no_cuda": false,
-    "dry_run": false,
-    "seed": 1,
-    "log_interval": 10,
-    "save_model": false,
-    "noise_multiplier": 2.0,
-    "max_grad_norm": 1,
-    "optimizer": "DPDPSGD",
-    "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   }
 }
