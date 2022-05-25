@@ -2,6 +2,7 @@
 import torch
 import argparse
 import json
+import math
 
 from models.Lenet_model import Net
 from models.resnet_model import ResNet18,ResNet34,ResNet50,ResNet101,ResNet152
@@ -65,7 +66,7 @@ def main():
             setting_data = json_data[args.load_setting]
             # Loading data
             args.batch_size = setting_data["batch_size"]
-            args.microbatch_size = setting_data["microbatch_size"]
+            # args.microbatch_size = setting_data["microbatch_size"]
             args.test_batch_size = setting_data["test_batch_size"]
             args.iterations = setting_data["iterations"]
             args.lr = setting_data["learning_rate"]
@@ -85,17 +86,16 @@ def main():
     #     mode = "DGN"
     use_cuda = not args.no_cuda and torch.cuda.is_available()
 
-    # torch.manual_seed(args.seed)
+    torch.manual_seed(args.seed)
 
     device = torch.device("cuda" if use_cuda else "cpu")
     # TODO:
-    train_kwargs = {'batch_size': args.batch_size,
-                    'microbatch_size': args.microbatch_size,
-                    'iterations': args.iterations}
+    train_kwargs = {'batch_size': args.batch_size}
     test_kwargs = {'batch_size': args.test_batch_size}
 
     # train_loader, test_loader = MNIST_dataset.create_dataset(train_kwargs,test_kwargs)
-    train_minibatch_loader, microbatch_loader, test_loader = CIFAR10_dataset.create_dataset(train_kwargs,test_kwargs)
+    train_loader, test_loader, dataset_size = CIFAR10_dataset.create_dataset(train_kwargs,test_kwargs)
+    epochs = math.ceil(args.iterations* args.batch_size / dataset_size)
     if use_cuda:
         cuda_kwargs = {'num_workers': 1,
                        'pin_memory': True,
@@ -117,7 +117,7 @@ def main():
     print('Initializing visualization...')
     # visualizer = Visualizer({"name": "MNIST DPSGD"})
     visualizer = None
-    # train_accuracy = []
+    train_accuracy = []
     test_accuracy = []
     out_file_path = "./graphs/data/" + settings_file + "/" + args.optimizer
     if (args.enable_diminishing_gradient_norm == True):
@@ -125,13 +125,13 @@ def main():
     if (args.enable_individual_clipping == True):
         out_file_path = out_file_path + "/IC"
     print("Saving data to: %s" % out_file_path)
-    # for epoch in range(1, args.epochs + 1):
-    #     print("epoch %s:" % epoch)
-    train_accuracy, test_accuracy = CIFAR10_train.train(args, model, device, train_minibatch_loader, microbatch_loader,
-                                                        test_loader, args.optimizer, visualizer,
-                                              args.enable_diminishing_gradient_norm,
-                                              args.enable_individual_clipping)
-    # test_accuracy.append(CIFAR10_validate.test(model, device, test_loader,visualizer))
+    print("Total epochs: %f" % epochs)
+    for epoch in range(1, epochs + 1):
+        print("epoch %s:" % epoch)
+        train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, args.optimizer,
+                                                  args.enable_diminishing_gradient_norm,
+                                                  args.enable_individual_clipping))
+        test_accuracy.append(CIFAR10_validate.test(model, device, test_loader))
     generate_json_data_for_graph(out_file_path, args.load_setting, train_accuracy,test_accuracy)
 
     if args.save_model:

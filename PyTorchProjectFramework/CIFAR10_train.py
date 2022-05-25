@@ -151,8 +151,8 @@ END OPACUS code
 """
 # def train(args, model, device, train_loader, optimizer_name, epoch,
 #           visualizer,is_diminishing_gradient_norm, is_individual):
-def train(args, model, device, train_minibatch_loader, microbatch_loader, test_loader,
-          optimizer_name,wvisualizer,is_diminishing_gradient_norm, is_individual):
+def train(args, model, device, train_loader,
+          optimizer_name,is_diminishing_gradient_norm, is_individual):
     model.train()
     train_loss = 0
     train_correct = 0
@@ -160,8 +160,8 @@ def train(args, model, device, train_minibatch_loader, microbatch_loader, test_l
     output = 0
     loss = 0
     # Get optimizer
-    train_accuracy = []
-    test_accuracy = []
+    # train_accuracy = []
+    # test_accuracy = []
     iteration = 0
     if optimizer_name == "DPSGD":
         optimizer = DPSGD_optimizer(model.parameters(),args.lr,
@@ -181,7 +181,7 @@ def train(args, model, device, train_minibatch_loader, microbatch_loader, test_l
     # train_accuracy = np.array()
     # for batch_idx, (data, target) in enumerate(train_loader):
 
-    for (data,target) in train_minibatch_loader:
+    for batch_idx, (data,target) in enumerate(train_loader):
         # count = 0
         iteration += 1
         data, target = data.to(device), target.to(device)
@@ -202,7 +202,10 @@ def train(args, model, device, train_minibatch_loader, microbatch_loader, test_l
                 # input(len(batch[0]))
                 # input(len(batch[1]))
 
-                for X_microbatch, y_microbatch in microbatch_loader(TensorDataset(data, target)):
+                microbatch_loader = torch.utils.data.DataLoader(TensorDataset(data, target), batch_size=1, num_workers=0, shuffle=False)
+                for X_microbatch, y_microbatch in microbatch_loader:
+                    # print(X_microbatch.shape)
+                    # print(y_microbatch)
                     # sample_x, sample_y = data[sample_idx],target[sample_idx]
                 # sample_y = target[sample_idx]
                 #     for param in model.parameters():
@@ -219,8 +222,8 @@ def train(args, model, device, train_minibatch_loader, microbatch_loader, test_l
                             # input()
 
                     # Calculate the loss
-                    previous_output = output
-                    previous_loss = loss
+                    # previous_output = output
+                    # previous_loss = loss
                     output = model(X_microbatch) # input as batch size = 1
                     # input(output.shape)
                     # input(target.shape)
@@ -288,10 +291,18 @@ def train(args, model, device, train_minibatch_loader, microbatch_loader, test_l
                         # Clip the sample grad
                         # param.register_hook(lambda grad: torch.clamp(grad, -args.max_grad_norm, args.max_grad_norm))
                         # Detach the sample gradient
+                        """
+                        Get sample gradient value
+                        """
                         per_sample_grad = param.grad.detach().clone()
+                        """
+                        CLIPPING sample gradient norm
+                        """
                         torch.nn.utils.clip_grad_norm_(per_sample_grad, max_norm=args.max_grad_norm)  # in-place
                         # input(param.accumulated_grads)
-                        # Add sample's gradient to accumulated_grads
+                        """
+                        Add sample's gradient to accumulated_grads
+                        """
                         if(param.accumulated_grads == None):
                             param.accumulated_grads = per_sample_grad
                         else:
@@ -315,7 +326,7 @@ def train(args, model, device, train_minibatch_loader, microbatch_loader, test_l
                 for param in model.parameters():
                     # param.grad = torch.mul(param.accumulated_grads,1/args.batch_size)
                     """
-                    Add Gaussian noise to gradients
+                    Add Gaussian noise to sum of gradients
                     """
                     dist = torch.distributions.normal.Normal(torch.tensor(0.0),
                                                              torch.tensor((args.noise_multiplier * args.max_grad_norm)))
@@ -323,6 +334,9 @@ def train(args, model, device, train_minibatch_loader, microbatch_loader, test_l
                     param.grad = (param.accumulated_grads + noise) / args.batch_size
                     # param.grad = param.accumulated_grads  / args.batch_size
                     # print(param.accumulated_grads)
+                    """
+                    Reset sum of  gradients
+                    """
                     param.accumulated_grads = None
                     # print(param.grad)
                     # param.grad = param.accumulated_grads
@@ -455,15 +469,15 @@ def train(args, model, device, train_minibatch_loader, microbatch_loader, test_l
         # loss = torch.nn.NLLLoss()(lsoftmax(output), target)
 
         # if batch_idx % args.log_interval == 0:
-        if iteration % args.log_interval == 0:
+        if batch_idx % args.log_interval == 0:
             # print(batch_idx)
             # print(len(data))
             # print(len(train_minibatch_loader))
             print("Training using %s optimizer" % optimizer_name)
-            print('[Iteration %d/%d] [Loss: %f]' % (iteration, len(train_minibatch_loader), loss.item()))
-            # print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-            #     epoch, batch_idx/100  * len(data), len(train_minibatch_loader.dataset),
-            #            100. * batch_idx / len(train_minibatch_loader), loss.item()))
+            # print('[Iteration %d/%d] [Loss: %f]' % (iteration, len(train_minibatch_loader), loss.item()))
+            print('Train iterations: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+                iteration, batch_idx/100  * len(data), len(train_loader.dataset),
+                       100. * batch_idx / len(train_loader), loss.item()))
             # print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
             #     epoch, batch_idx/100  * len(data), len(train_minibatch_loader.dataset),
             #            100. * batch_idx / len(train_minibatch_loader), loss.item()))
@@ -481,8 +495,8 @@ def train(args, model, device, train_minibatch_loader, microbatch_loader, test_l
 
             # train_correct incremented by one if predicted right
             train_correct += np.sum(prediction[1].cpu().numpy() == target.cpu().numpy())
-            train_accuracy.append(train_correct/total)
-            test_accuracy.append(CIFAR10_validate.test(model, device, test_loader,visualizer=None))
+            # train_accuracy.append(train_correct/total)
+            # test_accuracy.append(CIFAR10_validate.test(model, device, test_loader))
             # train_accuracy.append(train_correct / total)
             # losses = model.get_current_losses()
         #     visualizer.print_current_losses(epoch, batch_idx * len(data), len(train_loader.dataset), loss)
@@ -491,7 +505,7 @@ def train(args, model, device, train_minibatch_loader, microbatch_loader, test_l
 
         if args.dry_run:
             break
-    return train_accuracy, test_accuracy
+    return train_correct/total
 
 if __name__ == '__main__':
     import multiprocessing
