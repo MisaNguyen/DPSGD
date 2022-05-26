@@ -13,7 +13,7 @@
     "save_model": false,
     "noise_multiplier": 6.0,
     "max_grad_norm": 1.0,
-    "optimizer": "DPSGD",
+    "optimizer": "SGD",
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -535,7 +535,7 @@
     "save_model": false,
     "noise_multiplier": 2.0,
     "max_grad_norm": 3.5,
-    "optimizer": "DPSGD",
+    "optimizer": "DSGD",
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },

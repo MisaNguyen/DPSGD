@@ -126,6 +126,7 @@ def main():
         out_file_path = out_file_path + "/IC"
     print("Saving data to: %s" % out_file_path)
     print("Total epochs: %f" % epochs)
+    epochs = 50
     for epoch in range(1, epochs + 1):
         print("epoch %s:" % epoch)
         train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, args.optimizer,
