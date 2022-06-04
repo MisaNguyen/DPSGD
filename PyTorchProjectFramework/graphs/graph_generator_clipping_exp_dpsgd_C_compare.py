@@ -5,21 +5,27 @@ import os
 import json
 if __name__ == "__main__":
     # loading SGD data
-    settings_path = "settings_clipping_exp_cifar10_dpsgd"
+    settings_path = "settings_clipping_exp_cifar10_dpsgd_new"
     # setting_file_name = "settings_main_theorem(test)"
     # settings = ["setting_" + str(i) for i in range(1,6)]
     # settings = ["setting_" + str(i) for i in range(6,11)]
     # settings = ["setting_" + str(i) for i in range(11,16)]
     # settings = ["setting_" + str(i) for i in range(16,21)]
     lr = 0.1
-    Cs = [1.0,0.5,0.1,0.05,0.01,0.005]
+    # Cs = [0.1,0.05,0.01,0.005,0.5,1.0]
+    Cs = [1.0,1.5,2,2.5,3,3.5]
     sigma = 2
-    s = 512
+    index=1
+    s_arr = [32,64,128,256,512]
+    s = s_arr[index-1]
     draw_IC_case = False
     # settings = ["setting_0_c1_s2","setting_0_noclip"]
     # settings = ["setting_1","setting_2","setting_3","setting_4"]
     # settings = ["setting_1","setting_2"]
-    settings = ["setting_30", "setting_25", "setting_5","setting_10","setting_15","setting_20"]
+
+    settings = ["setting_" + str(5*i+index) for i in range(6)]
+    # settings = ["setting_30", "setting_25", "setting_5","setting_10","setting_15","setting_20"]
+    # settings = ["setting_4", "setting_9", "setting_14","setting_19","setting_24","setting_29"]
     # settings = ["setting_16"]
     for setting_idx, setting in enumerate(settings):
         C = Cs[setting_idx]
@@ -67,8 +73,10 @@ if __name__ == "__main__":
         plt.ylabel('accuracy')
         plt.legend()
         # s = s*2
-    file_name = '/dpsgd_C_comparing_lr_' + str(lr) + '_sigma_' + str(sigma)
-    plt.savefig(graph_path + file_name +".png",dpi=2000)
+    file_name = '/dpsgd_C_comparing_lr_' + str(lr) + '_sigma_' + str(sigma) + '_' +str(index)
+    fig = plt.gcf()
+    fig.set_size_inches((22, 11), forward=False)
+    plt.savefig(graph_path + file_name +".png")
     plt.show()
     # plt.clf()
     # plt.plot(index, sigma, label="sigma")

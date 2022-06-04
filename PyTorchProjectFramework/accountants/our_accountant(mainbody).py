@@ -90,8 +90,10 @@ def Compute_alpha_bar(eps,N_c,K,gamma):
 if __name__ == "__main__":
     # N_c,K,delta,s = setting_3()
     # setting_file_name = "settings_main_theorem(test)"
-    # setting_file_name = "settings_sample_size_exp"
-    setting_file_name = "settings_ICML_table_2"
+    # setting_file_name = "settings_sample_siz1e_exp"
+    # setting_file_name = "settings_ICML_table_2"
+    # setting_file_name = "settings_ICML_table_3"
+    setting_file_name = "settings_ICML_table_4"
     # setting_file_name = "settings_ICML_N_1000000"
     # settings = ["setting_1","setting_2","setting_3","setting_4","setting_5","setting_6","setting_7"]
     settings = ["setting_1","setting_2","setting_3","setting_4"]

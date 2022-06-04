@@ -6,7 +6,7 @@
     "epochs": 7,
     "learning_rate": 0.1,
     "noise_multiplier": 6.572,
-    "max_grad_norm": 0.0125
+    "max_grad_norm": 0.025
   },
   "setting_2": {
     "sampling_batch": 25,
@@ -15,7 +15,7 @@
     "epochs": 7,
     "learning_rate": 0.1,
     "noise_multiplier": 6.572,
-    "max_grad_norm": 0.0125
+    "max_grad_norm": 0.025
   },
   "setting_3": {
     "sampling_batch": 50,
@@ -24,7 +24,7 @@
     "epochs": 7,
     "learning_rate": 0.1,
     "noise_multiplier": 6.572,
-    "max_grad_norm": 0.0125
+    "max_grad_norm": 0.025
   },
   "setting_4": {
     "sampling_batch": 100,
@@ -33,7 +33,7 @@
     "epochs": 7,
     "learning_rate": 0.1,
     "noise_multiplier": 6.572,
-    "max_grad_norm": 0.0125
+    "max_grad_norm": 0.025
   },
   "setting_5": {
     "sampling_batch": 300,
@@ -42,7 +42,7 @@
     "epochs": 7,
     "learning_rate": 0.1,
     "noise_multiplier": 6.572,
-    "max_grad_norm": 0.0125
+    "max_grad_norm": 0.025
   },
   "setting_6": {
     "sampling_batch": 500,
@@ -51,7 +51,7 @@
     "epochs": 7,
     "learning_rate": 0.1,
     "noise_multiplier": 6.572,
-    "max_grad_norm": 0.0125
+    "max_grad_norm": 0.025
   },
   "setting_7": {
     "sampling_batch": 689,
@@ -60,7 +60,7 @@
     "epochs": 7,
     "learning_rate": 0.1,
     "noise_multiplier": 6.572,
-    "max_grad_norm": 0.0125
+    "max_grad_norm": 0.025
   },
   "setting_min_T": {
     "sampling_batch": 406.756279,

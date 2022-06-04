@@ -476,7 +476,7 @@ def train(args, model, device, train_loader,
             print("Training using %s optimizer" % optimizer_name)
             # print('[Iteration %d/%d] [Loss: %f]' % (iteration, len(train_minibatch_loader), loss.item()))
             print('Train iterations: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-                iteration, batch_idx/100  * len(data), len(train_loader.dataset),
+                iteration, batch_idx * len(data), len(train_loader.dataset),
                        100. * batch_idx / len(train_loader), loss.item()))
             # print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
             #     epoch, batch_idx/100  * len(data), len(train_minibatch_loader.dataset),

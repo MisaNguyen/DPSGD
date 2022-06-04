@@ -109,8 +109,8 @@ def main():
     # model = AlexNet(num_classes=10).to(device)
     model = SimpleDLA().to(device)
     # optimizer = MNIST_optimizer.SGD_optimizer(args.lr,model)
-    sigma = 6
-    gradient_norm = 3
+    # sigma = 6
+    # gradient_norm = 3
     # optimizer_name = "DPSGD"
     # optimizer_name = "SGD"
 
@@ -125,8 +125,9 @@ def main():
     if (args.enable_individual_clipping == True):
         out_file_path = out_file_path + "/IC"
     print("Saving data to: %s" % out_file_path)
-    print("Total epochs: %f" % epochs)
     epochs = 50
+    print("Total epochs: %f" % epochs)
+
     for epoch in range(1, epochs + 1):
         print("epoch %s:" % epoch)
         train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, args.optimizer,
