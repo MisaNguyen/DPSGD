@@ -171,7 +171,7 @@ def train(args, model, device, train_loader,
         Initialize sum of grads
         """
         for param in model.parameters():
-            param.accumulated_grads = None
+            param.accumulated_grads = []
 
     elif optimizer_name == "SGD":
         # optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
@@ -303,10 +303,15 @@ def train(args, model, device, train_loader,
                         """
                         Add sample's gradient to accumulated_grads
                         """
-                        if(param.accumulated_grads == None):
-                            param.accumulated_grads = per_sample_grad
-                        else:
-                            param.accumulated_grads.add_(per_sample_grad)
+                        param.accumulated_grads.append(per_sample_grad)
+                        """
+                        Free memory: Delete sample's gradient
+                        """
+                        del per_sample_grad
+                        # if(param.accumulated_grads == None):
+                        #     param.accumulated_grads = per_sample_grad
+                        # else:
+                        #     param.accumulated_grads.add_(per_sample_grad)
 
                             # input(param.grad_sample)
                             # param.accumulated_grads = torch.einsum("i,i...", param.accumulated_grads,per_sample_grad)
@@ -331,12 +336,13 @@ def train(args, model, device, train_loader,
                     dist = torch.distributions.normal.Normal(torch.tensor(0.0),
                                                              torch.tensor((args.noise_multiplier * args.max_grad_norm)))
                     noise = dist.rsample(param.accumulated_grads.shape).to(device=torch.device("cuda:0"))
-                    param.grad = (param.accumulated_grads + noise) / args.batch_size
-                    # param.grad = param.accumulated_grads  / args.batch_size
+                    # param.grad = (toparam.accumulated_grads + noise) / args.batch_size
+                    param.grad = torch.cat(param.accumulated_grads) / args.batch_size + noise / args.batch_size
                     # print(param.accumulated_grads)
                     """
                     Reset sum of  gradients
                     """
+
                     param.accumulated_grads = None
                     # print(param.grad)
                     # param.grad = param.accumulated_grads
