@@ -203,7 +203,9 @@ def train(args, model, device, train_loader,
                 # input(len(batch[1]))
 
                 microbatch_loader = torch.utils.data.DataLoader(TensorDataset(data, target), batch_size=1, num_workers=0, shuffle=False)
+                count = 0
                 for X_microbatch, y_microbatch in microbatch_loader:
+                    count = count +1
                     # print(X_microbatch.shape)
                     # print(y_microbatch)
                     # sample_x, sample_y = data[sample_idx],target[sample_idx]
@@ -225,6 +227,7 @@ def train(args, model, device, train_loader,
                     # previous_output = output
                     # previous_loss = loss
                     output = model(X_microbatch) # input as batch size = 1
+                    # print(output)
                     # input(output.shape)
                     # input(target.shape)
                     # input(sample_y)
@@ -295,6 +298,8 @@ def train(args, model, device, train_loader,
                         Get sample gradient value
                         """
                         per_sample_grad = param.grad.detach().clone()
+                        # print(per_sample_grad.shape)
+                        # input()
                         """
                         CLIPPING sample gradient norm
                         """
@@ -304,6 +309,7 @@ def train(args, model, device, train_loader,
                         Add sample's gradient to accumulated_grads
                         """
                         param.accumulated_grads.append(per_sample_grad)
+                        # print(len(param.accumulated_grads))
                         """
                         Free memory: Delete sample's gradient
                         """
@@ -328,22 +334,32 @@ def train(args, model, device, train_loader,
                 """
                 UPDATE param.grad as accumulated_grads
                 """
+                print(count)
                 for param in model.parameters():
                     # param.grad = torch.mul(param.accumulated_grads,1/args.batch_size)
                     """
                     Add Gaussian noise to sum of gradients
                     """
+
+                    param.grad = torch.stack(param.accumulated_grads).sum(dim=0)
+
                     dist = torch.distributions.normal.Normal(torch.tensor(0.0),
                                                              torch.tensor((args.noise_multiplier * args.max_grad_norm)))
-                    noise = dist.rsample(param.accumulated_grads.shape).to(device=torch.device("cuda:0"))
+                    # noise = dist.rsample(param.accumulated_grads.shape).to(device=torch.device("cuda:0"))
+                    noise = dist.rsample(param.grad.shape).to(device=torch.device("cuda:0"))
+
+                    param.grad = (param.grad + noise).div(args.batch_size)
+                    # print(param.grad)
+
                     # param.grad = (toparam.accumulated_grads + noise) / args.batch_size
-                    param.grad = torch.cat(param.accumulated_grads) / args.batch_size + noise / args.batch_size
+                    # param.grad = torch.cat(param.accumulated_grads) / args.batch_size + noise / args.batch_size
+                    # input("HERE")
                     # print(param.accumulated_grads)
                     """
                     Reset sum of  gradients
                     """
 
-                    param.accumulated_grads = None
+                    param.accumulated_grads = []
                     # print(param.grad)
                     # param.grad = param.accumulated_grads
                     # input(len(param.accumulated_grads))
