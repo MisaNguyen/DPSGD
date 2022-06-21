@@ -9,7 +9,8 @@ from models.resnet_model import ResNet18,ResNet34,ResNet50,ResNet101,ResNet152
 # from models.densenet_model import densenet40_k12_cifar10
 # from models.alexnet_model import AlexNet
 # from models.alexnet_simple import AlexNet
-from models.simple_dla import SimpleDLA
+# from models.simple_dla import SimpleDLA
+from models.convnet_model import convnet
 from datasets import MNIST_dataset, CIFAR10_dataset
 from utils.utils import generate_json_data_for_graph
 import MNIST_train, MNIST_validate
@@ -107,7 +108,9 @@ def main():
     # model = Net().to(device)
     # model = densenet40_k12_cifar10().to(device)
     # model = AlexNet(num_classes=10).to(device)
-    model = SimpleDLA().to(device)
+    # model = SimpleDLA().to(device)
+    model = convnet(num_classes=10).to(device)
+    model_name = "convnet"
     # optimizer = MNIST_optimizer.SGD_optimizer(args.lr,model)
     # sigma = 6
     # gradient_norm = 3
@@ -119,7 +122,7 @@ def main():
     visualizer = None
     train_accuracy = []
     test_accuracy = []
-    out_file_path = "./graphs/data/" + settings_file + "/" + args.optimizer
+    out_file_path = "./graphs/data/" + settings_file +  "/" + model_name + "/" + args.optimizer
     if (args.enable_diminishing_gradient_norm == True):
         out_file_path = out_file_path + "/DGN"
     if (args.enable_individual_clipping == True):

@@ -164,9 +164,10 @@ def train(args, model, device, train_loader,
     # test_accuracy = []
     iteration = 0
     if optimizer_name == "DPSGD":
-        optimizer = DPSGD_optimizer(model.parameters(),args.lr,
-                                                    args.noise_multiplier,args.max_grad_norm,
-                                    args.batch_size)
+        # optimizer = DPSGD_optimizer(model.parameters(),args.lr,
+        #                                             args.noise_multiplier,args.max_grad_norm,
+        #                             args.batch_size)
+        optimizer = SGD_optimizer(model.parameters(),args.lr)
         """
         Initialize sum of grads
         """
@@ -202,10 +203,12 @@ def train(args, model, device, train_loader,
                 # input(len(batch[0]))
                 # input(len(batch[1]))
 
-                microbatch_loader = torch.utils.data.DataLoader(TensorDataset(data, target), batch_size=1, num_workers=0, shuffle=False)
-                count = 0
-                for X_microbatch, y_microbatch in microbatch_loader:
-                    count = count +1
+                # microbatch_loader = torch.utils.data.DataLoader(TensorDataset(data, target), batch_size=1, num_workers=2, shuffle=False)
+                # count = 0
+                # for X_microbatch, y_microbatch in microbatch_loader:
+                for micro_idx in range(len(data)):
+                    X_microbatch, y_microbatch = data[micro_idx][None, ...],target[micro_idx][None, ...]
+                    # count = count +1
                     # print(X_microbatch.shape)
                     # print(y_microbatch)
                     # sample_x, sample_y = data[sample_idx],target[sample_idx]
@@ -213,7 +216,7 @@ def train(args, model, device, train_loader,
                 #     for param in model.parameters():
                 #         param.grad_sample = None
                     # Reset gradients to zero
-                    optimizer.zero_grad()
+
                     # if(sample_idx>30):
                     #     for param in model.parameters():
                     #         print(param.accumulated_grads)
@@ -232,7 +235,7 @@ def train(args, model, device, train_loader,
                     # input(target.shape)
                     # input(sample_y)
                     loss = nn.CrossEntropyLoss()(output, y_microbatch)
-
+                    # print(loss)
                     # if np.isnan(loss.cpu().detach().numpy()):
                     #     print("NaN loss")
                     #     print(batch_idx)
@@ -297,34 +300,35 @@ def train(args, model, device, train_loader,
                         """
                         Get sample gradient value
                         """
-                        per_sample_grad = param.grad.detach().clone()
-                        # print(per_sample_grad.shape)
-                        # input()
-                        """
-                        CLIPPING sample gradient norm
-                        """
-                        torch.nn.utils.clip_grad_norm_(per_sample_grad, max_norm=args.max_grad_norm)  # in-place
-                        # input(param.accumulated_grads)
-                        """
-                        Add sample's gradient to accumulated_grads
-                        """
-                        param.accumulated_grads.append(per_sample_grad)
-                        # print(len(param.accumulated_grads))
-                        """
-                        Free memory: Delete sample's gradient
-                        """
-                        del per_sample_grad
-                        # if(param.accumulated_grads == None):
-                        #     param.accumulated_grads = per_sample_grad
-                        # else:
-                        #     param.accumulated_grads.add_(per_sample_grad)
+                        if param.grad is not None:
+                            per_sample_grad = param.grad.detach().clone()
+                            # print(per_sample_grad.shape)
+                            # input()
+                            """
+                            CLIPPING sample gradient norm
+                            """
+                            torch.nn.utils.clip_grad_norm_(per_sample_grad, max_norm=args.max_grad_norm)  # in-place
+                            # input(param.accumulated_grads)
+                            """
+                            Add sample's gradient to accumulated_grads
+                            """
+                            param.accumulated_grads.append(per_sample_grad)
+                            # print(len(param.accumulated_grads))
+                            """
+                            Free memory: Delete sample's gradient
+                            """
+                            # del per_sample_grad
+                            # if(param.accumulated_grads == None):
+                            #     param.accumulated_grads = per_sample_grad
+                            # else:
+                            #     param.accumulated_grads.add_(per_sample_grad)
 
-                            # input(param.grad_sample)
-                            # param.accumulated_grads = torch.einsum("i,i...", param.accumulated_grads,per_sample_grad)
-                        # input(param.accumulated_grads)
-                        # input(param.accumulated_grads)
-                        # param.accumulated_grads.append(per_sample_grad)
-                        # print(torch.stack(param.accumulated_grads, dim=0).shape)
+                                # input(param.grad_sample)
+                                # param.accumulated_grads = torch.einsum("i,i...", param.accumulated_grads,per_sample_grad)
+                            # input(param.accumulated_grads)
+                            # input(param.accumulated_grads)
+                            # param.accumulated_grads.append(per_sample_grad)
+                            # print(torch.stack(param.accumulated_grads, dim=0).shape)
                     """
                     END OLD CLIPPING AND ACCUMULATE GRAD CODE
                     """
@@ -334,23 +338,50 @@ def train(args, model, device, train_loader,
                 """
                 UPDATE param.grad as accumulated_grads
                 """
-                print(count)
+                # print(count)
+                """
+                TESTING (REMOVE AFTER FINISH)
+                """
+                # optimizer.zero_grad()
+                # # for param in model.parameters():
+                # #     input(param.grad)
+                # #     break
+                # # Calculate the loss
+                # output = model(data)
+                # loss = nn.CrossEntropyLoss()(output, target)
+                # # loss = F.cross_entropy(output, target)
+                # # Loss back-propagation = Calculate gradients
+                # loss.backward()
+                """END TESTING"""
                 for param in model.parameters():
                     # param.grad = torch.mul(param.accumulated_grads,1/args.batch_size)
                     """
                     Add Gaussian noise to sum of gradients
                     """
-
+                    # test = torch.stack(param.accumulated_grads).sum(dim=0)
+                    # print(test.div(args.batch_size))
+                    # print("*"*20)
+                    # print(param.grad)
+                    # print("-"*20)
+                    # input()
                     param.grad = torch.stack(param.accumulated_grads).sum(dim=0)
-
+                    # param.grad = param.grad.div(args.batch_size)
+                    # input(param)
+                    # print("------")
+                    # input(param.grad)
+                    # print("xxxxxxx")
                     dist = torch.distributions.normal.Normal(torch.tensor(0.0),
                                                              torch.tensor((args.noise_multiplier * args.max_grad_norm)))
                     # noise = dist.rsample(param.accumulated_grads.shape).to(device=torch.device("cuda:0"))
                     noise = dist.rsample(param.grad.shape).to(device=torch.device("cuda:0"))
-
+                    # print(args.noise_multiplier)
+                    # print(args.max_grad_norm)
+                    # input(args.noise_multiplier * args.max_grad_norm)
                     param.grad = (param.grad + noise).div(args.batch_size)
+                    # print(noise)
+                    # input("------------------------------")
                     # print(param.grad)
-
+                    # input("*********************************")
                     # param.grad = (toparam.accumulated_grads + noise) / args.batch_size
                     # param.grad = torch.cat(param.accumulated_grads) / args.batch_size + noise / args.batch_size
                     # input("HERE")
@@ -416,7 +447,6 @@ def train(args, model, device, train_loader,
         elif (optimizer_name == "SGD" or optimizer_name == "Adam") :
 
             # optimizer = SGD_optimizer(model.parameters(),args.lr)
-            optimizer.zero_grad()
             # for param in model.parameters():
             #     input(param.grad)
             #     break
@@ -440,6 +470,7 @@ def train(args, model, device, train_loader,
         scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
         # Calculate gradient step
         optimizer.step()
+        optimizer.zero_grad()
         # Decrease learning rate using scheduler
         scheduler.step()
         # for param in model.parameters():
