@@ -14,9 +14,8 @@
     "noise_multiplier": 1.5,
     "max_grad_norm": 10,
     "optimizer": "DPSGD",
-
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false
   },
   "setting_1": {
     "batch_size": 32, 
