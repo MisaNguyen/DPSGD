@@ -16,8 +16,11 @@ from utils.utils import generate_json_data_for_graph
 import MNIST_train, MNIST_validate
 import CIFAR10_train, CIFAR10_validate
 
+import torch.optim as optim
 from utils.visualizer import Visualizer
-
+from CIFAR10_train_opacus import train
+""" OPACUS"""
+from opacus import PrivacyEngine
 def main():
     # Training settings
     parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
@@ -82,6 +85,9 @@ def main():
             args.optimizer = setting_data["optimizer"]
             args.enable_diminishing_gradient_norm = setting_data["diminishing_gradient_norm"]
             args.enable_individual_clipping = setting_data["is_individual_clipping"]
+            args.clip_per_layer = False #TODO: add to setting file
+            args.secure_rng = False #TODO: add to setting file
+            clipping = "per_layer" if args.clip_per_layer else "flat"
     print("Mode: DGN (%s), IC (%s)" %  (args.enable_diminishing_gradient_norm, args.enable_individual_clipping))
     # if (args.enable_diminishing_gradient_norm == True):
     #     mode = "DGN"
@@ -90,8 +96,8 @@ def main():
     torch.manual_seed(args.seed)
 
     device = torch.device("cuda" if use_cuda else "cpu")
-    # TODO:
-    train_kwargs = {'batch_size': args.batch_size}
+
+    train_kwargs = {'batch_size': args.batch_size, 'generator': None}
     test_kwargs = {'batch_size': args.test_batch_size}
 
     # train_loader, test_loader = MNIST_dataset.create_dataset(train_kwargs,test_kwargs)
@@ -117,6 +123,21 @@ def main():
     # optimizer_name = "DPSGD"
     # optimizer_name = "SGD"
 
+    if args.optimizer == "SGD":
+        optimizer = optim.SGD(
+            model.parameters(),
+            lr=args.lr,
+            # momentum=args.momentum,
+            # weight_decay=args.weight_decay,
+        )
+    elif args.optimizer == "RMSprop":
+        optimizer = optim.RMSprop(model.parameters(), lr=args.lr)
+    elif args.optimizer == "Adam":
+        optimizer = optim.Adam(model.parameters(), lr=args.lr)
+    else:
+        # print(args.optimizer)
+        raise NotImplementedError("Optimizer not recognized. Please check spelling")
+
     print('Initializing visualization...')
     # visualizer = Visualizer({"name": "MNIST DPSGD"})
     visualizer = None
@@ -127,15 +148,40 @@ def main():
         out_file_path = out_file_path + "/DGN"
     if (args.enable_individual_clipping == True):
         out_file_path = out_file_path + "/IC"
+    else:
+        out_file_path = out_file_path + "/BC"
     print("Saving data to: %s" % out_file_path)
-    epochs = 50
+    epochs = 50 #TODO: remove to calculated based on iterations
     print("Total epochs: %f" % epochs)
+    privacy_engine = None
+    if(args.enable_individual_clipping == True):
+        privacy_engine = PrivacyEngine(
+            secure_mode=args.secure_rng,
+        )
+        clipping = "per_layer" if args.clip_per_layer else "flat"
+        model, optimizer, train_loader = privacy_engine.make_private(
+            module=model,
+            optimizer=optimizer,
+            data_loader=train_loader,
+            noise_multiplier=args.noise_multiplier,
+            max_grad_norm=args.max_grad_norm,
+            clipping=clipping,
+        )
+        # print(train_loader)
+
 
     for epoch in range(1, epochs + 1):
         print("epoch %s:" % epoch)
-        train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, args.optimizer,
+        """
+        TEST
+        """
+        # train(
+        #     args, model, train_loader, optimizer, privacy_engine, 50, device
+        # )
+        train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, optimizer,
                                                   args.enable_diminishing_gradient_norm,
                                                   args.enable_individual_clipping))
+
         test_accuracy.append(CIFAR10_validate.test(model, device, test_loader))
     generate_json_data_for_graph(out_file_path, args.load_setting, train_accuracy,test_accuracy)
 

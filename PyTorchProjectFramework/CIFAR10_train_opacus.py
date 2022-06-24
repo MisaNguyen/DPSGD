@@ -37,6 +37,7 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 from torchvision.datasets import CIFAR10
 from tqdm import tqdm
 
+import json
 from models.simple_dla import SimpleDLA
 logging.basicConfig(
     format="%(asctime)s:%(levelname)s:%(message)s",
@@ -299,8 +300,8 @@ def main():
         optimizer = optim.SGD(
             model.parameters(),
             lr=args.lr,
-            momentum=args.momentum,
-            weight_decay=args.weight_decay,
+            # momentum=args.momentum,
+            # weight_decay=args.weight_decay,
         )
     elif args.optim == "RMSprop":
         optimizer = optim.RMSprop(model.parameters(), lr=args.lr)
@@ -334,6 +335,7 @@ def main():
             max_grad_norm=max_grad_norm,
             clipping=clipping,
         )
+
         # for data1,target1  in train_loader:
         #     print(target1[0])
         #     break
@@ -362,7 +364,7 @@ def main():
             for param_group in optimizer.param_groups:
                 param_group["lr"] = lr
 
-        train_duration = train(
+        train_duration  = train(
             args, model, train_loader, optimizer, privacy_engine, epoch, device
         )
         top1_acc = test(args, model, test_loader, device)
