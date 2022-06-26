@@ -37,6 +37,7 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 from torchvision.datasets import CIFAR10
 from tqdm import tqdm
 
+from models.convnet_model import convnet
 import json
 from models.simple_dla import SimpleDLA
 logging.basicConfig(
@@ -101,23 +102,23 @@ def cleanup():
     torch.distributed.destroy_process_group()
 
 
-def convnet(num_classes):
-    return nn.Sequential(
-        nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=1),
-        nn.ReLU(),
-        nn.AvgPool2d(kernel_size=2, stride=2),
-        nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1),
-        nn.ReLU(),
-        nn.AvgPool2d(kernel_size=2, stride=2),
-        nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1),
-        nn.ReLU(),
-        nn.AvgPool2d(kernel_size=2, stride=2),
-        nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
-        nn.ReLU(),
-        nn.AdaptiveAvgPool2d((1, 1)),
-        nn.Flatten(start_dim=1, end_dim=-1),
-        nn.Linear(128, num_classes, bias=True),
-    )
+# def convnet(num_classes):
+#     return nn.Sequential(
+#         nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=1),
+#         nn.ReLU(),
+#         nn.AvgPool2d(kernel_size=2, stride=2),
+#         nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1),
+#         nn.ReLU(),
+#         nn.AvgPool2d(kernel_size=2, stride=2),
+#         nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1),
+#         nn.ReLU(),
+#         nn.AvgPool2d(kernel_size=2, stride=2),
+#         nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
+#         nn.ReLU(),
+#         nn.AdaptiveAvgPool2d((1, 1)),
+#         nn.Flatten(start_dim=1, end_dim=-1),
+#         nn.Linear(128, num_classes, bias=True),
+#     )
 
 
 def save_checkpoint(state, is_best, filename="checkpoint.tar"):
@@ -183,7 +184,7 @@ def train(args, model, train_loader, optimizer, privacy_engine, epoch, device):
                     f"Acc@1: {np.mean(top1_acc):.6f} "
                 )
     train_duration = datetime.now() - start_time
-    return train_duration
+    return np.mean(top1_acc)
 
 
 def test(args, model, test_loader, device):
@@ -260,7 +261,7 @@ def main():
     train_dataset = CIFAR10(
         root=args.data_root, train=True, download=True, transform=train_transform
     )
-
+    print("batchsize", args.sample_rate * len(train_dataset))
     train_loader = torch.utils.data.DataLoader(
         train_dataset,
         batch_size=int(args.sample_rate * len(train_dataset)),
@@ -361,6 +362,12 @@ def main():
     for epoch in range(args.start_epoch, args.epochs + 1):
         if args.lr_schedule == "cos":
             lr = args.lr * 0.5 * (1 + np.cos(np.pi * epoch / (args.epochs + 1)))
+            for param_group in optimizer.param_groups:
+                param_group["lr"] = lr
+        elif args.lr_schedule == "gamma":
+            # print("gamma mode")
+            gamma = 0.9
+            lr = args.lr * pow(gamma,epoch)
             for param_group in optimizer.param_groups:
                 param_group["lr"] = lr
 
@@ -492,7 +499,7 @@ def parse_args():
         help="evaluate model on validation set",
     )
     parser.add_argument(
-        "--seed", default=None, type=int, help="seed for initializing training. "
+        "--seed", default=1, type=int, help="seed for initializing training. "
     )
 
     parser.add_argument(
@@ -557,7 +564,7 @@ def parse_args():
         help="Optimizer to use (Adam, RMSprop, SGD)",
     )
     parser.add_argument(
-        "--lr-schedule", type=str, choices=["constant", "cos"], default="cos"
+        "--lr-schedule", type=str, choices=["constant", "cos","gamma"], default="gamma"
     )
 
     parser.add_argument(

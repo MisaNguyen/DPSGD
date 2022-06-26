@@ -96,9 +96,9 @@ def main():
     torch.manual_seed(args.seed)
 
     device = torch.device("cuda" if use_cuda else "cpu")
-
+    # print(args.batch_size)
     train_kwargs = {'batch_size': args.batch_size, 'generator': None}
-    test_kwargs = {'batch_size': args.test_batch_size}
+    test_kwargs = {'batch_size': args.test_batch_size, 'shuffle': False}
 
     # train_loader, test_loader = MNIST_dataset.create_dataset(train_kwargs,test_kwargs)
     train_loader, test_loader, dataset_size = CIFAR10_dataset.create_dataset(train_kwargs,test_kwargs)
@@ -106,7 +106,7 @@ def main():
     if use_cuda:
         cuda_kwargs = {'num_workers': 1,
                        'pin_memory': True,
-                       'shuffle': True}
+                       }
         train_kwargs.update(cuda_kwargs)
         test_kwargs.update(cuda_kwargs)
     # input(len(train_loader))
@@ -175,13 +175,20 @@ def main():
         """
         TEST
         """
-        # train(
-        #     args, model, train_loader, optimizer, privacy_engine, 50, device
-        # )
+        # args.print_freq = args.log_interval
+        # args.disable_dp = False
+        # args.delta = 1/dataset_size
+        # train_accuracy.append(train(
+        #     args, model, train_loader, optimizer, privacy_engine, epoch, device
+        # ))
+
+
         train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, optimizer,
                                                   args.enable_diminishing_gradient_norm,
                                                   args.enable_individual_clipping))
-
+        lr = args.lr * pow(args.gamma,epoch)
+        for param_group in optimizer.param_groups:
+            param_group["lr"] = lr
         test_accuracy.append(CIFAR10_validate.test(model, device, test_loader))
     generate_json_data_for_graph(out_file_path, args.load_setting, train_accuracy,test_accuracy)
 

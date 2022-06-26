@@ -167,7 +167,8 @@ def train(args, model, device, train_loader,
     # train_accuracy = []
     # test_accuracy = []
     iteration = 0
-
+    losses = []
+    top1_acc = []
     # for batch_idx, (data,target) in enumerate(train_loader):
     for batch_idx, (data,target) in enumerate(tqdm(train_loader)):
         iteration += 1
@@ -179,10 +180,13 @@ def train(args, model, device, train_loader,
 
         # compute output
         output = model(data)
-
+        preds = np.argmax(output.detach().cpu().numpy(), axis=1)
+        labels = target.detach().cpu().numpy()
+        acc1 = accuracy(preds, labels)
+        top1_acc.append(acc1)
         # compute loss
         loss = nn.CrossEntropyLoss()(output, target)
-
+        losses.append(loss.item())
         # compute gradient and do SGD step
         loss.backward()
 
@@ -204,10 +208,10 @@ def train(args, model, device, train_loader,
             # input("HERE")
 
         # Get scheduler
-        scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
+        # scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
         optimizer.step()
         optimizer.zero_grad()
-        scheduler.step()
+        # scheduler.step()
         # input("HERE")
         if batch_idx % args.log_interval == 0:
             # print(batch_idx)
@@ -237,8 +241,10 @@ def train(args, model, device, train_loader,
             train_correct += np.sum(prediction[1].cpu().numpy() == target.cpu().numpy())
             print(
                 # f"\tTrain Epoch: {epoch} \t"
-                f"Loss: {loss:.6f} "
-                f"Acc@1: {train_correct/total:.6f} "
+                # f"Loss: {loss:.6f} "
+                # f"Acc@1: {train_correct/total:.6f} "
+                f"Loss: {np.mean(losses):.6f} "
+                f"Acc@1: {np.mean(top1_acc):.6f} "
             )
         if args.dry_run:
             break
