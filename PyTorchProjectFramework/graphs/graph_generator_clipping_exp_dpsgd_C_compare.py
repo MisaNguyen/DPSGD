@@ -5,7 +5,9 @@ import os
 import json
 if __name__ == "__main__":
     # loading SGD data
-    settings_path = "settings_clipping_exp_cifar10_dpsgd_new"
+    # settings_path = "settings_clipping_exp_cifar10_dpsgd_new"
+    settings_path = "settings_clipping_exp_cifar10_dpsgd_large_C"
+    model_name = "convnet"
     # setting_file_name = "settings_main_theorem(test)"
     # settings = ["setting_" + str(i) for i in range(1,6)]
     # settings = ["setting_" + str(i) for i in range(6,11)]
@@ -13,9 +15,10 @@ if __name__ == "__main__":
     # settings = ["setting_" + str(i) for i in range(16,21)]
     lr = 0.1
     # Cs = [0.1,0.05,0.01,0.005,0.5,1.0]
-    Cs = [1.0,1.5,2,2.5,3,3.5]
+    # Cs = [1.0,1.5,2,2.5,3,3.5]
+    Cs = [6.0,7.0,8.0,9.0,10.0,20.0]
     sigma = 2
-    index=1
+    index=5
     s_arr = [32,64,128,256,512]
     s = s_arr[index-1]
     draw_IC_case = False
@@ -24,14 +27,14 @@ if __name__ == "__main__":
     # settings = ["setting_1","setting_2"]
 
     settings = ["setting_" + str(5*i+index) for i in range(6)]
-    # settings = ["setting_30", "setting_25", "setting_5","setting_10","setting_15","setting_20"]
+    # settings = ["setting_4", "setting_9", "setting_14","setting_19","setting_24"]
     # settings = ["setting_4", "setting_9", "setting_14","setting_19","setting_24","setting_29"]
     # settings = ["setting_16"]
     for setting_idx, setting in enumerate(settings):
         C = Cs[setting_idx]
-        experiment = "DPSGD"
+        experiment = "SGD"
         graph_path = "./graph/" + settings_path + '/' + experiment
-        data_path  = "./data/" + settings_path + '/' + experiment + '/' + setting +".json"
+        data_path  = "./data/" + settings_path + '/'  + model_name + '/' + experiment + '/BC/' + setting +".json"
 
         # Check whether the specified path exists or not
         isExist = os.path.exists(graph_path)
@@ -48,7 +51,7 @@ if __name__ == "__main__":
             DPSGD_epochs = len(DPSGD_train_accuracy)
         # setting = "setting_0_c01_s2"
         if(draw_IC_case):
-            ic_data_path = "./data/" + settings_path + '/' + experiment + '/IC/' + setting +".json"
+            ic_data_path = "./data/" + settings_path + '/'  + model_name + experiment + '/IC/' + setting +".json"
             with open(ic_data_path, "r") as data_file:
                 data = json.load(data_file)
                 IC_DPSGD_train_accuracy = data["train_accuracy"]

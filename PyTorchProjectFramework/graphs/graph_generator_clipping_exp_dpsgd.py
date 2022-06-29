@@ -8,7 +8,9 @@ if __name__ == "__main__":
     # mng.full_screen_toggle()
     # loading SGD data
     # settings_path = "settings_clipping_exp_cifar10_dpsgd" # old
-    settings_path = "settings_clipping_exp_cifar10_dpsgd_new"
+    # settings_path = "settings_clipping_exp_cifar10_dpsgd_new"
+    settings_path = "settings_clipping_exp_cifar10_dpsgd_large_C"
+    model_name = "convnet"
     # setting_file_name = "settings_main_theorem(test)"
     # settings = ["setting_" + str(i) for i in range(1,6)]
     # settings = ["setting_" + str(i) for i in range(6,11)]
@@ -16,20 +18,21 @@ if __name__ == "__main__":
     # settings = ["setting_" + str(i) for i in range(16,21)]
     # settings = ["setting_" + str(i) for i in range(21,26)]
     # settings = ["setting_" + str(i) for i in range(26,31)]
-    index = 5
+    index = 4
     # settings = ["setting_" + str(i) for i in range(26,29)]
     # settings.append("setting_30")
     settings = ["setting_" + str(5*index+i) for i in range(1,6)]
     # settings = ["setting_0" ]
     lr = 0.1
     # Cs = [0.1,0.05,0.01,0.005,0.5,1.0] #old
-    Cs = [1.0,1.5,2,2.5,3,3.5]
+    # Cs = [1.0,1.5,2,2.5,3,3.5]
+    Cs = [6.0,7.0,8.0,9.0,10.0,20.0]
     C = Cs[index]
     sigma = 2
     s = 32
-    draw_DPSGD_IC_case = True
-    draw_SGD_case = True
-    draw_DPSGD_BC_case = False
+    draw_DPSGD_IC_case = False
+    draw_SGD_case = False
+    draw_DPSGD_BC_case = True
     # settings = ["setting_0_c1_s2","setting_0_noclip"]
     # settings = ["setting_1","setting_2","setting_3","setting_4"]
     # settings = ["setting_1","setting_2"]
@@ -40,7 +43,7 @@ if __name__ == "__main__":
 
     # Check whether the specified path exists or not
     isExist = os.path.exists(graph_path)
-
+    base_path = "./data/" + settings_path + "/" + model_name
     if not isExist:
         # Create a new directory because it does not exist
         os.makedirs(graph_path)
@@ -54,7 +57,7 @@ if __name__ == "__main__":
         """
         if(draw_SGD_case):
             experiment = "SGD"
-            sgd_data_path  = "./data/" + settings_path + '/' + experiment + '/' + setting +".json"
+            sgd_data_path  = base_path + '/' + experiment + '/' + setting +".json"
             with open(sgd_data_path, "r") as data_file:
                 data = json.load(data_file)
                 SGD_train_accuracy = data["train_accuracy"]
@@ -65,7 +68,7 @@ if __name__ == "__main__":
         if(draw_DPSGD_BC_case):
             experiment = "SGD"
             # bc_data_path  = "./data/" + settings_path + '/' + experiment + '/' + setting +".json"
-            bc_data_path  = "./data/" + settings_path + '/' + experiment + '/BC/' + setting +".json"
+            bc_data_path  = base_path + '/' + experiment + '/BC/' + setting +".json"
             with open(bc_data_path, "r") as data_file:
                 data = json.load(data_file)
                 DPSGD_train_accuracy = data["train_accuracy"]
@@ -75,7 +78,7 @@ if __name__ == "__main__":
 
         if(draw_DPSGD_IC_case):
             experiment = "SGD"
-            ic_data_path = "./data/" + settings_path + '/' + experiment + '/IC/' + setting +".json"
+            ic_data_path = base_path + '/' + experiment + '/IC/' + setting +".json"
             with open(ic_data_path, "r") as data_file:
                 data = json.load(data_file)
                 IC_DPSGD_train_accuracy = data["train_accuracy"]
