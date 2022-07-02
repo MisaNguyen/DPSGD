@@ -14,6 +14,7 @@
     "noise_multiplier": 1.5,
     "max_grad_norm": 6.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -32,6 +33,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 6.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -50,6 +52,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 6.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -68,6 +71,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 6.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -86,6 +90,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 6.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -104,6 +109,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 6.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -122,6 +128,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 7.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -140,6 +147,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 7.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -158,6 +166,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 7.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -176,6 +185,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 7.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -194,6 +204,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 7.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -212,6 +223,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 8.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -230,6 +242,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 8.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -248,6 +261,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 8.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -266,6 +280,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 8.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -284,6 +299,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 8.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -302,6 +318,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 9.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -320,6 +337,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 9.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -338,6 +356,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 9.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -356,6 +375,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 9.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -374,6 +394,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 9.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -392,6 +413,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 10.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -410,6 +432,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 10.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -428,6 +451,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 10.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -446,6 +470,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 10.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -464,6 +489,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 10.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -482,6 +508,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 20.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -500,6 +527,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 20.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -518,6 +546,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 20.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -536,6 +565,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 20.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   },
@@ -554,6 +584,7 @@
     "noise_multiplier": 2.0,
     "max_grad_norm": 20.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": true
   }

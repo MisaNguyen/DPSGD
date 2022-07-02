@@ -14,8 +14,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 6.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_1": {
     "batch_size": 32, 
@@ -32,8 +33,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 6.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_2": {
     "batch_size": 64, 
@@ -50,8 +52,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 6.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_3": {
     "batch_size": 128, 
@@ -68,8 +71,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 6.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_4": {
     "batch_size": 256, 
@@ -86,8 +90,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 6.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_5": {
     "batch_size": 512, 
@@ -104,8 +109,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 6.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_6": {
     "batch_size": 32, 
@@ -122,8 +128,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 7.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_7": {
     "batch_size": 64, 
@@ -140,8 +147,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 7.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_8": {
     "batch_size": 128, 
@@ -158,8 +166,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 7.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_9": {
     "batch_size": 256, 
@@ -176,8 +185,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 7.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_10": {
     "batch_size": 512, 
@@ -194,8 +204,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 7.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_11": {
     "batch_size": 32, 
@@ -212,8 +223,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 8.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_12": {
     "batch_size": 64, 
@@ -230,8 +242,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 8.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_13": {
     "batch_size": 128, 
@@ -248,8 +261,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 8.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_14": {
     "batch_size": 256, 
@@ -266,8 +280,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 8.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_15": {
     "batch_size": 512, 
@@ -284,8 +299,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 8.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_16": {
     "batch_size": 32, 
@@ -302,8 +318,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 9.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_17": {
     "batch_size": 64, 
@@ -320,8 +337,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 9.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_18": {
     "batch_size": 128, 
@@ -338,8 +356,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 9.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_19": {
     "batch_size": 256, 
@@ -356,8 +375,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 9.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_20": {
     "batch_size": 512, 
@@ -374,8 +394,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 9.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_21": {
     "batch_size": 32, 
@@ -392,8 +413,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 10.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_22": {
     "batch_size": 64, 
@@ -410,8 +432,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 10.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_23": {
     "batch_size": 128, 
@@ -428,8 +451,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 10.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_24": {
     "batch_size": 256, 
@@ -446,8 +470,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 10.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_25": {
     "batch_size": 512, 
@@ -464,8 +489,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 10.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_26": {
     "batch_size": 32, 
@@ -482,8 +508,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 20.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_27": {
     "batch_size": 64, 
@@ -500,8 +527,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 20.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_28": {
     "batch_size": 128, 
@@ -518,8 +546,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 20.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_29": {
     "batch_size": 256, 
@@ -536,8 +565,9 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 20.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   },
   "setting_30": {
     "batch_size": 512, 
@@ -554,7 +584,8 @@
     "noise_multiplier": 8.0,
     "max_grad_norm": 20.0,
     "optimizer": "SGD",
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": true
+    "is_individual_clipping": false,
   }
 }

@@ -62,7 +62,7 @@ def main():
 
     #Add setting path here
     # settings_file = "settings"
-    settings_file = "settings_clipping_exp_cifar10_dpsgd_new"
+    settings_file = "settings_clipping_exp_cifar10_dpsgd_large_C"
     print("Running setting: %s.json" % settings_file)
     if(args.load_setting != ""):
         with open(settings_file +".json", "r") as json_file:
@@ -85,6 +85,7 @@ def main():
             args.optimizer = setting_data["optimizer"]
             args.enable_diminishing_gradient_norm = setting_data["diminishing_gradient_norm"]
             args.enable_individual_clipping = setting_data["is_individual_clipping"]
+            args.enable_DP = setting_data["enable_DP"]
             args.clip_per_layer = False #TODO: add to setting file
             args.secure_rng = False #TODO: add to setting file
             clipping = "per_layer" if args.clip_per_layer else "flat"
@@ -144,32 +145,32 @@ def main():
     train_accuracy = []
     test_accuracy = []
     out_file_path = "./graphs/data/" + settings_file +  "/" + model_name + "/" + args.optimizer
-    if (args.enable_diminishing_gradient_norm == True):
-        out_file_path = out_file_path + "/DGN"
-    if (args.enable_individual_clipping == True):
-        out_file_path = out_file_path + "/IC"
-    else:
-        out_file_path = out_file_path + "/BC"
+    if args.enable_DP:
+        privacy_engine = None
+        if (args.enable_diminishing_gradient_norm == True):
+            out_file_path = out_file_path + "/DGN"
+        if (args.enable_individual_clipping == True):
+            out_file_path = out_file_path + "/IC"
+            privacy_engine = PrivacyEngine(
+                secure_mode=args.secure_rng,
+            )
+            clipping = "per_layer" if args.clip_per_layer else "flat"
+            """
+            Opacus privacy engine
+            """
+            model, optimizer, train_loader = privacy_engine.make_private(
+                module=model,
+                optimizer=optimizer,
+                data_loader=train_loader,
+                noise_multiplier=args.noise_multiplier,
+                max_grad_norm=args.max_grad_norm,
+                clipping=clipping,
+            )
+        else:
+            out_file_path = out_file_path + "/BC"
     print("Saving data to: %s" % out_file_path)
     epochs = 50 #TODO: remove to calculated based on iterations
     print("Total epochs: %f" % epochs)
-    privacy_engine = None
-    if(args.enable_individual_clipping == True):
-        privacy_engine = PrivacyEngine(
-            secure_mode=args.secure_rng,
-        )
-        clipping = "per_layer" if args.clip_per_layer else "flat"
-        model, optimizer, train_loader = privacy_engine.make_private(
-            module=model,
-            optimizer=optimizer,
-            data_loader=train_loader,
-            noise_multiplier=args.noise_multiplier,
-            max_grad_norm=args.max_grad_norm,
-            clipping=clipping,
-        )
-        # print(train_loader)
-
-
     for epoch in range(1, epochs + 1):
         print("epoch %s:" % epoch)
         """

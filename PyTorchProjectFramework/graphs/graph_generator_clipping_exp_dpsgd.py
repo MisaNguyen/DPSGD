@@ -18,7 +18,7 @@ if __name__ == "__main__":
     # settings = ["setting_" + str(i) for i in range(16,21)]
     # settings = ["setting_" + str(i) for i in range(21,26)]
     # settings = ["setting_" + str(i) for i in range(26,31)]
-    index = 4
+    index = 3
     # settings = ["setting_" + str(i) for i in range(26,29)]
     # settings.append("setting_30")
     settings = ["setting_" + str(5*index+i) for i in range(1,6)]
@@ -30,7 +30,7 @@ if __name__ == "__main__":
     C = Cs[index]
     sigma = 2
     s = 32
-    draw_DPSGD_IC_case = False
+    draw_DPSGD_IC_case = True
     draw_SGD_case = False
     draw_DPSGD_BC_case = True
     # settings = ["setting_0_c1_s2","setting_0_noclip"]
