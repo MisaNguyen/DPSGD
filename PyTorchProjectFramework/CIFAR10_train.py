@@ -201,13 +201,20 @@ def train(args, model, device, train_loader,
                 Add Gaussian noise to gradients
                 """
                 if(is_diminishing_gradient_norm == True):
-                    args.max_grad_norm = torch.linalg.norm(param.grad)
+                    args.max_grad_norm = torch.linalg.norm(param.grad).to("cpu")
+                    # print(args.max_grad_norm)
                 else:
                     torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
                 dist = torch.distributions.normal.Normal(torch.tensor(0.0),
                                                      torch.tensor((args.noise_multiplier * args.max_grad_norm)))
 
+                # input(param.grad.shape.get_device())
+                # input(device)
                 noise = dist.rsample(param.grad.shape).to(device=device)
+                # print(noise)
+                # input()
+
+
                 param.grad = param.grad + noise / args.batch_size
             # input("HERE")
 
