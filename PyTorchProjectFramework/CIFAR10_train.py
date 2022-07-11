@@ -195,15 +195,19 @@ def train(args, model, device, train_loader,
             Batch-clipping
             """
             #Batch clipping
-            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=args.max_grad_norm) # in-place computation
             for param in model.parameters():
                 # param.grad = torch.mul(param.accumulated_grads,1/args.batch_size)
                 """
                 Add Gaussian noise to gradients
                 """
+                if(is_diminishing_gradient_norm == True):
+                    args.max_grad_norm = torch.linalg.norm(param.grad)
+                else:
+                    torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
                 dist = torch.distributions.normal.Normal(torch.tensor(0.0),
-                                                         torch.tensor((args.noise_multiplier * args.max_grad_norm)))
-                noise = dist.rsample(param.grad.shape).to(device=torch.device("cuda:0"))
+                                                     torch.tensor((args.noise_multiplier * args.max_grad_norm)))
+
+                noise = dist.rsample(param.grad.shape).to(device=device)
                 param.grad = param.grad + noise / args.batch_size
             # input("HERE")
 

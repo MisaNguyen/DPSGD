@@ -3,6 +3,8 @@ import numpy
 
 import os
 import json
+
+
 if __name__ == "__main__":
     # loading SGD data
     # settings_path = "settings_clipping_exp_cifar10_dpsgd_new"
@@ -30,6 +32,7 @@ if __name__ == "__main__":
     # settings = ["setting_4", "setting_9", "setting_14","setting_19","setting_24"]
     # settings = ["setting_4", "setting_9", "setting_14","setting_19","setting_24","setting_29"]
     # settings = ["setting_16"]
+
     for setting_idx, setting in enumerate(settings):
         C = Cs[setting_idx]
         experiment = "SGD"
