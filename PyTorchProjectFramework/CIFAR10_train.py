@@ -182,6 +182,7 @@ def BC_train(args, model, device, train_batches,epoch,
     indices = np.arange(len(train_batches))
     indices = np.random.permutation(indices)
     for batch_idx, indice in enumerate(indices): # Batch loop
+        optimizer.zero_grad()
         # copy current model
 
         model_clone = copy.deepcopy(model)
@@ -199,6 +200,7 @@ def BC_train(args, model, device, train_batches,epoch,
 
         """ Original SGD updates"""
         for sample_idx, (data,target) in enumerate(tqdm(train_loader)):
+            optimizer_clone.zero_grad()
             iteration += 1
             data, target = data.to(device), target.to(device)
             # print(target)
@@ -226,7 +228,7 @@ def BC_train(args, model, device, train_batches,epoch,
 
             # Gradient Descent step
             optimizer_clone.step()
-            optimizer_clone.zero_grad()
+
         # Copy sum of grad to the model gradient
         for net1, net2 in zip(model.named_parameters(), model_clone.named_parameters()): # (layer_name, value) for each layer
             net1[1].grad = net2[1].sum_grad
@@ -270,7 +272,7 @@ def BC_train(args, model, device, train_batches,epoch,
             # print("----------------------")
             # input(param.grad)
             optimizer.step()
-            optimizer.zero_grad()
+
             # scheduler.step()
             # input("HERE")
             if batch_idx % args.log_interval == 0:
@@ -339,6 +341,8 @@ def train(args, model, device, train_loader,
                 param.prev_max_grad_norm = param.layer_max_grad_norm
     # for batch_idx, (data,target) in enumerate(train_loader):
     for batch_idx, (data,target) in enumerate(tqdm(train_loader)):
+
+        optimizer.zero_grad()
         iteration += 1
         data, target = data.to(device), target.to(device)
         # print(target)
@@ -348,6 +352,7 @@ def train(args, model, device, train_loader,
 
         # compute output
         output = model(data)
+        # compute accuracy
         preds = np.argmax(output.detach().cpu().numpy(), axis=1)
         labels = target.detach().cpu().numpy()
         acc1 = accuracy(preds, labels)
@@ -359,45 +364,47 @@ def train(args, model, device, train_loader,
         loss.backward()
 
         optimizer.step()
-        optimizer.zero_grad()
+
         ### UPDATE LEARNING RATE """
         for param_group in optimizer.param_groups:
             param_group["lr"] = param_group["lr"] * args.gamma
+            # print(param_group["lr"])
+            # input()
         # scheduler.step()
         # input("HERE")
-        # if batch_idx % args.log_interval == 0:
-        #     # print(batch_idx)
-        #     # print(len(data))
-        #     # print(len(train_minibatch_loader))
-        #
-        #     # print('[Iteration %d/%d] [Loss: %f]' % (iteration, len(train_minibatch_loader), loss.item()))
-        #     # print('Train iterations: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-        #     #     iteration, batch_idx * len(data), len(train_loader.dataset),
-        #     #            100. * batch_idx / len(train_loader), loss.item()))
-        #     # print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-        #     #     epoch, batch_idx/100  * len(data), len(train_minibatch_loader.dataset),
-        #     #            100. * batch_idx / len(train_minibatch_loader), loss.item()))
-        #     # # Trainning Log
-        #     # output = model(data)
-        #     #
-        #     # loss = nn.CrossEntropyLoss()(output, target)
-        #     #
-        #     train_loss += loss.item()
-        #     prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
-        #
-        #     # # print(prediction[1])
-        #     # # print(target)
-        #     total += target.size(0)
-        #     #
-        #     # # train_correct incremented by one if predicted right
-        #     train_correct += np.sum(prediction[1].cpu().numpy() == target.cpu().numpy())
-        #     print(
-        #         # f"\tTrain Epoch: {epoch} \t"
-        #         # f"Loss: {loss:.6f} "
-        #         # f"Acc@1: {train_correct/total:.6f} "
-        #         f"Loss: {np.mean(losses):.6f} "
-        #         f"Acc@1: {np.mean(top1_acc):.6f} "
-        #     )
+        if batch_idx % args.log_interval == 0:
+            # print(batch_idx)
+            # print(len(data))
+            # print(len(train_minibatch_loader))
+
+            # print('[Iteration %d/%d] [Loss: %f]' % (iteration, len(train_minibatch_loader), loss.item()))
+            # print('Train iterations: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+            #     iteration, batch_idx * len(data), len(train_loader.dataset),
+            #            100. * batch_idx / len(train_loader), loss.item()))
+            # print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+            #     epoch, batch_idx/100  * len(data), len(train_minibatch_loader.dataset),
+            #            100. * batch_idx / len(train_minibatch_loader), loss.item()))
+            # # Trainning Log
+            # output = model(data)
+            #
+            # loss = nn.CrossEntropyLoss()(output, target)
+            #
+            train_loss += loss.item()
+            prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
+
+            # # print(prediction[1])
+            # # print(target)
+            total += target.size(0)
+            #
+            # # train_correct incremented by one if predicted right
+            train_correct += np.sum(prediction[1].cpu().numpy() == target.cpu().numpy())
+            print(
+                # f"\tTrain Epoch: {epoch} \t"
+                # f"Loss: {loss:.6f} "
+                # f"Acc@1: {train_correct/total:.6f} "
+                f"Loss: {np.mean(losses):.6f} "
+                f"Acc@1: {np.mean(top1_acc):.6f} "
+            )
         if args.dry_run:
             break
 

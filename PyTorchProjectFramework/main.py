@@ -14,8 +14,9 @@ from models.convnet_model import convnet
 from datasets import MNIST_dataset, CIFAR10_dataset
 from utils.utils import generate_json_data_for_graph
 import MNIST_train, MNIST_validate
-import CIFAR10_train, CIFAR10_validate
-
+import CIFAR10_validate
+import CIFAR10_train
+# import CIFAR10_train_minibatch_SGD as CIFAR10_train
 import torch.optim as optim
 from utils.visualizer import Visualizer
 from CIFAR10_train_opacus import train
@@ -196,19 +197,19 @@ def main():
         print("epoch %s:" % epoch)
         if args.enable_DP:
             if(args.enable_individual_clipping):
-
+                print("Individual Clipping training")
                 # input(list(train_loader))
                 train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, optimizer,
                                                       args.enable_diminishing_gradient_norm,
                                                       args.enable_individual_clipping))
             else:
-
+                print("Batch Clipping training")
                 train_accuracy.append(CIFAR10_train.BC_train(args, model, device, train_batches, epoch, optimizer,
                                                       args.enable_diminishing_gradient_norm,
                                                       args.enable_individual_clipping))
         else:
 
-
+            print("SGD training")
             train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, optimizer,
                                                          args.enable_diminishing_gradient_norm,
                                                          args.enable_individual_clipping))
