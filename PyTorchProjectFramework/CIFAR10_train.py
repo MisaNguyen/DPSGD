@@ -365,39 +365,39 @@ def train(args, model, device, train_loader,
             param_group["lr"] = param_group["lr"] * args.gamma
         # scheduler.step()
         # input("HERE")
-        if batch_idx % args.log_interval == 0:
-            # print(batch_idx)
-            # print(len(data))
-            # print(len(train_minibatch_loader))
-
-            # print('[Iteration %d/%d] [Loss: %f]' % (iteration, len(train_minibatch_loader), loss.item()))
-            # print('Train iterations: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-            #     iteration, batch_idx * len(data), len(train_loader.dataset),
-            #            100. * batch_idx / len(train_loader), loss.item()))
-            # print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-            #     epoch, batch_idx/100  * len(data), len(train_minibatch_loader.dataset),
-            #            100. * batch_idx / len(train_minibatch_loader), loss.item()))
-            # # Trainning Log
-            # output = model(data)
-            #
-            # loss = nn.CrossEntropyLoss()(output, target)
-            #
-            train_loss += loss.item()
-            prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
-
-            # # print(prediction[1])
-            # # print(target)
-            total += target.size(0)
-            #
-            # # train_correct incremented by one if predicted right
-            train_correct += np.sum(prediction[1].cpu().numpy() == target.cpu().numpy())
-            print(
-                # f"\tTrain Epoch: {epoch} \t"
-                # f"Loss: {loss:.6f} "
-                # f"Acc@1: {train_correct/total:.6f} "
-                f"Loss: {np.mean(losses):.6f} "
-                f"Acc@1: {np.mean(top1_acc):.6f} "
-            )
+        # if batch_idx % args.log_interval == 0:
+        #     # print(batch_idx)
+        #     # print(len(data))
+        #     # print(len(train_minibatch_loader))
+        #
+        #     # print('[Iteration %d/%d] [Loss: %f]' % (iteration, len(train_minibatch_loader), loss.item()))
+        #     # print('Train iterations: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+        #     #     iteration, batch_idx * len(data), len(train_loader.dataset),
+        #     #            100. * batch_idx / len(train_loader), loss.item()))
+        #     # print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+        #     #     epoch, batch_idx/100  * len(data), len(train_minibatch_loader.dataset),
+        #     #            100. * batch_idx / len(train_minibatch_loader), loss.item()))
+        #     # # Trainning Log
+        #     # output = model(data)
+        #     #
+        #     # loss = nn.CrossEntropyLoss()(output, target)
+        #     #
+        #     train_loss += loss.item()
+        #     prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
+        #
+        #     # # print(prediction[1])
+        #     # # print(target)
+        #     total += target.size(0)
+        #     #
+        #     # # train_correct incremented by one if predicted right
+        #     train_correct += np.sum(prediction[1].cpu().numpy() == target.cpu().numpy())
+        #     print(
+        #         # f"\tTrain Epoch: {epoch} \t"
+        #         # f"Loss: {loss:.6f} "
+        #         # f"Acc@1: {train_correct/total:.6f} "
+        #         f"Loss: {np.mean(losses):.6f} "
+        #         f"Acc@1: {np.mean(top1_acc):.6f} "
+        #     )
         if args.dry_run:
             break
 

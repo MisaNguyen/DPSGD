@@ -14,9 +14,9 @@
     "noise_multiplier": 0.0001,
     "max_grad_norm": 10.0,
     "optimizer": "SGD",
-    "enable_DP": false,
+    "enable_DP": true,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_1": {
     "batch_size": 32, 
