@@ -1,20 +1,20 @@
 {
-  "original_SGD": {
-    "batch_size": 512,
+  "setting_0": {
+    "batch_size": 1,
     "microbatch_size": 1,
     "test_batch_size": 1000,
     "iterations": 5000,
     "learning_rate": 0.1,
-    "gamma": 1,
+    "gamma": 0.9,
     "no_cuda": false,
     "dry_run": false,
     "seed": 1,
-    "log_interval": 10000,
+    "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.0001,
-    "max_grad_norm": 10.0,
+    "noise_multiplier": 1.5,
+    "max_grad_norm": 6.0,
     "optimizer": "SGD",
-    "enable_DP": false,
+    "enable_DP": fasle,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": false
   },

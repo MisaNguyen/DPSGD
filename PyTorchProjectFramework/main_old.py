@@ -14,7 +14,7 @@ from models.convnet_model import convnet
 from datasets import MNIST_dataset, CIFAR10_dataset
 from utils.utils import generate_json_data_for_graph
 import MNIST_train, MNIST_validate
-import CIFAR10_train, CIFAR10_validate
+import CIFAR10_train_minibatch_SGD, CIFAR10_validate
 
 import torch.optim as optim
 from utils.visualizer import Visualizer
@@ -98,14 +98,14 @@ def main():
 
     device = torch.device("cuda" if use_cuda else "cpu")
     # print(args.batch_size)
-    train_kwargs = {'batch_size': args.batch_size,  'shuffle': True}
+    train_kwargs = {'batch_size': args.batch_size, 'generator': None, 'shuffle': True}
     test_kwargs = {'batch_size': args.test_batch_size, 'shuffle': False}
 
     # train_loader, test_loader = MNIST_dataset.create_dataset(train_kwargs,test_kwargs)
-
-
+    train_loader, test_loader, dataset_size = CIFAR10_dataset.create_dataset(train_kwargs,test_kwargs)
+    epochs = math.ceil(args.iterations* args.batch_size / dataset_size)
     if use_cuda:
-        cuda_kwargs = {'num_workers': 2,
+        cuda_kwargs = {'num_workers': 1,
                        'pin_memory': True,
                        }
         train_kwargs.update(cuda_kwargs)
@@ -155,13 +155,11 @@ def main():
     test_accuracy = []
     out_file_path = "./graphs/data/" + settings_file +  "/" + model_name + "/" + args.optimizer
     if args.enable_DP:
-
-        # privacy_engine = None
+        privacy_engine = None
         if (args.enable_diminishing_gradient_norm == True):
             out_file_path = out_file_path + "/DGN"
         if (args.enable_individual_clipping == True):
-            train_loader, test_loader, dataset_size = CIFAR10_dataset.individual_clipping_preprocessing(train_kwargs,test_kwargs)
-
+            out_file_path = out_file_path + "/IC"
             privacy_engine = PrivacyEngine(
                 secure_mode=args.secure_rng,
             )
@@ -176,42 +174,27 @@ def main():
                 noise_multiplier=args.noise_multiplier,
                 max_grad_norm=args.max_grad_norm,
                 clipping=clipping,
-                poisson_sampling=False,
             )
-            out_file_path = out_file_path + "/IC"
         else:
-            train_batches, test_loader, dataset_size = CIFAR10_dataset.batch_clipping_preprocessing(train_kwargs,test_kwargs)
             out_file_path = out_file_path + "/BC"
-    else:
-        # train_loader, test_loader, dataset_size = CIFAR10_dataset.minibatch_SGD_preprocessing(train_kwargs,test_kwargs)
-        train_loader, test_loader, dataset_size = CIFAR10_dataset.minibatch_SGD_preprocessing(train_kwargs,test_kwargs)
-
-    # epochs = math.ceil(args.iterations* args.batch_size / dataset_size)
+    print("Saving data to: %s" % out_file_path)
     epochs = 50 #TODO: remove to calculated based on iterations
     print("Total epochs: %f" % epochs)
-    print("Saving data to: %s" % out_file_path)
 
-    """TRAINING LOOP"""
     for epoch in range(1, epochs + 1):
         print("epoch %s:" % epoch)
-        if args.enable_DP:
-            if(args.enable_individual_clipping):
-
-                # input(list(train_loader))
-                train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, optimizer,
-                                                      args.enable_diminishing_gradient_norm,
-                                                      args.enable_individual_clipping))
-            else:
-
-                train_accuracy.append(CIFAR10_train.BC_train(args, model, device, train_batches, epoch, optimizer,
-                                                      args.enable_diminishing_gradient_norm,
-                                                      args.enable_individual_clipping))
-        else:
-
-
-            train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, optimizer,
-                                                         args.enable_diminishing_gradient_norm,
-                                                         args.enable_individual_clipping))
+        """
+        TEST
+        """
+        # args.print_freq = args.log_interval
+        # args.disable_dp = False
+        # args.delta = 1/dataset_size
+        # train_accuracy.append(train(
+        #     args, model, train_loader, optimizer, privacy_engine, epoch, device
+        # ))
+        train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, optimizer,
+                                                  args.enable_diminishing_gradient_norm,
+                                                  args.enable_individual_clipping))
 
         test_accuracy.append(CIFAR10_validate.test(model, device, test_loader))
     generate_json_data_for_graph(out_file_path, args.load_setting, train_accuracy,test_accuracy)

@@ -4,12 +4,25 @@ import numpy
 import os
 import json
 
-def get_data_from_settings(setting_path,setting_name,model_name,experiment,IC,BC):
-    data_path  = "./data/" + setting_path + '/'  + model_name + '/' + experiment + '/' + setting_name +".json" #SGD
-    if(BC):
-        data_path  = "./data/" + setting_path + '/'  + model_name + '/' + experiment + '/BC/' + setting_name +".json"
-    if(IC):
-        data_path  = "./data/" + setting_path + '/'  + model_name + '/' + experiment + '/IC/' + setting_name +".json"
+def get_data_from_settings(setting_path,setting_name,model_name,experiment,IC,BC,DGN):
+    base_path = "./data/" + setting_path + '/'  + model_name + '/' + experiment
+
+    if(DGN):
+        base_path += "/DGN"
+        if(BC):
+            data_path  = base_path + '/BC/' + setting_name +".json"
+        elif(IC):
+            data_path  = base_path + '/IC/' + setting_name +".json"
+        else:
+            data_path  = base_path + '/' + setting_name +".json"
+    else:
+        if(BC):
+            data_path  = base_path + '/BC/' + setting_name +".json"
+        elif(IC):
+            data_path  = base_path + '/IC/' + setting_name +".json"
+        else:
+            data_path  = base_path + '/' + setting_name +".json"
+
     with open(data_path, "r") as data_file:
         data = json.load(data_file)
         DPSGD_train_accuracy = data["train_accuracy"]
@@ -59,8 +72,9 @@ if __name__ == "__main__":
     sigma = 2
     lr = 0.1
     s = 256
-    draw_IC_case = True
-    draw_BC_case = False
+    draw_IC_case = False
+    draw_BC_case = True
+    draw_DGN_case = False
     setup_plot('epoch' , 'accuracy',lr ,s ,sigma)
     """SGD DATA"""
     model_name = "convnet"
@@ -72,7 +86,7 @@ if __name__ == "__main__":
     train_accuracy, test_accuracy, epochs = get_data_from_settings(
         setting_path,setting_name,
         model_name,experiment,
-        False,False)
+        False,False,False)
     epoch_index = [i for i in range(1, epochs+1)]
     plt_draw(epoch_index, train_accuracy,test_accuracy,"SGD",None)
     """SETTING 1 DATA"""
@@ -87,14 +101,14 @@ if __name__ == "__main__":
     train_accuracy, test_accuracy, epochs = get_data_from_settings(
         setting_path,setting_name,
         model_name,experiment,
-        draw_IC_case,draw_BC_case)
+        draw_IC_case,draw_BC_case,draw_DGN_case)
     epoch_index = [i for i in range(1, epochs+1)]
     plt_draw(epoch_index, train_accuracy,test_accuracy,label,C)
 
     """SETTING 2 DATA"""
     model_name = "convnet"
     setting_path = "settings_clipping_exp_cifar10_dpsgd"
-    
+
     s = 256
     C = 0.1
     setting_name = "setting_4"
@@ -103,7 +117,7 @@ if __name__ == "__main__":
     train_accuracy, test_accuracy, epochs = get_data_from_settings(
         setting_path,setting_name,
         model_name,experiment,
-        draw_IC_case,draw_BC_case)
+        draw_IC_case,draw_BC_case,False)
     epoch_index = [i for i in range(1, epochs+1)]
     plt_draw(epoch_index, train_accuracy,test_accuracy,label,C)
     plt.legend()
@@ -111,7 +125,7 @@ if __name__ == "__main__":
     """SETTING 3 DATA"""
     model_name = "convnet"
     setting_path = "settings_clipping_exp_cifar10_dpsgd"
-    
+
     s = 256
     C = 1.0
     setting_name = "setting_29"
@@ -120,7 +134,7 @@ if __name__ == "__main__":
     train_accuracy, test_accuracy, epochs = get_data_from_settings(
         setting_path,setting_name,
         model_name,experiment,
-        draw_IC_case,draw_BC_case)
+        draw_IC_case,draw_BC_case,draw_DGN_case)
     epoch_index = [i for i in range(1, epochs+1)]
     plt_draw(epoch_index, train_accuracy,test_accuracy,label,C)
     plt.legend()
@@ -128,7 +142,7 @@ if __name__ == "__main__":
     """SETTING 4 DATA"""
     model_name = "convnet"
     setting_path = "settings_clipping_exp_cifar10_dpsgd_new"
-    
+
     s = 256
     C = 2.0
     setting_name = "setting_14"
@@ -137,7 +151,7 @@ if __name__ == "__main__":
     train_accuracy, test_accuracy, epochs = get_data_from_settings(
         setting_path,setting_name,
         model_name,experiment,
-        draw_IC_case,draw_BC_case)
+        draw_IC_case,draw_BC_case,draw_DGN_case)
     epoch_index = [i for i in range(1, epochs+1)]
     plt_draw(epoch_index, train_accuracy,test_accuracy,label,C)
     plt.legend()
@@ -145,7 +159,7 @@ if __name__ == "__main__":
     """SETTING 5 DATA"""
     model_name = "convnet"
     setting_path = "settings_clipping_exp_cifar10_dpsgd_new"
-    
+
     s = 256
     C = 3.5
     setting_name = "setting_29"
@@ -154,14 +168,14 @@ if __name__ == "__main__":
     train_accuracy, test_accuracy, epochs = get_data_from_settings(
         setting_path,setting_name,
         model_name,experiment,
-        draw_IC_case,draw_BC_case)
+        draw_IC_case,draw_BC_case,draw_DGN_case)
     epoch_index = [i for i in range(1, epochs+1)]
     plt_draw(epoch_index, train_accuracy,test_accuracy,label,C)
 
     """SETTING 6 DATA"""
     model_name = "convnet"
     setting_path = "settings_clipping_exp_cifar10_dpsgd_large_C"
-    
+
     s = 256
     C = 10.0
     setting_name = "setting_24"
@@ -170,14 +184,14 @@ if __name__ == "__main__":
     train_accuracy, test_accuracy, epochs = get_data_from_settings(
         setting_path,setting_name,
         model_name,experiment,
-        draw_IC_case,draw_BC_case)
+        draw_IC_case,draw_BC_case,draw_DGN_case)
     epoch_index = [i for i in range(1, epochs+1)]
     plt_draw(epoch_index, train_accuracy,test_accuracy,label,C)
 
     """SETTING 7 DATA"""
     model_name = "convnet"
     setting_path = "settings_clipping_exp_cifar10_dpsgd_large_C"
-    
+
     s = 256
     C = 20.0
     setting_name = "setting_29"
@@ -186,7 +200,7 @@ if __name__ == "__main__":
     train_accuracy, test_accuracy, epochs = get_data_from_settings(
         setting_path,setting_name,
         model_name,experiment,
-        draw_IC_case,draw_BC_case)
+        draw_IC_case,draw_BC_case,draw_DGN_case)
     epoch_index = [i for i in range(1, epochs+1)]
     plt_draw(epoch_index, train_accuracy,test_accuracy,label,C)
     plt.legend()

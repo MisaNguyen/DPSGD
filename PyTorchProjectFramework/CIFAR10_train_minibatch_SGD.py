@@ -3,8 +3,6 @@ import argparse
 # import torch
 # import torchvision
 # import torch.nn.functional as F
-import copy
-
 import torch.nn as nn
 # from torch.optim.lr_scheduler import StepLR
 # from utils.progression_bar import progress_bar
@@ -21,7 +19,6 @@ from tqdm import tqdm
 import CIFAR10_validate
 
 from datetime import datetime, timedelta
-import copy
 """ Schedulers """
 from scheduler.learning_rate_scheduler import StepLR
 from scheduler.gradient_norm_scheduler import StepGN_normal
@@ -157,166 +154,6 @@ END OPACUS code
 """
 # def train(args, model, device, train_loader, optimizer_name, epoch,
 #           visualizer,is_diminishing_gradient_norm, is_individual):
-def BC_train(args, model, device, train_batches,epoch,
-          optimizer,is_diminishing_gradient_norm, is_individual):
-    model.train()
-    print("Training using %s optimizer" % optimizer.__class__.__name__)
-    train_loss = 0
-    train_correct = 0
-    total = 0
-    output = 0
-    loss = 0
-    # Get optimizer
-    # train_accuracy = []
-    # test_accuracy = []
-    iteration = 0
-    losses = []
-    top1_acc = []
-    # Store each layer's max grad norm from last round
-    # if(is_diminishing_gradient_norm == True):
-    #     for param in model.parameters():
-    #         if hasattr(param, "layer_max_grad_norm"):
-    #             param.prev_max_grad_norm = param.layer_max_grad_norm
-    # for batch_idx, (data,target) in enumerate(train_loader):
-    # generate & shuffle batches indices
-    indices = np.arange(len(train_batches))
-    indices = np.random.permutation(indices)
-    for batch_idx, indice in enumerate(indices): # Batch loop
-        # copy current model
-
-        model_clone = copy.deepcopy(model)
-        optimizer_clone= optim.SGD(
-            [
-                {"params": model_clone.layer1.parameters(), "lr": args.lr},
-                {"params": model_clone.layer2.parameters(),"lr": args.lr},
-                {"params": model_clone.layer3.parameters(), "lr": args.lr},
-                {"params": model_clone.layer4.parameters(), "lr": args.lr},
-            ],
-            lr=args.lr,
-        )
-        batch = train_batches[indice]
-        train_loader = torch.utils.data.DataLoader(batch, batch_size=1, shuffle=True) # Load each data
-
-        """ Original SGD updates"""
-        for sample_idx, (data,target) in enumerate(tqdm(train_loader)):
-            iteration += 1
-            data, target = data.to(device), target.to(device)
-            # print(target)
-            # output = model(data) # input as batch size = 1
-            # loss = nn.CrossEntropyLoss()(output, target)
-            # loss.backward()
-
-            # compute output
-            output = model_clone(data)
-            preds = np.argmax(output.detach().cpu().numpy(), axis=1)
-            labels = target.detach().cpu().numpy()
-            acc1 = accuracy(preds, labels)
-            top1_acc.append(acc1)
-            # compute loss
-            loss = nn.CrossEntropyLoss()(output, target)
-            losses.append(loss.item())
-            # compute gradient
-            loss.backward()
-            # Add grad to sum of grad
-            for param in model_clone.parameters():
-                if not hasattr(param, "sum_grad"):
-                    param.sum_grad = param.grad
-                else:
-                    param.sum_grad = param.sum_grad + param.grad
-
-            # Gradient Descent step
-            optimizer_clone.step()
-            optimizer_clone.zero_grad()
-        # Copy sum of grad to the model gradient
-        for net1, net2 in zip(model.named_parameters(), model_clone.named_parameters()): # (layer_name, value) for each layer
-            net1[1].grad = net2[1].sum_grad
-        # Reset sum_grad
-        for param in model_clone.parameters():
-            delattr(param, 'sum_grad')
-        # Update model
-        for param in model.parameters():
-            # param.grad = torch.mul(param.accumulated_grads,1/args.batch_size)
-            # param.grad = param_clone.sum_grad.clone # Copy sum_grad
-
-            """
-            Batch clipping
-            """
-            if(is_diminishing_gradient_norm == True):
-                # args.max_grad_norm = torch.linalg.norm(param.grad).to("cpu")
-                # print(args.max_grad_norm)
-                if not hasattr(param, "prev_max_grad_norm"): #round 1
-                    torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
-                else: #round 2 onward
-                    torch.nn.utils.clip_grad_norm_(param.grad, max_norm=param.prev_max_grad_norm) # in-place computation
-                if not hasattr(param, "layer_max_grad_norm"):
-                    param.layer_max_grad_norm  = torch.linalg.norm(param.grad)
-                else:
-                    param.layer_max_grad_norm = max(param.layer_max_grad_norm, torch.linalg.norm(param.grad)) # get new max_grad_norm
-                # print(param.layer_max_grad_norm)
-            else:
-                torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
-
-            """
-            Add Gaussian noise to gradients
-            """
-            dist = torch.distributions.normal.Normal(torch.tensor(0.0),
-                                                 torch.tensor((args.noise_multiplier * args.max_grad_norm)))
-
-            noise = dist.rsample(param.grad.shape).to(device=device)
-
-            # param.grad = param.grad + noise / args.batch_size
-            # input(param.grad)
-            param.grad = (param.grad + noise).div(len(train_loader))
-            # print("----------------------")
-            # input(param.grad)
-            optimizer.step()
-            optimizer.zero_grad()
-            # scheduler.step()
-            # input("HERE")
-            if batch_idx % args.log_interval == 0:
-
-                train_loss += loss.item()
-                prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
-
-                total += target.size(0)
-
-                train_correct += np.sum(prediction[1].cpu().numpy() == target.cpu().numpy())
-                print(
-                    f"Loss: {np.mean(losses):.6f} "
-                    f"Acc@1: {np.mean(top1_acc):.6f} "
-                )
-            if args.dry_run:
-                break
-        ### UPDATE LEARNING RATE after each batch"""
-        if(args.enable_diminishing_gradient_norm):
-
-
-            iterations_per_epoch = len(train_loader)
-        # layer_names = []
-        # # print(len(optimizer.param_groups))
-        # # print(len(model.named_parameters()))
-        # # input()
-        # # for idxparam in model.parameters():
-        # #     print(param)
-        # # for param_group in optimizer.param_groups:
-        # #     print(param_group['lr'])
-        # # for param_group in optimizer.param_groups:
-        # #
-        # #     param_group["lr"] = np.sqrt(iterations_per_epoch)*param_group["param"].layer_max_grad_norm
-        # parameters = []
-        # for idx, (name, param) in enumerate(model.named_parameters()):
-        #     layer_names.append(name)
-        #     parameters+= [{'params': param,
-        #                    'lr':     np.sqrt(iterations_per_epoch)*param.layer_max_grad_norm}]
-        #     print(f'{idx}: lr = {np.sqrt(iterations_per_epoch)*param.layer_max_grad_norm:.6f}, {name}')
-        # optimizer = optim.SGD(parameters)
-        else:
-            args.lr = args.lr*pow(args.gamma,(epoch-1)*len(train_batches) + batch_idx)
-            for param_group in optimizer.param_groups:
-                param_group["lr"] = param_group["lr"] * args.gamma
-    return train_correct/total
-
-
 def train(args, model, device, train_loader,
           optimizer,is_diminishing_gradient_norm, is_individual):
     model.train()
@@ -358,11 +195,49 @@ def train(args, model, device, train_loader,
         # compute gradient and do SGD step
         loss.backward()
 
+        if(is_individual != True):
+            """
+            Batch-clipping
+            """
+            #Batch clipping
+            for param in model.parameters():
+                # param.grad = torch.mul(param.accumulated_grads,1/args.batch_size)
+                """
+                Add Gaussian noise to gradients
+                """
+                if(is_diminishing_gradient_norm == True):
+                    # args.max_grad_norm = torch.linalg.norm(param.grad).to("cpu")
+                    # print(args.max_grad_norm)
+                    if not hasattr(param, "prev_max_grad_norm"): #round 1
+                        torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
+                    else: #round 2 onward
+                        torch.nn.utils.clip_grad_norm_(param.grad, max_norm=param.prev_max_grad_norm) # in-place computation
+                    if not hasattr(param, "layer_max_grad_norm"):
+                        param.layer_max_grad_norm  = torch.linalg.norm(param.grad)
+                    else:
+                        param.layer_max_grad_norm = max(param.layer_max_grad_norm, torch.linalg.norm(param.grad)) # get new max_grad_norm
+                    # print(param.layer_max_grad_norm)
+                else:
+                    torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
+
+
+                dist = torch.distributions.normal.Normal(torch.tensor(0.0),
+                                                     torch.tensor((args.noise_multiplier * args.max_grad_norm)))
+
+                # input(param.grad.shape.get_device())
+                # input(device)
+                noise = dist.rsample(param.grad.shape).to(device=device)
+                # print(noise)
+                # input()
+
+
+                param.grad = param.grad + noise / args.batch_size
+            # input("HERE")
+
+        # Get scheduler
+        # scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
         optimizer.step()
         optimizer.zero_grad()
-        ### UPDATE LEARNING RATE """
-        for param_group in optimizer.param_groups:
-            param_group["lr"] = param_group["lr"] * args.gamma
         # scheduler.step()
         # input("HERE")
         if batch_idx % args.log_interval == 0:
@@ -400,8 +275,35 @@ def train(args, model, device, train_loader,
             )
         if args.dry_run:
             break
+    ### UPDATE LEARNING RATE """
+    if(args.enable_diminishing_gradient_norm):
 
+
+        iterations_per_epoch = len(train_loader)
+        layer_names = []
+        # print(len(optimizer.param_groups))
+        # print(len(model.named_parameters()))
+        # input()
+        # for idxparam in model.parameters():
+        #     print(param)
+        # for param_group in optimizer.param_groups:
+        #     print(param_group['lr'])
+        # for param_group in optimizer.param_groups:
+        #
+        #     param_group["lr"] = np.sqrt(iterations_per_epoch)*param_group["param"].layer_max_grad_norm
+        parameters = []
+        for idx, (name, param) in enumerate(model.named_parameters()):
+            layer_names.append(name)
+            parameters+= [{'params': param,
+                           'lr':     np.sqrt(iterations_per_epoch)*param.layer_max_grad_norm}]
+            print(f'{idx}: lr = {np.sqrt(iterations_per_epoch)*param.layer_max_grad_norm:.6f}, {name}')
+        optimizer = optim.SGD(parameters)
+    else:
+        for param_group in optimizer.param_groups:
+            param_group["lr"] = param_group["lr"] * args.gamma
     return train_correct/total
+
+
 if __name__ == '__main__':
     import multiprocessing
     multiprocessing.set_start_method('spawn', True)
