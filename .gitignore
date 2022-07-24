@@ -10,4 +10,5 @@ PytorchProjectFramework/accountants/graphs/graph/*
 
 PytorchProjectFramework/graphs/graph/*
 PytorchProjectFramework/graphs/data/*
+PytorchProjectFramework/graphs/old_data/*
 PytorchProjectFramework/*.tar

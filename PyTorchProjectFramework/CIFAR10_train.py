@@ -181,7 +181,7 @@ def BC_train(args, model, device, train_batches,epoch,
     # generate & shuffle batches indices
     indices = np.arange(len(train_batches))
     indices = np.random.permutation(indices)
-    for batch_idx, indice in enumerate(indices): # Batch loop
+    for batch_idx, indice in enumerate(tqdm(indices)): # Batch loop
         optimizer.zero_grad()
         # copy current model
 
@@ -199,7 +199,7 @@ def BC_train(args, model, device, train_batches,epoch,
         train_loader = torch.utils.data.DataLoader(batch, batch_size=1, shuffle=True) # Load each data
 
         """ Original SGD updates"""
-        for sample_idx, (data,target) in enumerate(tqdm(train_loader)):
+        for sample_idx, (data,target) in enumerate(train_loader):
             optimizer_clone.zero_grad()
             iteration += 1
             data, target = data.to(device), target.to(device)
@@ -210,10 +210,6 @@ def BC_train(args, model, device, train_batches,epoch,
 
             # compute output
             output = model_clone(data)
-            preds = np.argmax(output.detach().cpu().numpy(), axis=1)
-            labels = target.detach().cpu().numpy()
-            acc1 = accuracy(preds, labels)
-            top1_acc.append(acc1)
             # compute loss
             loss = nn.CrossEntropyLoss()(output, target)
             losses.append(loss.item())
@@ -271,11 +267,25 @@ def BC_train(args, model, device, train_batches,epoch,
             param.grad = (param.grad + noise).div(len(train_loader))
             # print("----------------------")
             # input(param.grad)
-            optimizer.step()
 
+        optimizer.step()
+
+        """
+        Calculate top 1 acc
+        """
+        batch = train_batches[indice]
+        # input(len(batch))
+        data_loader = torch.utils.data.DataLoader(batch, batch_size=len(batch)) # Load each data
+        for data, target in data_loader:
+            data, target = data.to(device), target.to(device)
+            output = model(data)
+            preds = np.argmax(output.detach().cpu().numpy(), axis=1)
+            labels = target.detach().cpu().numpy()
+            acc1 = accuracy(preds, labels)
+            top1_acc.append(acc1)
             # scheduler.step()
             # input("HERE")
-            if batch_idx % args.log_interval == 0:
+            if batch_idx % (args.log_interval*len(indices)) == 0:
 
                 train_loss += loss.item()
                 prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
@@ -316,39 +326,28 @@ def BC_train(args, model, device, train_batches,epoch,
             args.lr = args.lr*pow(args.gamma,(epoch-1)*len(train_batches) + batch_idx)
             for param_group in optimizer.param_groups:
                 param_group["lr"] = param_group["lr"] * args.gamma
-    return train_correct/total
+    return np.mean(top1_acc)
 
 
 def train(args, model, device, train_loader,
           optimizer,is_diminishing_gradient_norm, is_individual):
     model.train()
     print("Training using %s optimizer" % optimizer.__class__.__name__)
-    train_loss = 0
-    train_correct = 0
-    total = 0
-    output = 0
-    loss = 0
+    # train_loss = 0
+    # train_correct = 0
+    # total = 0
+    # output = 0
+    # loss = 0
     # Get optimizer
     # train_accuracy = []
     # test_accuracy = []
     iteration = 0
     losses = []
     top1_acc = []
-    # Store each layer's max grad norm from last round
-    if(is_diminishing_gradient_norm == True):
-        for param in model.parameters():
-            if hasattr(param, "layer_max_grad_norm"):
-                param.prev_max_grad_norm = param.layer_max_grad_norm
-    # for batch_idx, (data,target) in enumerate(train_loader):
     for batch_idx, (data,target) in enumerate(tqdm(train_loader)):
-
         optimizer.zero_grad()
         iteration += 1
         data, target = data.to(device), target.to(device)
-        # print(target)
-        # output = model(data) # input as batch size = 1
-        # loss = nn.CrossEntropyLoss()(output, target)
-        # loss.backward()
 
         # compute output
         output = model(data)
@@ -362,7 +361,6 @@ def train(args, model, device, train_loader,
         losses.append(loss.item())
         # compute gradient and do SGD step
         loss.backward()
-
         optimizer.step()
 
         ### UPDATE LEARNING RATE """
@@ -372,32 +370,7 @@ def train(args, model, device, train_loader,
             # input()
         # scheduler.step()
         # input("HERE")
-        if batch_idx % args.log_interval == 0:
-            # print(batch_idx)
-            # print(len(data))
-            # print(len(train_minibatch_loader))
-
-            # print('[Iteration %d/%d] [Loss: %f]' % (iteration, len(train_minibatch_loader), loss.item()))
-            # print('Train iterations: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-            #     iteration, batch_idx * len(data), len(train_loader.dataset),
-            #            100. * batch_idx / len(train_loader), loss.item()))
-            # print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-            #     epoch, batch_idx/100  * len(data), len(train_minibatch_loader.dataset),
-            #            100. * batch_idx / len(train_minibatch_loader), loss.item()))
-            # # Trainning Log
-            # output = model(data)
-            #
-            # loss = nn.CrossEntropyLoss()(output, target)
-            #
-            train_loss += loss.item()
-            prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
-
-            # # print(prediction[1])
-            # # print(target)
-            total += target.size(0)
-            #
-            # # train_correct incremented by one if predicted right
-            train_correct += np.sum(prediction[1].cpu().numpy() == target.cpu().numpy())
+        if batch_idx % (args.log_interval*len(train_loader)) == 0:
             print(
                 # f"\tTrain Epoch: {epoch} \t"
                 # f"Loss: {loss:.6f} "
@@ -408,7 +381,7 @@ def train(args, model, device, train_loader,
         if args.dry_run:
             break
 
-    return train_correct/total
+    return np.mean(top1_acc)
 if __name__ == '__main__':
     import multiprocessing
     multiprocessing.set_start_method('spawn', True)

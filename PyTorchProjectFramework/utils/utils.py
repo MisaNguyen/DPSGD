@@ -80,4 +80,4 @@ def generate_json_data_for_graph(out_file_path: str,setting : str,train_accuracy
         print("The new directory is created: %s" % out_file_path)
 
     with open(out_file_path + '/' + setting + '.json', "w") as data_file:
-        json.dump(json_output, data_file)
+        json.dump(json_output, data_file,indent=2)
