@@ -70,7 +70,7 @@ def main():
             json_data = json.load(json_file)
             setting_data = json_data[args.load_setting]
             # Loading data
-            args.batch_size = setting_data["batch_size"]
+            args.batch_size = int(setting_data["batch_size"])
             # args.microbatch_size = setting_data["microbatch_size"]
             args.test_batch_size = setting_data["test_batch_size"]
             args.iterations = setting_data["iterations"]
