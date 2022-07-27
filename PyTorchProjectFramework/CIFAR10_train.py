@@ -26,7 +26,7 @@ import copy
 from scheduler.learning_rate_scheduler import StepLR
 from scheduler.gradient_norm_scheduler import StepGN_normal
 # from scheduler.noise_multiplier_scheduler import StepLR
-
+# from torch.optim.lr_scheduler import ReduceLROnPlateau
 """ Optimizers """
 from optimizers import *
 """Create learning_rate sequence generator
@@ -299,33 +299,33 @@ def BC_train(args, model, device, train_batches,epoch,
                 )
             if args.dry_run:
                 break
-        ### UPDATE LEARNING RATE after each batch"""
-        if(args.enable_diminishing_gradient_norm):
-
-
-            iterations_per_epoch = len(train_loader)
-        # layer_names = []
-        # # print(len(optimizer.param_groups))
-        # # print(len(model.named_parameters()))
-        # # input()
-        # # for idxparam in model.parameters():
-        # #     print(param)
-        # # for param_group in optimizer.param_groups:
-        # #     print(param_group['lr'])
-        # # for param_group in optimizer.param_groups:
-        # #
-        # #     param_group["lr"] = np.sqrt(iterations_per_epoch)*param_group["param"].layer_max_grad_norm
-        # parameters = []
-        # for idx, (name, param) in enumerate(model.named_parameters()):
-        #     layer_names.append(name)
-        #     parameters+= [{'params': param,
-        #                    'lr':     np.sqrt(iterations_per_epoch)*param.layer_max_grad_norm}]
-        #     print(f'{idx}: lr = {np.sqrt(iterations_per_epoch)*param.layer_max_grad_norm:.6f}, {name}')
-        # optimizer = optim.SGD(parameters)
-        else:
-            args.lr = args.lr*pow(args.gamma,(epoch-1)*len(train_batches) + batch_idx)
-            for param_group in optimizer.param_groups:
-                param_group["lr"] = param_group["lr"] * args.gamma
+        # ### UPDATE LEARNING RATE after each batch"""
+        # if(args.enable_diminishing_gradient_norm):
+        #
+        #
+        #     iterations_per_epoch = len(train_loader)
+        # # layer_names = []
+        # # # print(len(optimizer.param_groups))
+        # # # print(len(model.named_parameters()))
+        # # # input()
+        # # # for idxparam in model.parameters():
+        # # #     print(param)
+        # # # for param_group in optimizer.param_groups:
+        # # #     print(param_group['lr'])
+        # # # for param_group in optimizer.param_groups:
+        # # #
+        # # #     param_group["lr"] = np.sqrt(iterations_per_epoch)*param_group["param"].layer_max_grad_norm
+        # # parameters = []
+        # # for idx, (name, param) in enumerate(model.named_parameters()):
+        # #     layer_names.append(name)
+        # #     parameters+= [{'params': param,
+        # #                    'lr':     np.sqrt(iterations_per_epoch)*param.layer_max_grad_norm}]
+        # #     print(f'{idx}: lr = {np.sqrt(iterations_per_epoch)*param.layer_max_grad_norm:.6f}, {name}')
+        # # optimizer = optim.SGD(parameters)
+        # else:
+        #     args.lr = args.lr*pow(args.gamma,(epoch-1)*len(train_batches) + batch_idx)
+        #     for param_group in optimizer.param_groups:
+        #         param_group["lr"] = param_group["lr"] * args.gamma
     return np.mean(top1_acc)
 
 
@@ -363,9 +363,9 @@ def train(args, model, device, train_loader,
         loss.backward()
         optimizer.step()
 
-        ### UPDATE LEARNING RATE """
-        for param_group in optimizer.param_groups:
-            param_group["lr"] = param_group["lr"] * args.gamma
+        # ### UPDATE LEARNING RATE """
+        # for param_group in optimizer.param_groups:
+        #     param_group["lr"] = param_group["lr"] * args.gamma
             # print(param_group["lr"])
             # input()
         # scheduler.step()

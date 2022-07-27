@@ -213,8 +213,43 @@ def main():
             train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, optimizer,
                                                          args.enable_diminishing_gradient_norm,
                                                          args.enable_individual_clipping))
-
+        ### UPDATE LEARNING RATE after each batch"""
+        # if(args.enable_diminishing_gradient_norm):
+        #
+        #
+        # iterations_per_epoch = len(train_loader)
+        # # layer_names = []
+        # # # print(len(optimizer.param_groups))
+        # # # print(len(model.named_parameters()))
+        # # # input()
+        # # # for idxparam in model.parameters():
+        # # #     print(param)
+        # # # for param_group in optimizer.param_groups:
+        # # #     print(param_group['lr'])
+        # # # for param_group in optimizer.param_groups:
+        # # #
+        # # #     param_group["lr"] = np.sqrt(iterations_per_epoch)*param_group["param"].layer_max_grad_norm
+        # # parameters = []
+        # # for idx, (name, param) in enumerate(model.named_parameters()):
+        # #     layer_names.append(name)
+        # #     parameters+= [{'params': param,
+        # #                    'lr':     np.sqrt(iterations_per_epoch)*param.layer_max_grad_norm}]
+        # #     print(f'{idx}: lr = {np.sqrt(iterations_per_epoch)*param.layer_max_grad_norm:.6f}, {name}')
+        # # optimizer = optim.SGD(parameters)
+        # else:
+        #     args.lr = args.lr*pow(args.gamma,(epoch-1)*len(train_batches) + batch_idx)
+        #     for param_group in optimizer.param_groups:
+        #         param_group["lr"] = param_group["lr"] * args.gamma
         test_accuracy.append(CIFAR10_validate.test(model, device, test_loader))
+        """
+        Update learning rate if test_accuracy does not increase
+        """
+        if (epoch > 2):
+            if(test_accuracy[-1] <= test_accuracy[-2]):
+                args.lr = args.lr * args.gamma
+                print(args.lr)
+                for param_group in optimizer.param_groups:
+                    param_group["lr"] = args.lr
     generate_json_data_for_graph(out_file_path, args.load_setting, train_accuracy,test_accuracy)
 
     if args.save_model:
