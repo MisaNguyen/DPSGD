@@ -44,25 +44,25 @@ def batch_clipping_preprocessing(train_kwargs,test_kwargs):
     """
     With DP
     """
-
+    toTensor = [
+        transforms.ToTensor(),
+    ]
     augmentations = [
         transforms.RandomCrop(32, padding=4),
         transforms.RandomHorizontalFlip(),
     ]
+
     normalize = [
-        transforms.ToTensor(),
         # transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
         transforms.Normalize((0.5, 0.5, 0.5), (0.2, 0.2, 0.2)),
     ]
-    transform_train = transforms.Compose(
-        augmentations + normalize
-    )
+
     transform_test = transforms.Compose(
-        augmentations + normalize
+        toTensor + augmentations + normalize
     )
 
     trainset = datasets.CIFAR10(
-        root='../data', train=True, download=True)
+        root='../data', train=True, download=True, transform=transforms.Compose(toTensor))
     testset = datasets.CIFAR10(
         root='../data', train=False, download=True, transform=transform_test)
 
@@ -73,9 +73,21 @@ def batch_clipping_preprocessing(train_kwargs,test_kwargs):
         batches_length.append(len(trainset) % train_kwargs['batch_size'])
     """ Split train dataset into batches"""
     batches = torch.utils.data.random_split(trainset, batches_length)
+    mean, std = get_mean_and_std(trainset)
+    # print(mean, std)
+    # input()
     """ Normalize each batch"""
-    for idx, _ in enumerate(batches):
-       batches[idx] = MyDataset(batches[idx],transform=transform_train)
+    for idx, batch in enumerate(batches):
+        mean, std = get_mean_and_std(batch)
+        # print(mean, std)
+        # input()
+        train_normalize = [
+            transforms.Normalize(mean, (std)),
+        ]
+        transform_train = transforms.Compose(
+            toTensor + augmentations + train_normalize
+        )
+        batches[idx] = MyDataset(batches[idx],transform=transform_train)
 
     # MyDataset
     # train_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)

@@ -7,7 +7,7 @@ if __name__ == "__main__":
     # mng = plt.get_current_fig_manager()
     # mng.full_screen_toggle()
     # loading SGD data
-    settings_path = "settings_clipping_exp_cifar10_dpsgd" # old
+    settings_path = "settings_clipping_exp_cifar10_dpsgd_large_C" # old
     # settings_path = "settings_clipping_exp_cifar10_dpsgd_new"
     # settings_path = "settings_clipping_exp_cifar10_dpsgd_large_C_sigma_4"
     model_name = "convnet"
@@ -18,22 +18,23 @@ if __name__ == "__main__":
     # settings = ["setting_" + str(i) for i in range(16,21)]
     # settings = ["setting_" + str(i) for i in range(21,26)]
     # settings = ["setting_" + str(i) for i in range(26,31)]
-    index =4
-    s_index = 1
+    index =1
+    s_index_min = 1
+    s_index_max = 4 # max = 6
     # settings = ["setting_" + str(i) for i in range(26,29)]
     # settings.append("setting_30")
-    settings = ["setting_" + str(5*index+i) for i in range(s_index,6)]
+    settings = ["setting_" + str(5*index+i) for i in range(s_index_min,s_index_max)]
     # settings = ["setting_0" ]
     lr = 0.1
-    Cs = [0.1,0.05,0.01,0.005,0.5,1.0] #old
+    # Cs = [0.1,0.05,0.01,0.005,0.5,1.0] #old
     # Cs = [1.0,1.5,2,2.5,3,3.5]
-    # Cs = [6.0,7.0,8.0,9.0,10.0,20.0]
+    Cs = [6.0,7.0,8.0,9.0,10.0,20.0]
     C = Cs[index]
-    sigma = 4
-    s = 32 * pow(2, s_index-1)
+    sigma = 2
+    s = 64 * pow(2, s_index_min-1)
     draw_DPSGD_IC_case = True
-    draw_SGD_case = False
-    draw_DPSGD_BC_case = False
+    draw_SGD_case = True
+    draw_DPSGD_BC_case = True
     # settings = ["setting_0_c1_s2","setting_0_noclip"]
     # settings = ["setting_1","setting_2","setting_3","setting_4"]
     # settings = ["setting_1","setting_2"]
@@ -44,7 +45,7 @@ if __name__ == "__main__":
 
     # Check whether the specified path exists or not
     isExist = os.path.exists(graph_path)
-    base_path = "./data/" + settings_path + "/" + model_name
+    base_path = "./old_data/" + settings_path + "/" + model_name
     if not isExist:
         # Create a new directory because it does not exist
         os.makedirs(graph_path)
