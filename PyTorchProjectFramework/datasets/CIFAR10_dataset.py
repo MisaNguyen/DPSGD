@@ -16,7 +16,7 @@ def get_mean_and_std(dataset):
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=1, shuffle=True, num_workers=2)
     mean = torch.zeros(3)
     std = torch.zeros(3)
-    print('==> Computing mean and std..')
+    # print('==> Computing mean and std..')
     for inputs, targets in dataloader:
         for i in range(3):
             mean[i] += inputs[:,i,:,:].mean()
@@ -73,22 +73,30 @@ def batch_clipping_preprocessing(train_kwargs,test_kwargs):
         batches_length.append(len(trainset) % train_kwargs['batch_size'])
     """ Split train dataset into batches"""
     batches = torch.utils.data.random_split(trainset, batches_length)
-    mean, std = get_mean_and_std(trainset)
+    # mean, std = get_mean_and_std(trainset)
     # print(mean, std)
     # input()
     """ Normalize each batch"""
+    print("normalizing batches...")
     for idx, batch in enumerate(batches):
         mean, std = get_mean_and_std(batch)
+        print("batch_ID: %f" % (idx))
+        # print("mean:", mean)
+        # print("std:", std)
+
         # print(mean, std)
         # input()
         train_normalize = [
-            transforms.Normalize(mean, (std)),
+            transforms.Normalize(mean, std),
         ]
         transform_train = transforms.Compose(
-            toTensor + augmentations + train_normalize
+            augmentations + train_normalize
         )
         batches[idx] = MyDataset(batches[idx],transform=transform_train)
-
+        # train_loader = torch.utils.data.DataLoader(batches[idx], batch_size=1, shuffle=True) # Load each data
+        # for sample_idx, (data,target) in enumerate(train_loader):
+        #     pass
+    print("Finished normalizing batches.")
     # MyDataset
     # train_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)
     test_loader = torch.utils.data.DataLoader(testset, **test_kwargs)
@@ -183,10 +191,10 @@ def individual_clipping_preprocessing(train_kwargs,test_kwargs):
         transforms.Normalize((0.5, 0.5, 0.5), (0.2, 0.2, 0.2)),
     ]
     transform_train = transforms.Compose(
-        augmentations + normalize
+        augmentations
     )
     transform_test = transforms.Compose(
-        augmentations + normalize
+        augmentations
     )
 
     """

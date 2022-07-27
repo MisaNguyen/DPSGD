@@ -1,6 +1,6 @@
 {
   "setting_0": {
-    "batch_size": 512.0,
+    "batch_size": 25000.0,
     "microbatch_size": 1,
     "test_batch_size": 1000,
     "iterations": 5000,
