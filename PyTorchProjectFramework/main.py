@@ -1,25 +1,32 @@
 
 import torch
+import torchvision
 import argparse
 import json
 import math
 import numpy as np
 from models.Lenet_model import Net
 from models.resnet_model import ResNet18,ResNet34,ResNet50,ResNet101,ResNet152
+"""MODELS"""
 # from models.densenet_model import densenet40_k12_cifar10
 # from models.alexnet_model import AlexNet
 # from models.alexnet_simple import AlexNet
 # from models.simple_dla import SimpleDLA
 from models.convnet_model import convnet
+from models.vgg16 import VGGNet
+"""DATASETS"""
 from datasets import MNIST_dataset, CIFAR10_dataset
+"""UTILS"""
 from utils.utils import generate_json_data_for_graph
+from utils.visualizer import Visualizer
+"""TRAIN AND VALIDATE"""
 import MNIST_train, MNIST_validate
 import CIFAR10_validate
 import CIFAR10_train
 # import CIFAR10_train_minibatch_SGD as CIFAR10_train
+"""OPTIMIZERS"""
 import torch.optim as optim
-from utils.visualizer import Visualizer
-from CIFAR10_train_opacus import train
+# from CIFAR10_train_opacus import train
 """ OPACUS"""
 from opacus import PrivacyEngine
 def main():
@@ -117,8 +124,23 @@ def main():
     # model = densenet40_k12_cifar10().to(device)
     # model = AlexNet(num_classes=10).to(device)
     # model = SimpleDLA().to(device)
-    model = convnet(num_classes=10).to(device)
-    model_name = "convnet"
+    # model = convnet(num_classes=10).to(device)
+    # model_name = "convnet"
+    """VGG 16 """
+    arch = [64, 64, 'M',
+            128, 128, 'M',
+            256, 256, 256, 'M',
+            512, 512, 512, 'M',
+            512, 512, 512, 'M']
+    model = VGGNet(in_channels=3, num_classes=10, arch=arch).to(device)
+    # model = torchvision.models.vgg16().to(device)
+    # input_lastLayer = model.classifier[6].in_features
+    # print(input_lastLayer)
+    # model.classifier[6] = torch.nn.Linear(input_lastLayer,10)
+    # model = model.to(device)
+    # input(model)
+    # model = VGG16(num_classes=10).to(device)
+    model_name = "VGG16"
     # optimizer = MNIST_optimizer.SGD_optimizer(args.lr,model)
     # sigma = 6
     # gradient_norm = 3
@@ -132,13 +154,13 @@ def main():
         #     # momentum=args.momentum,
         #     # weight_decay=args.weight_decay,
         # )
-        optimizer= optim.SGD(
-            [
-                {"params": model.layer1.parameters(), "lr": args.lr},
-                {"params": model.layer2.parameters(),"lr": args.lr},
-                {"params": model.layer3.parameters(), "lr": args.lr},
-                {"params": model.layer4.parameters(), "lr": args.lr},
-            ],
+        optimizer= optim.SGD(params=model.parameters(),
+            # [
+            #     {"params": model.layer1.parameters(), "lr": args.lr},
+            #     {"params": model.layer2.parameters(),"lr": args.lr},
+            #     {"params": model.layer3.parameters(), "lr": args.lr},
+            #     {"params": model.layer4.parameters(), "lr": args.lr},
+            # ],
             lr=args.lr,
         )
     elif args.optimizer == "RMSprop":

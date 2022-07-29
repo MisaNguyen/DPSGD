@@ -186,13 +186,13 @@ def BC_train(args, model, device, train_batches,epoch,
         # copy current model
 
         model_clone = copy.deepcopy(model)
-        optimizer_clone= optim.SGD(
-            [
-                {"params": model_clone.layer1.parameters(), "lr": args.lr},
-                {"params": model_clone.layer2.parameters(),"lr": args.lr},
-                {"params": model_clone.layer3.parameters(), "lr": args.lr},
-                {"params": model_clone.layer4.parameters(), "lr": args.lr},
-            ],
+        optimizer_clone= optim.SGD(model_clone.parameters(),
+            # [
+            #     {"params": model_clone.layer1.parameters(), "lr": args.lr},
+            #     {"params": model_clone.layer2.parameters(),"lr": args.lr},
+            #     {"params": model_clone.layer3.parameters(), "lr": args.lr},
+            #     {"params": model_clone.layer4.parameters(), "lr": args.lr},
+            # ],
             lr=args.lr,
         )
         batch = train_batches[indice]
@@ -351,9 +351,11 @@ def train(args, model, device, train_loader,
 
         # compute output
         output = model(data)
+        # print(output)
         # compute accuracy
         preds = np.argmax(output.detach().cpu().numpy(), axis=1)
         labels = target.detach().cpu().numpy()
+
         acc1 = accuracy(preds, labels)
         top1_acc.append(acc1)
         # compute loss
@@ -371,6 +373,7 @@ def train(args, model, device, train_loader,
         # scheduler.step()
         # input("HERE")
         if batch_idx % (args.log_interval*len(train_loader)) == 0:
+
             print(
                 # f"\tTrain Epoch: {epoch} \t"
                 # f"Loss: {loss:.6f} "

@@ -17,45 +17,47 @@ Input params:
         the system-specific, dataset-specific and 
         model-specific settings.
 """
+def accuracy(preds, labels):
+    return (preds == labels).mean()
 def test(model, device, test_loader):
     model.eval()
     test_loss = 0
     correct = 0
     test_correct = 0
     total = 0
+    top1_acc = []
+    losses = []
     # test_accuracy = np.array()
     with torch.no_grad():
         for batch_num, (data, target) in enumerate(test_loader):
             data, target = data.to(device), target.to(device)
+            # compute output
             output = model(data)
-            loss  = nn.CrossEntropyLoss()(output, target)
+            print(output)
+            # compute accuracy
+            preds = np.argmax(output.detach().cpu().numpy(), axis=1)
+            labels = target.detach().cpu().numpy()
 
-            test_loss += loss.item()
-            prediction = torch.max(output, 1)
-            # print("pred:", prediction[1])
-            # print("target:", target)
-            # print("pred: %f, target: %f" % (prediction[1],target))
-            total += target.size(0)
-            test_correct += np.sum(prediction[1].cpu().numpy() == target.cpu().numpy())
-            # if(test_correct/ total < 0.2):
-            #     print("predict:",prediction)
-            #     print("target:",target)
-            # pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
-            # test_accuracy.append(test_correct / total)
-            # input(pred)
-            # input(target)
-            # correct += pred.eq(target.view_as(pred)).sum().item()
-            # print(correct)
-            # print(len(test_loader.dataset))
-            progress_bar(batch_num, len(test_loader), 'Loss: %.4f | Acc: %.3f%% (%d/%d)'
-                         % (test_loss / (batch_num + 1), 100. * test_correct / total, test_correct, total))
+            acc1 = accuracy(preds, labels)
+            top1_acc.append(acc1)
+            # compute loss
+            loss = nn.CrossEntropyLoss()(output, target)
+            losses.append(loss.item())
     # test_loss /= len(test_loader.dataset)
     #
     # print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
     #     test_loss, correct, len(test_loader.dataset),
     #     100. * correct / len(test_loader.dataset)))
     # visualizer.plot_current_accuracy(epoch, 100*correct / len(test_loader.dataset))
-    return test_correct / total
+            print(
+                f"\tTesting accuracy:\t"
+                # f"Loss: {loss:.6f} "
+                # f"Acc@1: {train_correct/total:.6f} "
+                f"Loss: {np.mean(losses):.6f} "
+                f"Acc@1: {np.mean(top1_acc):.6f} "
+            )
+
+    return np.mean(top1_acc)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Perform model validation.')

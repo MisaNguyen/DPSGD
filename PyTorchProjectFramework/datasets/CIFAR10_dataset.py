@@ -52,20 +52,20 @@ def batch_clipping_preprocessing(train_kwargs,test_kwargs):
         transforms.RandomHorizontalFlip(),
     ]
 
-    normalize = [
+    testset = datasets.CIFAR10(
+        root='../data', train=False, download=True, transform=transforms.Compose(toTensor))
+    test_mean, test_std = get_mean_and_std(testset)
+    test_normalize = [
         # transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-        transforms.Normalize((0.5, 0.5, 0.5), (0.2, 0.2, 0.2)),
+        transforms.Normalize(test_mean, test_std),
     ]
-
     transform_test = transforms.Compose(
-        toTensor + augmentations + normalize
+        augmentations + test_normalize
     )
+    testset = MyDataset(testset,transform=transform_test)
 
     trainset = datasets.CIFAR10(
         root='../data', train=True, download=True, transform=transforms.Compose(toTensor))
-    testset = datasets.CIFAR10(
-        root='../data', train=False, download=True, transform=transform_test)
-
     number_of_batches = len(trainset) // train_kwargs['batch_size']
     batches_length = [train_kwargs['batch_size']] * number_of_batches
     """ No drop last option"""
@@ -73,6 +73,7 @@ def batch_clipping_preprocessing(train_kwargs,test_kwargs):
         batches_length.append(len(trainset) % train_kwargs['batch_size'])
     """ Split train dataset into batches"""
     batches = torch.utils.data.random_split(trainset, batches_length)
+
     # mean, std = get_mean_and_std(trainset)
     # print(mean, std)
     # input()
@@ -188,23 +189,28 @@ def individual_clipping_preprocessing(train_kwargs,test_kwargs):
     toTensor = [
         transforms.ToTensor(),
     ]
-    normalize = [
-
-        transforms.Normalize((0.5, 0.5, 0.5), (0.2, 0.2, 0.2)),
-    ]
     transform_train = transforms.Compose(
         augmentations + toTensor
     )
+
+    testset = datasets.CIFAR10(
+        root='../data', train=False, download=True, transform=transforms.Compose(toTensor))
+    test_mean, test_std = get_mean_and_std(testset)
+    test_normalize = [
+        # transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+        transforms.Normalize(test_mean, test_std),
+    ]
     transform_test = transforms.Compose(
-        augmentations + toTensor
+        augmentations + test_normalize
     )
+    testset = MyDataset(testset,transform=transform_test)
+
 
     """
     """
     trainset = datasets.CIFAR10(
         root='../data', train=True, download=True, transform=transform_train)
-    testset = datasets.CIFAR10(
-        root='../data', train=False, download=True, transform=transform_test)
+
 
     train_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)
     test_loader = torch.utils.data.DataLoader(testset, **test_kwargs)
@@ -248,23 +254,31 @@ def minibatch_SGD_preprocessing(train_kwargs,test_kwargs):
         transforms.RandomCrop(32, padding=4),
         transforms.RandomHorizontalFlip(),
     ]
-    normalize = [
-        transforms.ToTensor(),
+
+    testset = datasets.CIFAR10(
+        root='../data', train=False, download=True, transform=transforms.Compose(toTensor))
+    test_mean, test_std = get_mean_and_std(testset)
+    test_normalize = [
         # transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-        transforms.Normalize((0.5, 0.5, 0.5), (0.2, 0.2, 0.2)),
+        transforms.Normalize(test_mean, test_std),
+    ]
+    transform_test = transforms.Compose(
+        augmentations + test_normalize
+    )
+    testset = MyDataset(testset,transform=transform_test)
+
+    train_normalize = [
+        transforms.ToTensor(),
+        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+        # transforms.Normalize((0.5, 0.5, 0.5), (0.2, 0.2, 0.2)),
     ]
     transform_train = transforms.Compose(
-        augmentations + normalize
+        augmentations + train_normalize
     )
-    transform_test = transforms.Compose(
-        augmentations + normalize
-    )
-
-
     trainset = datasets.CIFAR10(
         root='../data', train=True, download=True, transform=transform_train)
-    testset = datasets.CIFAR10(
-        root='../data', train=False, download=True, transform=transform_test)
+    # testset = datasets.CIFAR10(
+    #     root='../data', train=False, download=True, transform=transform_test)
 
     train_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)
     test_loader = torch.utils.data.DataLoader(testset, **test_kwargs)
