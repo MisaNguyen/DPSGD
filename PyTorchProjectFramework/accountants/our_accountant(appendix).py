@@ -294,15 +294,15 @@ MAIN MODULE
 if __name__ == "__main__":
     # N_c,K,delta,s = setting_3()
     # setting_file_name = "settings_sample_size_exp"
-    # setting_file_name = "settings"
+    setting_file_name = "settings"
     # setting_file_name = "settings_ICML_table_2"
-    setting_file_name = "settings_batch_clipping"
-    settings = ["setting_1","setting_2","setting_3","setting_4","setting_5"]
+    # setting_file_name = "settings_batch_clipping"
+    # settings = ["setting_1","setting_2","setting_3","setting_4","setting_5"]
     # settings = ["setting_1","setting_2","setting_3","setting_4","setting_5","setting_6"]
     # settings = ["setting_1","setting_2","setting_3","setting_4","setting_5","setting_6","setting_7"]
     # settings = ["setting_1","setting_3","setting_4","setting_5","setting_6","setting_7","setting_8","setting_9"]
     # settings = ["setting_min_T", "setting_min_T_conjecture"]
-    # settings = ["setting_1"]
+    settings = ["setting_1"]
     with open("./%s.json" % setting_file_name, "r") as json_file:
         json_data = json.load(json_file)
     latex_output_dpsgd = "Our DPA (appendix)"

@@ -43,7 +43,7 @@ class VGGNet(nn.Module):
                                      kernel_size=(3, 3),
                                      stride=(1, 1),
                                      padding=(1, 1)),
-                           nn.BatchNorm2d(x),
+                           # nn.BatchNorm2d(x),
                            nn.ReLU(inplace=True),
                            ]
 

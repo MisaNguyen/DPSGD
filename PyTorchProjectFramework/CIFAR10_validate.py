@@ -33,7 +33,7 @@ def test(model, device, test_loader):
             data, target = data.to(device), target.to(device)
             # compute output
             output = model(data)
-            print(output)
+            # print(output)
             # compute accuracy
             preds = np.argmax(output.detach().cpu().numpy(), axis=1)
             labels = target.detach().cpu().numpy()
@@ -49,13 +49,13 @@ def test(model, device, test_loader):
     #     test_loss, correct, len(test_loader.dataset),
     #     100. * correct / len(test_loader.dataset)))
     # visualizer.plot_current_accuracy(epoch, 100*correct / len(test_loader.dataset))
-            print(
-                f"\tTesting accuracy:\t"
-                # f"Loss: {loss:.6f} "
-                # f"Acc@1: {train_correct/total:.6f} "
-                f"Loss: {np.mean(losses):.6f} "
-                f"Acc@1: {np.mean(top1_acc):.6f} "
-            )
+        print(
+            f"\tTesting accuracy:\t"
+            # f"Loss: {loss:.6f} "
+            # f"Acc@1: {train_correct/total:.6f} "
+            f"Loss: {np.mean(losses):.6f} "
+            f"Acc@1: {np.mean(top1_acc):.6f} "
+        )
 
     return np.mean(top1_acc)
 

@@ -1,12 +1,12 @@
 {
   "setting_1": {
-    "sampling_batch": 512,
+    "sampling_batch": 64,
     "num_examples"
-    : 60000,
+    : 50000,
     "epochs": 50,
-    "learning_rate": 0.001,
-    "noise_multiplier": 3.6,
-    "max_grad_norm": 0.001
+    "learning_rate": 0.1,
+    "noise_multiplier": 2,
+    "max_grad_norm": 1.0
   },
   "setting_2": {
     "epochs"

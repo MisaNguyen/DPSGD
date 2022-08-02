@@ -9,7 +9,7 @@ from models.Lenet_model import Net
 from models.resnet_model import ResNet18,ResNet34,ResNet50,ResNet101,ResNet152
 """MODELS"""
 # from models.densenet_model import densenet40_k12_cifar10
-# from models.alexnet_model import AlexNet
+from models.alexnet_model import AlexNet
 # from models.alexnet_simple import AlexNet
 # from models.simple_dla import SimpleDLA
 from models.convnet_model import convnet
@@ -122,17 +122,18 @@ def main():
     # input(len(test_kwargs))
     # model = Net().to(device)
     # model = densenet40_k12_cifar10().to(device)
-    # model = AlexNet(num_classes=10).to(device)
+    model = AlexNet(num_classes=10).to(device)
+    model_name = "AlexNet"
     # model = SimpleDLA().to(device)
     # model = convnet(num_classes=10).to(device)
     # model_name = "convnet"
     """VGG 16 """
-    arch = [64, 64, 'M',
-            128, 128, 'M',
-            256, 256, 256, 'M',
-            512, 512, 512, 'M',
-            512, 512, 512, 'M']
-    model = VGGNet(in_channels=3, num_classes=10, arch=arch).to(device)
+    # arch = [64, 64, 'M',
+    #         128, 128, 'M',
+    #         256, 256, 256, 'M',
+    #         512, 512, 512, 'M',
+    #         512, 512, 512, 'M']
+    # model = VGGNet(in_channels=3, num_classes=10, arch=arch).to(device)
     # model = torchvision.models.vgg16().to(device)
     # input_lastLayer = model.classifier[6].in_features
     # print(input_lastLayer)
@@ -140,7 +141,7 @@ def main():
     # model = model.to(device)
     # input(model)
     # model = VGG16(num_classes=10).to(device)
-    model_name = "VGG16"
+    # model_name = "VGG16"
     # optimizer = MNIST_optimizer.SGD_optimizer(args.lr,model)
     # sigma = 6
     # gradient_norm = 3

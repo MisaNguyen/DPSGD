@@ -183,6 +183,9 @@ def individual_clipping_preprocessing(train_kwargs,test_kwargs):
         transforms.RandomCrop(32, padding=4),
         transforms.RandomHorizontalFlip(),
     ]
+    normalize = [
+        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+    ]
     """
     Without DP: Normalization violates DP
     """
@@ -201,7 +204,7 @@ def individual_clipping_preprocessing(train_kwargs,test_kwargs):
         transforms.Normalize(test_mean, test_std),
     ]
     transform_test = transforms.Compose(
-        augmentations + test_normalize
+        augmentations
     )
     testset = MyDataset(testset,transform=transform_test)
 
@@ -250,7 +253,12 @@ def individual_clipping_preprocessing(train_kwargs,test_kwargs):
     return train_loader, test_loader, dataset_size
 
 def minibatch_SGD_preprocessing(train_kwargs,test_kwargs):
+    toTensor = [
+        transforms.ToTensor(),
+    ]
     augmentations = [
+        # transforms.Resize(256),
+        # transforms.CenterCrop(224),
         transforms.RandomCrop(32, padding=4),
         transforms.RandomHorizontalFlip(),
     ]

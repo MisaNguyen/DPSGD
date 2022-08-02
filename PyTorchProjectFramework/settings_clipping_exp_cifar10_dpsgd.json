@@ -1,6 +1,6 @@
 {
   "setting_0": {
-    "batch_size": 128.0,
+    "batch_size": 64.0,
     "microbatch_size": 1,
     "test_batch_size": 1000,
     "iterations": 5000,
@@ -11,10 +11,10 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 2.0,
-    "max_grad_norm": 10,
+    "noise_multiplier": 0.5,
+    "max_grad_norm": 2,
     "optimizer": "SGD",
-    "enable_DP": true,
+    "enable_DP": true ,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": false
   },
