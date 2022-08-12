@@ -122,11 +122,11 @@ def main():
     # input(len(test_kwargs))
     # model = Net().to(device)
     # model = densenet40_k12_cifar10().to(device)
-    model = AlexNet(num_classes=10).to(device)
-    model_name = "AlexNet"
+    # model = AlexNet(num_classes=10).to(device)
+    # model_name = "AlexNet"
     # model = SimpleDLA().to(device)
-    # model = convnet(num_classes=10).to(device)
-    # model_name = "convnet"
+    model = convnet(num_classes=10).to(device)
+    model_name = "convnet"
     """VGG 16 """
     # arch = [64, 64, 'M',
     #         128, 128, 'M',

@@ -1,6 +1,6 @@
 {
   "setting_0": {
-    "batch_size": 64.0,
+    "batch_size": 50.0,
     "microbatch_size": 1,
     "test_batch_size": 1000,
     "iterations": 5000,
@@ -16,7 +16,7 @@
     "optimizer": "SGD",
     "enable_DP": true ,
     "diminishing_gradient_norm": false,
-    "is_individual_clipping": false
+    "is_individual_clipping": true
   },
   "setting_1": {
     "batch_size": 64.0,

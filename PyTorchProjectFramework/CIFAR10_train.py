@@ -344,6 +344,7 @@ def train(args, model, device, train_loader,
     iteration = 0
     losses = []
     top1_acc = []
+    loss = None
     for batch_idx, (data,target) in enumerate(tqdm(train_loader)):
         optimizer.zero_grad()
         iteration += 1
@@ -359,12 +360,26 @@ def train(args, model, device, train_loader,
         acc1 = accuracy(preds, labels)
         top1_acc.append(acc1)
         # compute loss
+        previous_loss = loss
+        previous_output = output
         loss = nn.CrossEntropyLoss()(output, target)
         losses.append(loss.item())
         # compute gradient and do SGD step
         loss.backward()
         optimizer.step()
 
+        if np.isnan(loss.cpu().detach().numpy()):
+            print("NaN loss")
+            print(batch_idx)
+            print(data)
+            print(target)
+            # imshow(torchvision.utils.make_grid(sample_x.cpu()))
+            print(output)
+            print("previous loss", previous_loss)
+            print("previous output", previous_output)
+            input()
+            for param in model.parameters():
+                print(param.grad)
         # ### UPDATE LEARNING RATE """
         # for param_group in optimizer.param_groups:
         #     param_group["lr"] = param_group["lr"] * args.gamma

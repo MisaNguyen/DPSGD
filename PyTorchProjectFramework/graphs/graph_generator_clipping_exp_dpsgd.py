@@ -10,7 +10,7 @@ if __name__ == "__main__":
     settings_path = "settings_clipping_exp_cifar10_dpsgd" # old
     # settings_path = "settings_clipping_exp_cifar10_dpsgd_new"
     # settings_path = "settings_clipping_exp_cifar10_dpsgd_large_C_sigma_4"
-    model_name = "convnet"
+    model_name = "VGG16"
     # setting_file_name = "settings_main_theorem(test)"
     # settings = ["setting_" + str(i) for i in range(1,6)]
     # settings = ["setting_" + str(i) for i in range(6,11)]
@@ -19,8 +19,8 @@ if __name__ == "__main__":
     # settings = ["setting_" + str(i) for i in range(21,26)]
     # settings = ["setting_" + str(i) for i in range(26,31)]
     index =5
-    s_index_min = 1
-    s_index_max = 6 # max = 6
+    s_index_min = 2
+    s_index_max = 5 # max = 6
     # settings = ["setting_" + str(i) for i in range(26,29)]
     # settings.append("setting_30")
     settings = ["setting_" + str(5*index+i) for i in range(s_index_min,s_index_max)]
@@ -32,9 +32,9 @@ if __name__ == "__main__":
     C = Cs[index]
     sigma = 2
     s = 64 * pow(2, s_index_min-1)
-    draw_DPSGD_IC_case = True
+    draw_DPSGD_IC_case = False
     draw_SGD_case = False
-    draw_DPSGD_BC_case = False
+    draw_DPSGD_BC_case = True
     # settings = ["setting_0_c1_s2","setting_0_noclip"]
     # settings = ["setting_1","setting_2","setting_3","setting_4"]
     # settings = ["setting_1","setting_2"]
@@ -45,7 +45,7 @@ if __name__ == "__main__":
 
     # Check whether the specified path exists or not
     isExist = os.path.exists(graph_path)
-    base_path = "./old_data/" + settings_path + "/" + model_name
+    base_path = "./data/" + settings_path + "/" + model_name
     if not isExist:
         # Create a new directory because it does not exist
         os.makedirs(graph_path)
