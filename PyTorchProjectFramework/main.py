@@ -13,6 +13,7 @@ from models.alexnet_model import AlexNet
 # from models.alexnet_simple import AlexNet
 # from models.simple_dla import SimpleDLA
 from models.convnet_model import convnet
+from models.nor_convnet_model import nor_convnet
 from models.vgg16 import VGGNet
 """DATASETS"""
 from datasets import MNIST_dataset, CIFAR10_dataset
@@ -125,8 +126,10 @@ def main():
     # model = AlexNet(num_classes=10).to(device)
     # model_name = "AlexNet"
     # model = SimpleDLA().to(device)
-    model = convnet(num_classes=10).to(device)
-    model_name = "convnet"
+    # model = convnet(num_classes=10).to(device)
+    # model_name = "convnet"
+    model = nor_convnet(num_classes=10).to(device)
+    model_name = "nor_convnet"
     """VGG 16 """
     # arch = [64, 64, 'M',
     #         128, 128, 'M',
