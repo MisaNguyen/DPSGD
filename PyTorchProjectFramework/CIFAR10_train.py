@@ -275,7 +275,7 @@ def BC_train(args, model, device, train_batches,epoch,
         """
         batch = train_batches[indice]
         # input(len(batch))
-        data_loader = torch.utils.data.DataLoader(batch, batch_size=len(batch)) # Load each data
+        data_loader = torch.utils.data.DataLoader(batch, batch_size=args.microbatch_size) # Load each data
         for data, target in data_loader:
             data, target = data.to(device), target.to(device)
             output = model(data)

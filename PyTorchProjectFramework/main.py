@@ -71,7 +71,7 @@ def main():
 
     #Add setting path here
     # settings_file = "settings"
-    settings_file = "settings_clipping_exp_cifar10_dpsgd"
+    settings_file = "settings_clipping_exp_cifar10_dpsgd_large_C_microbatch"
     print("Running setting: %s.json" % settings_file)
     if(args.load_setting != ""):
         with open(settings_file +".json", "r") as json_file:
@@ -79,7 +79,7 @@ def main():
             setting_data = json_data[args.load_setting]
             # Loading data
             args.batch_size = int(setting_data["batch_size"])
-            # args.microbatch_size = setting_data["microbatch_size"]
+            args.microbatch_size = setting_data["microbatch_size"]
             args.test_batch_size = setting_data["test_batch_size"]
             args.iterations = setting_data["iterations"]
             args.lr = setting_data["learning_rate"]

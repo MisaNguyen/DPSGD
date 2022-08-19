@@ -10,7 +10,7 @@ if __name__ == "__main__":
     settings_path = "settings_clipping_exp_cifar10_dpsgd" # old
     # settings_path = "settings_clipping_exp_cifar10_dpsgd_new"
     # settings_path = "settings_clipping_exp_cifar10_dpsgd_large_C_sigma_4"
-    model_name = "VGG16"
+    model_name = "nor_convnet"
     # setting_file_name = "settings_main_theorem(test)"
     # settings = ["setting_" + str(i) for i in range(1,6)]
     # settings = ["setting_" + str(i) for i in range(6,11)]
@@ -19,8 +19,8 @@ if __name__ == "__main__":
     # settings = ["setting_" + str(i) for i in range(21,26)]
     # settings = ["setting_" + str(i) for i in range(26,31)]
     index =5
-    s_index_min = 2
-    s_index_max = 5 # max = 6
+    s_index_min = 1 # min = 1
+    s_index_max = 6 # max = 6
     # settings = ["setting_" + str(i) for i in range(26,29)]
     # settings.append("setting_30")
     settings = ["setting_" + str(5*index+i) for i in range(s_index_min,s_index_max)]
