@@ -1,8 +1,8 @@
 {
-  "original_SGD": {
+  "setting_0": {
     "batch_size": 1024,
     "microbatch_size": 1,
-    "test_batch_size": 1000,
+    "test_batch_size": 1024,
     "iterations": 5000,
     "learning_rate": 0.1,
     "gamma": 1,
@@ -11,7 +11,7 @@
     "seed": 1,
     "log_interval": 10000,
     "save_model": false,
-    "noise_multiplier": 0.0001,
+    "noise_multiplier": 2,
     "max_grad_norm": 10.0,
     "optimizer": "SGD",
     "enable_DP": true,

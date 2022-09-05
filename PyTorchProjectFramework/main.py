@@ -5,16 +5,17 @@ import argparse
 import json
 import math
 import numpy as np
-from models.Lenet_model import Net
-from models.resnet_model import ResNet18,ResNet34,ResNet50,ResNet101,ResNet152
+
+# from models.resnet_model import ResNet18,ResNet34,ResNet50,ResNet101,ResNet152
 """MODELS"""
 # from models.densenet_model import densenet40_k12_cifar10
-from models.alexnet_model import AlexNet
+# from models.alexnet_model import AlexNet
 # from models.alexnet_simple import AlexNet
 # from models.simple_dla import SimpleDLA
-from models.convnet_model import convnet
-from models.nor_convnet_model import nor_convnet
-from models.vgg16 import VGGNet
+# from models.convnet_model import convnet
+from models.Lenet_model import LeNet
+# from models.nor_convnet_model import nor_convnet
+# from models.vgg16 import VGGNet
 """DATASETS"""
 from datasets import MNIST_dataset, CIFAR10_dataset
 """UTILS"""
@@ -71,7 +72,7 @@ def main():
 
     #Add setting path here
     # settings_file = "settings"
-    settings_file = "settings_clipping_exp_cifar10_dpsgd_large_C_microbatch"
+    settings_file = "settings_clipping_exp_cifar10_dpsgd_large_C"
     print("Running setting: %s.json" % settings_file)
     if(args.load_setting != ""):
         with open(settings_file +".json", "r") as json_file:
@@ -128,8 +129,11 @@ def main():
     # model = SimpleDLA().to(device)
     # model = convnet(num_classes=10).to(device)
     # model_name = "convnet"
-    model = nor_convnet(num_classes=10).to(device)
-    model_name = "nor_convnet"
+    model = LeNet().to(device)
+    model_name = "LeNet"
+
+    # model = nor_convnet(num_classes=10).to(device)
+    # model_name = "nor_convnet"
     """VGG 16 """
     # arch = [64, 64, 'M',
     #         128, 128, 'M',
@@ -187,7 +191,7 @@ def main():
         if (args.enable_diminishing_gradient_norm == True):
             out_file_path = out_file_path + "/DGN"
         if (args.enable_individual_clipping == True):
-            train_loader, test_loader, dataset_size = CIFAR10_dataset.individual_clipping_preprocessing(train_kwargs,test_kwargs)
+            train_loader, test_loader, dataset_size = MNIST_dataset.individual_clipping_preprocessing(train_kwargs,test_kwargs)
 
             privacy_engine = PrivacyEngine(
                 secure_mode=args.secure_rng,
@@ -207,11 +211,11 @@ def main():
             )
             out_file_path = out_file_path + "/IC"
         else:
-            train_batches, test_loader, dataset_size = CIFAR10_dataset.batch_clipping_preprocessing(train_kwargs,test_kwargs)
+            train_batches, test_loader, dataset_size = MNIST_dataset.batch_clipping_preprocessing(train_kwargs,test_kwargs)
             out_file_path = out_file_path + "/BC"
     else:
-        # train_loader, test_loader, dataset_size = CIFAR10_dataset.minibatch_SGD_preprocessing(train_kwargs,test_kwargs)
-        train_loader, test_loader, dataset_size = CIFAR10_dataset.minibatch_SGD_preprocessing(train_kwargs,test_kwargs)
+        # train_loader, test_loader, dataset_size = MNIST_dataset.minibatch_SGD_preprocessing(train_kwargs,test_kwargs)
+        train_loader, test_loader, dataset_size = MNIST_dataset.minibatch_SGD_preprocessing(train_kwargs,test_kwargs)
 
     # epochs = math.ceil(args.iterations* args.batch_size / dataset_size)
     epochs = 50 #TODO: remove to calculated based on iterations
@@ -225,20 +229,13 @@ def main():
             if(args.enable_individual_clipping):
                 print("Individual Clipping training")
                 # input(list(train_loader))
-                train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, optimizer,
-                                                      args.enable_diminishing_gradient_norm,
-                                                      args.enable_individual_clipping))
+                train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, optimizer))
             else:
                 print("Batch Clipping training")
-                train_accuracy.append(CIFAR10_train.BC_train(args, model, device, train_batches, epoch, optimizer,
-                                                      args.enable_diminishing_gradient_norm,
-                                                      args.enable_individual_clipping))
+                train_accuracy.append(CIFAR10_train.BC_train(args, model, device, train_batches, epoch, optimizer))
         else:
-
             print("SGD training")
-            train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, optimizer,
-                                                         args.enable_diminishing_gradient_norm,
-                                                         args.enable_individual_clipping))
+            train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, optimizer))
         ### UPDATE LEARNING RATE after each batch"""
         # if(args.enable_diminishing_gradient_norm):
         #

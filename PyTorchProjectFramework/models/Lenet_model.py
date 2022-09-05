@@ -2,28 +2,32 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch
 
-class Net(nn.Module):
+class LeNet(nn.Module):
     def __init__(self):
-        super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(1, 32, 3, 1)
-        self.conv2 = nn.Conv2d(32, 64, 3, 1)
-        self.dropout1 = nn.Dropout(0.25)
-        self.dropout2 = nn.Dropout(0.5)
-        self.fc1 = nn.Linear(9216, 128)
-        self.fc2 = nn.Linear(128, 10)
+        super(LeNet, self).__init__()
+        self.conv1 = nn.Conv2d(in_channels = 1, out_channels = 6,
+                               kernel_size = 5, stride = 1, padding = 0)
+        self.conv2 = nn.Conv2d(in_channels = 6, out_channels = 16,
+                               kernel_size = 5, stride = 1, padding = 0)
+        self.conv3 = nn.Conv2d(in_channels = 16, out_channels = 120,
+                               kernel_size = 5, stride = 1, padding = 0)
+        self.linear1 = nn.Linear(120, 84)
+        self.linear2 = nn.Linear(84, 10)
+        self.tanh = nn.Tanh()
+        self.avgpool = nn.AvgPool2d(kernel_size = 2, stride = 2)
 
     def forward(self, x):
         x = self.conv1(x)
-        x = F.relu(x)
+        x = self.tanh(x)
+        x = self.avgpool(x)
         x = self.conv2(x)
-        x = F.relu(x)
-        x = F.max_pool2d(x, 2)
-        x = self.dropout1(x)
-        x = torch.flatten(x, 1)
-        x = self.fc1(x)
-        x = F.relu(x)
-        x = self.dropout2(x)
-        x = self.fc2(x)
-        # input(x)
-        output = F.log_softmax(x, dim=1)
-        return output
+        x = self.tanh(x)
+        x = self.avgpool(x)
+        x = self.conv3(x)
+        x = self.tanh(x)
+
+        x = x.reshape(x.shape[0], -1)
+        x = self.linear1(x)
+        x = self.tanh(x)
+        x = self.linear2(x)
+        return x

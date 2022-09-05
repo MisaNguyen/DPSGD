@@ -158,7 +158,7 @@ END OPACUS code
 # def train(args, model, device, train_loader, optimizer_name, epoch,
 #           visualizer,is_diminishing_gradient_norm, is_individual):
 def BC_train(args, model, device, train_batches,epoch,
-          optimizer,is_diminishing_gradient_norm, is_individual):
+          optimizer):
     model.train()
     print("Training using %s optimizer" % optimizer.__class__.__name__)
     train_loss = 0
@@ -239,7 +239,7 @@ def BC_train(args, model, device, train_batches,epoch,
             """
             Batch clipping
             """
-            if(is_diminishing_gradient_norm == True):
+            if(args.enable_diminishing_gradient_norm == True):
                 # args.max_grad_norm = torch.linalg.norm(param.grad).to("cpu")
                 # print(args.max_grad_norm)
                 if not hasattr(param, "prev_max_grad_norm"): #round 1
@@ -330,7 +330,7 @@ def BC_train(args, model, device, train_batches,epoch,
 
 
 def train(args, model, device, train_loader,
-          optimizer,is_diminishing_gradient_norm, is_individual):
+          optimizer):
     model.train()
     print("Training using %s optimizer" % optimizer.__class__.__name__)
     # train_loss = 0
