@@ -98,6 +98,7 @@ def main():
             args.enable_DP = setting_data["enable_DP"]
             args.clip_per_layer = False #TODO: add to setting file
             args.secure_rng = False #TODO: add to setting file
+            args.shuffle_dataset = True
             clipping = "per_layer" if args.clip_per_layer else "flat"
     print("Mode: DGN (%s), IC (%s)" %  (args.enable_diminishing_gradient_norm, args.enable_individual_clipping))
     # if (args.enable_diminishing_gradient_norm == True):
@@ -108,7 +109,10 @@ def main():
 
     device = torch.device("cuda" if use_cuda else "cpu")
     # print(args.batch_size)
-    train_kwargs = {'batch_size': args.batch_size,  'shuffle': True}
+    if(args.shuffle_dataset):
+        train_kwargs = {'batch_size': args.batch_size,  'shuffle': True}
+    else:
+        train_kwargs = {'batch_size': args.batch_size,  'shuffle': False}
     test_kwargs = {'batch_size': args.test_batch_size, 'shuffle': False}
 
     # train_loader, test_loader = MNIST_dataset.create_dataset(train_kwargs,test_kwargs)

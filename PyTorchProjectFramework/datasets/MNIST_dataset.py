@@ -89,7 +89,8 @@ def batch_clipping_preprocessing(train_kwargs,test_kwargs):
         # input()
         train_normalize = [
             # transforms.Normalize(mean, std),
-            transforms.Normalize((0.1307,), (0.3081,))
+            # transforms.Normalize((0.1307,), (0.3081,))
+            transforms.Normalize((0.15,), (0.3,))
         ]
         transform_train = transforms.Compose(
             augmentations + train_normalize
@@ -147,7 +148,7 @@ def individual_clipping_preprocessing(train_kwargs,test_kwargs):
         transforms.RandomHorizontalFlip(),
     ]
     normalize = [
-        transforms.Normalize((0.1307,), (0.3081,))
+        transforms.Normalize((0.15,), (0.3,))
     ]
     """
     Without DP: Normalization violates DP
@@ -240,7 +241,7 @@ def minibatch_SGD_preprocessing(train_kwargs,test_kwargs):
 
     train_normalize = [
         transforms.ToTensor(),
-        transforms.Normalize((0.1307,), (0.3081,))
+        transforms.Normalize((0.15,), (0.3,))
         # transforms.Normalize((0.5, 0.5, 0.5), (0.2, 0.2, 0.2)),
     ]
     transform_train = transforms.Compose(
