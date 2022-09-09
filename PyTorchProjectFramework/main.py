@@ -13,7 +13,8 @@ import numpy as np
 # from models.alexnet_simple import AlexNet
 # from models.simple_dla import SimpleDLA
 # from models.convnet_model import convnet
-from models.Lenet_model import LeNet
+# from models.Lenet_model import LeNet
+from models.Lenet_model import nor_LeNet
 # from models.nor_convnet_model import nor_convnet
 # from models.vgg16 import VGGNet
 """DATASETS"""
@@ -133,8 +134,8 @@ def main():
     # model = SimpleDLA().to(device)
     # model = convnet(num_classes=10).to(device)
     # model_name = "convnet"
-    model = LeNet().to(device)
-    model_name = "LeNet"
+    model = nor_LeNet().to(device)
+    model_name = "nor_LeNet"
 
     # model = nor_convnet(num_classes=10).to(device)
     # model_name = "nor_convnet"

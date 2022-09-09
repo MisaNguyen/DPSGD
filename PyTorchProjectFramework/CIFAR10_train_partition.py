@@ -157,7 +157,7 @@ END OPACUS code
 """
 # def train(args, model, device, train_loader, optimizer_name, epoch,
 #           visualizer,is_diminishing_gradient_norm, is_individual):
-def BC_train(args, model, device, train_loader,epoch,
+def BC_train(args, model, device, train_batches,epoch,
           optimizer):
     model.train()
     print("Training using %s optimizer" % optimizer.__class__.__name__)
@@ -167,12 +167,21 @@ def BC_train(args, model, device, train_loader,epoch,
     output = 0
     loss = 0
     # Get optimizer
+    # train_accuracy = []
+    # test_accuracy = []
     iteration = 0
     losses = []
     top1_acc = []
-
-    for batch_idx, (data,target) in enumerate(tqdm(train_loader)): # Batch loop
-        data, target = data.to(device), target.to(device)
+    # Store each layer's max grad norm from last round
+    # if(is_diminishing_gradient_norm == True):
+    #     for param in model.parameters():
+    #         if hasattr(param, "layer_max_grad_norm"):
+    #             param.prev_max_grad_norm = param.layer_max_grad_norm
+    # for batch_idx, (data,target) in enumerate(train_loader):
+    # generate & shuffle batches indices
+    indices = np.arange(len(train_batches))
+    indices = np.random.permutation(indices)
+    for batch_idx, indice in enumerate(tqdm(indices)): # Batch loop
         optimizer.zero_grad()
         # copy current model
 
@@ -186,23 +195,23 @@ def BC_train(args, model, device, train_loader,epoch,
             # ],
             lr=args.lr,
         )
-        BatchData = TensorDataset(data,target)
-        mini_train_loader = torch.utils.data.DataLoader(BatchData, batch_size=args.microbatch_size, shuffle=True) # Load each data
+        batch = train_batches[indice]
+        train_loader = torch.utils.data.DataLoader(batch, batch_size=1, shuffle=True) # Load each data
 
         """ Original SGD updates"""
-        for sample_idx, (micro_data,micro_target) in enumerate(mini_train_loader):
+        for sample_idx, (data,target) in enumerate(train_loader):
             optimizer_clone.zero_grad()
             iteration += 1
-            micro_data, micro_target = micro_data.to(device), micro_target.to(device)
+            data, target = data.to(device), target.to(device)
             # print(target)
             # output = model(data) # input as batch size = 1
             # loss = nn.CrossEntropyLoss()(output, target)
             # loss.backward()
 
             # compute output
-            output = model_clone(micro_data)
+            output = model_clone(data)
             # compute loss
-            loss = nn.CrossEntropyLoss()(output, micro_target)
+            loss = nn.CrossEntropyLoss()(output, target)
             losses.append(loss.item())
             # compute gradient
             loss.backward()
@@ -264,27 +273,32 @@ def BC_train(args, model, device, train_loader,epoch,
         """
         Calculate top 1 acc
         """
-        output = model(data)
-        preds = np.argmax(output.detach().cpu().numpy(), axis=1)
-        labels = target.detach().cpu().numpy()
-        acc1 = accuracy(preds, labels)
-        top1_acc.append(acc1)
-        # scheduler.step()
-        # input("HERE")
-        if batch_idx % args.log_interval == 0:
+        batch = train_batches[indice]
+        # input(len(batch))
+        data_loader = torch.utils.data.DataLoader(batch, batch_size=args.microbatch_size) # Load each data
+        for data, target in data_loader:
+            data, target = data.to(device), target.to(device)
+            output = model(data)
+            preds = np.argmax(output.detach().cpu().numpy(), axis=1)
+            labels = target.detach().cpu().numpy()
+            acc1 = accuracy(preds, labels)
+            top1_acc.append(acc1)
+            # scheduler.step()
+            # input("HERE")
+            if batch_idx % (args.log_interval*len(indices)) == 0:
 
-            train_loss += loss.item()
-            prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
+                train_loss += loss.item()
+                prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
 
-            total += target.size(0)
+                total += target.size(0)
 
-            train_correct += np.sum(prediction[1].cpu().numpy() == target.cpu().numpy())
-            print(
-                f"Loss: {np.mean(losses):.6f} "
-                f"Acc@1: {np.mean(top1_acc):.6f} "
-            )
-        if args.dry_run:
-            break
+                train_correct += np.sum(prediction[1].cpu().numpy() == target.cpu().numpy())
+                print(
+                    f"Loss: {np.mean(losses):.6f} "
+                    f"Acc@1: {np.mean(top1_acc):.6f} "
+                )
+            if args.dry_run:
+                break
         # ### UPDATE LEARNING RATE after each batch"""
         # if(args.enable_diminishing_gradient_norm):
         #
