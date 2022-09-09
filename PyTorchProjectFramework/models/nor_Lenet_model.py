@@ -9,7 +9,7 @@ class nor_LeNet(nn.Module):
         self.conv1 = nn.Sequential(
             nn.Conv2d(in_channels = 1, out_channels = 6,
                       kernel_size = 5, stride = 1, padding = 0),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(6),
         )
         self.conv2 = nn.Sequential(
             nn.Conv2d(in_channels = 6, out_channels = 16,

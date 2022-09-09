@@ -14,7 +14,7 @@ import numpy as np
 # from models.simple_dla import SimpleDLA
 # from models.convnet_model import convnet
 # from models.Lenet_model import LeNet
-from models.Lenet_model import nor_LeNet
+from models.nor_Lenet_model import nor_LeNet
 # from models.nor_convnet_model import nor_convnet
 # from models.vgg16 import VGGNet
 """DATASETS"""

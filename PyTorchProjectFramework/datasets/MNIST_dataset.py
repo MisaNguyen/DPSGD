@@ -59,7 +59,7 @@ def batch_clipping_preprocessing(train_kwargs,test_kwargs):
         transforms.ToTensor(),
     ]
     transform_train = transforms.Compose(
-        augmentations + normalize + toTensor
+        augmentations + toTensor + normalize
     )
 
     testset = datasets.MNIST(
@@ -71,7 +71,7 @@ def batch_clipping_preprocessing(train_kwargs,test_kwargs):
         transforms.Normalize((0.1307,), (0.3081,))
     ]
     transform_test = transforms.Compose(
-        augmentations + test_normalize + toTensor
+        augmentations + toTensor + test_normalize
     )
     testset = MyDataset(testset,transform=transform_test)
 
