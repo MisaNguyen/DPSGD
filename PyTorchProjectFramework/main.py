@@ -12,13 +12,16 @@ import numpy as np
 # from models.alexnet_model import AlexNet
 # from models.alexnet_simple import AlexNet
 # from models.simple_dla import SimpleDLA
-# from models.convnet_model import convnet
-# from models.Lenet_model import LeNet
+
+from models.convnet_model import convnet
+from models.Lenet_model import LeNet
 from models.nor_Lenet_model import nor_LeNet
-# from models.nor_convnet_model import nor_convnet
+from models.nor_convnet_model import nor_convnet
+
 # from models.vgg16 import VGGNet
 """DATASETS"""
-from datasets import MNIST_dataset, CIFAR10_dataset
+# from datasets import MNIST_dataset, CIFAR10_dataset
+from datasets.dataset_preprocessing import dataset_preprocessing
 """UTILS"""
 from utils.utils import generate_json_data_for_graph
 from utils.visualizer import Visualizer
@@ -100,6 +103,8 @@ def main():
             args.clip_per_layer = False #TODO: add to setting file
             args.secure_rng = False #TODO: add to setting file
             args.shuffle_dataset = True
+            # args.dataset_name = "MNIST"
+            args.dataset_name = "CIFAR10"
             clipping = "per_layer" if args.clip_per_layer else "flat"
     print("Mode: DGN (%s), IC (%s)" %  (args.enable_diminishing_gradient_norm, args.enable_individual_clipping))
     # if (args.enable_diminishing_gradient_norm == True):
@@ -134,11 +139,11 @@ def main():
     # model = SimpleDLA().to(device)
     # model = convnet(num_classes=10).to(device)
     # model_name = "convnet"
-    model = nor_LeNet().to(device)
-    model_name = "nor_LeNet"
+    # model = nor_LeNet().to(device)
+    # model_name = "nor_LeNet"
 
-    # model = nor_convnet(num_classes=10).to(device)
-    # model_name = "nor_convnet"
+    model = nor_convnet(num_classes=10).to(device)
+    model_name = "nor_convnet"
     """VGG 16 """
     # arch = [64, 64, 'M',
     #         128, 128, 'M',
@@ -190,14 +195,17 @@ def main():
     train_accuracy = []
     test_accuracy = []
     out_file_path = "./graphs/data/" + settings_file +  "/" + model_name + "/" + args.optimizer
+    # Get training and testing data loaders
+    train_loader, test_loader, dataset_size = dataset_preprocessing(args.dataset_name, train_kwargs, test_kwargs,
+                                                                    args.enable_DP,
+                                                                    args.enable_diminishing_gradient_norm,
+                                                                    args.enable_individual_clipping)
     if args.enable_DP:
 
         # privacy_engine = None
         if (args.enable_diminishing_gradient_norm == True):
             out_file_path = out_file_path + "/DGN"
         if (args.enable_individual_clipping == True):
-            train_loader, test_loader, dataset_size = MNIST_dataset.individual_clipping_preprocessing(train_kwargs,test_kwargs)
-
             privacy_engine = PrivacyEngine(
                 secure_mode=args.secure_rng,
             )
@@ -216,11 +224,10 @@ def main():
             )
             out_file_path = out_file_path + "/IC"
         else:
-            train_batches, test_loader, dataset_size = MNIST_dataset.batch_clipping_preprocessing(train_kwargs,test_kwargs)
             out_file_path = out_file_path + "/BC"
     else:
-        # train_loader, test_loader, dataset_size = MNIST_dataset.minibatch_SGD_preprocessing(train_kwargs,test_kwargs)
-        train_loader, test_loader, dataset_size = MNIST_dataset.minibatch_SGD_preprocessing(train_kwargs,test_kwargs)
+        out_file_path = out_file_path + "/SGD"
+
 
     # epochs = math.ceil(args.iterations* args.batch_size / dataset_size)
     epochs = 50 #TODO: remove to calculated based on iterations
@@ -237,7 +244,7 @@ def main():
                 train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, optimizer))
             else:
                 print("Batch Clipping training")
-                train_accuracy.append(CIFAR10_train.BC_train(args, model, device, train_batches, epoch, optimizer))
+                train_accuracy.append(CIFAR10_train.BC_train(args, model, device, train_loader, epoch, optimizer))
         else:
             print("SGD training")
             train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, optimizer))
