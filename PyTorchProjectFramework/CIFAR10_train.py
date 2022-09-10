@@ -173,6 +173,7 @@ def BC_train(args, model, device, train_loader,epoch,
 
     for batch_idx, (data,target) in enumerate(tqdm(train_loader)): # Batch loop
         data, target = data.to(device), target.to(device)
+        print(data.shape)
         optimizer.zero_grad()
         # copy current model
 
@@ -194,6 +195,7 @@ def BC_train(args, model, device, train_loader,epoch,
             optimizer_clone.zero_grad()
             iteration += 1
             micro_data, micro_target = micro_data.to(device), micro_target.to(device)
+            print(micro_data.shape)
             # print(target)
             # output = model(data) # input as batch size = 1
             # loss = nn.CrossEntropyLoss()(output, target)

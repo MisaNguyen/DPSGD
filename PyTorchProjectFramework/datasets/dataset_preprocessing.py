@@ -1,10 +1,13 @@
 from datasets import MNIST_dataset, CIFAR10_dataset
 
 def dataset_preprocessing(dataset_name, train_kwargs, test_kwargs, enable_DP,enable_diminishing_gradient_norm,enable_individual_clipping):
+    print(dataset_name)
     if(dataset_name == "MNIST"):
         dataset = MNIST_dataset
+        print("HERE")
     elif(dataset_name == "CIFAR10"):
         dataset = CIFAR10_dataset
+        print("HERE1")
     else:
         raise Exception("Invalid dataset name, try: MNIST, CIFAR10")
     if enable_DP:

@@ -58,9 +58,7 @@ def batch_clipping_preprocessing(train_kwargs,test_kwargs):
     toTensor = [
         transforms.ToTensor(),
     ]
-    transform_train = transforms.Compose(
-        augmentations + toTensor + normalize
-    )
+
 
 
     # test_mean, test_std = get_mean_and_std(testset)
@@ -72,13 +70,16 @@ def batch_clipping_preprocessing(train_kwargs,test_kwargs):
     transform_test = transforms.Compose(
         augmentations + toTensor + test_normalize
     )
-    testset = datasets.MNIST(
+    testset = datasets.CIFAR10(
         root='../data', train=False, download=True, transform=transform_test)
 
 
     """
     """
-    trainset = datasets.MNIST(
+    transform_train = transforms.Compose(
+        augmentations + toTensor + normalize
+    )
+    trainset = datasets.CIFAR10(
         root='../data', train=True, download=True, transform=transform_train)
 
 
