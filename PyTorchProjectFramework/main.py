@@ -16,12 +16,13 @@ import numpy as np
 from models.convnet_model import convnet
 from models.Lenet_model import LeNet
 from models.nor_Lenet_model import nor_LeNet
-from models.nor_convnet_model import nor_convnet
+# from models.nor_convnet_model import nor_convnet
+from models.BNF_convnet_model import BNF_convnet
 
 # from models.vgg16 import VGGNet
 """DATASETS"""
 # from datasets import MNIST_dataset, CIFAR10_dataset
-from datasets.dataset_preprocessing import dataset_preprocessing
+from datasets.dataset_preprocessing import dataset_preprocessing, partition_dataset_preprocessing
 """UTILS"""
 from utils.utils import generate_json_data_for_graph
 from utils.visualizer import Visualizer
@@ -103,6 +104,7 @@ def main():
             args.clip_per_layer = False #TODO: add to setting file
             args.secure_rng = False #TODO: add to setting file
             args.shuffle_dataset = True
+            args.is_partition_train = True
             # args.dataset_name = "MNIST"
             args.dataset_name = "CIFAR10"
             clipping = "per_layer" if args.clip_per_layer else "flat"
@@ -142,8 +144,12 @@ def main():
     # model = nor_LeNet().to(device)
     # model_name = "nor_LeNet"
 
-    model = nor_convnet(num_classes=10).to(device)
-    model_name = "nor_convnet"
+    # model = nor_convnet(num_classes=10).to(device)
+    # model_name = "nor_convnet"
+    # BNF_nor_convnet_model
+    model = BNF_convnet(num_classes=10).to(device)
+    model_name = "BNF_convnet"
+
     """VGG 16 """
     # arch = [64, 64, 'M',
     #         128, 128, 'M',
@@ -196,12 +202,18 @@ def main():
     test_accuracy = []
     out_file_path = "./graphs/data/" + settings_file +  "/" + model_name + "/" + args.optimizer
     # Get training and testing data loaders
-    train_loader, test_loader, dataset_size = dataset_preprocessing(args.dataset_name, train_kwargs, test_kwargs,
+    if(args.is_partition_train == True):
+        batches, test_loader, dataset_size = partition_dataset_preprocessing(args.dataset_name, train_kwargs, test_kwargs,
+                                                                        args.enable_DP,
+                                                                        args.enable_diminishing_gradient_norm,
+                                                                        args.enable_individual_clipping)
+    else:
+        train_loader, test_loader, dataset_size = dataset_preprocessing(args.dataset_name, train_kwargs, test_kwargs,
                                                                     args.enable_DP,
                                                                     args.enable_diminishing_gradient_norm,
                                                                     args.enable_individual_clipping)
+    # DP settings:
     if args.enable_DP:
-
         # privacy_engine = None
         if (args.enable_diminishing_gradient_norm == True):
             out_file_path = out_file_path + "/DGN"
@@ -228,7 +240,6 @@ def main():
     else:
         out_file_path = out_file_path + "/SGD"
 
-
     # epochs = math.ceil(args.iterations* args.batch_size / dataset_size)
     epochs = 50 #TODO: remove to calculated based on iterations
     print("Total epochs: %f" % epochs)
@@ -244,7 +255,10 @@ def main():
                 train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, optimizer))
             else:
                 print("Batch Clipping training")
-                train_accuracy.append(CIFAR10_train.BC_train(args, model, device, train_loader, epoch, optimizer))
+                if(args.is_partition_train == True):
+                    train_accuracy.append(CIFAR10_train.partition_BC_train(args, model, device, batches, epoch, optimizer))
+                else:
+                    train_accuracy.append(CIFAR10_train.BC_train(args, model, device, train_loader, epoch, optimizer))
         else:
             print("SGD training")
             train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, optimizer))

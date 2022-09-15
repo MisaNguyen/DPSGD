@@ -39,6 +39,81 @@ class MyDataset(Dataset):
     def __len__(self):
         return len(self.subset)
 
+def partition_batch_clipping_preprocessing(train_kwargs,test_kwargs):
+    """
+    With DP
+    """
+    toTensor = [
+        transforms.ToTensor(),
+    ]
+    augmentations = [
+        transforms.RandomCrop(32, padding=4),
+        transforms.RandomHorizontalFlip(),
+    ]
+
+    # testset = datasets.CIFAR10(
+    #     root='../data', train=False, download=True, transform=transforms.Compose(toTensor))
+    # test_mean, test_std = get_mean_and_std(testset)
+    # test_normalize = [
+    #     # transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+    #     transforms.Normalize(test_mean, test_std),
+    # ]
+    transform_test = transforms.Compose(
+        augmentations + toTensor
+        # + test_normalize
+    )
+    testset = datasets.CIFAR10(
+        root='../data', train=False, download=True, transform=transform_test)
+    # testset = MyDataset(testset,transform=transform_test)
+
+    trainset = datasets.CIFAR10(
+        root='../data', train=True, download=True, transform=transforms.Compose(toTensor))
+    number_of_batches = len(trainset) // train_kwargs['batch_size']
+    batches_length = [train_kwargs['batch_size']] * number_of_batches
+    """ No drop last option"""
+    if len(trainset) % train_kwargs['batch_size'] != 0:
+        batches_length.append(len(trainset) % train_kwargs['batch_size'])
+    """ Split train dataset into batches"""
+    batches = torch.utils.data.random_split(trainset, batches_length)
+
+    # mean, std = get_mean_and_std(trainset)
+    # print(mean, std)
+    # input()
+    """ Normalize each batch"""
+    print("normalizing batches...")
+    for idx, batch in enumerate(batches):
+        # mean, std = get_mean_and_std(batch)
+        print("batch_ID: %f" % (idx))
+        # print("mean:", mean)
+        # print("std:", std)
+
+        # print(mean, std)
+        # input()
+        # train_normalize = [
+        #     transforms.Normalize(mean, std),
+        # ]
+        transform_train = transforms.Compose(
+            augmentations
+            # + train_normalize
+        )
+        batches[idx] = MyDataset(batches[idx],transform=transform_train)
+        # train_loader = torch.utils.data.DataLoader(batches[idx], batch_size=1, shuffle=True) # Load each data
+        # for sample_idx, (data,target) in enumerate(train_loader):
+        #     pass
+    print("Finished normalizing batches.")
+
+    test_loader = torch.utils.data.DataLoader(testset, **test_kwargs)
+
+    # Checking the dataset
+    print('\nTesting Set:')
+    for images, labels in test_loader:
+        print('Image batch dimensions:', images.size())
+        print('Image label dimensions:', labels.size())
+        print(labels[:10])
+        break
+    # return train_loader, test_loader
+    dataset_size = len(trainset)
+    return batches, test_loader, dataset_size
 
 def batch_clipping_preprocessing(train_kwargs,test_kwargs):
     print('==> Preparing data..')
@@ -79,7 +154,7 @@ def batch_clipping_preprocessing(train_kwargs,test_kwargs):
     transform_train = transforms.Compose(
         augmentations + toTensor + normalize
     )
-    trainset = datasets.CIFAR10(
+    trainset = datasets.CIFAR10w(
         root='../data', train=True, download=True, transform=transform_train)
 
 
@@ -189,7 +264,7 @@ def individual_clipping_preprocessing(train_kwargs,test_kwargs):
         transforms.Normalize((0.5, 0.5, 0.5), (0.2, 0.2, 0.2)),
     ]
     transform_test = transforms.Compose(
-        augmentations
+        augmentations + toTensor + test_normalize
     )
     testset = datasets.CIFAR10(
         root='../data', train=False, download=True, transform=transform_test)
