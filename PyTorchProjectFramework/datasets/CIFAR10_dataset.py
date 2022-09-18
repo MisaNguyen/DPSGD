@@ -154,7 +154,7 @@ def batch_clipping_preprocessing(train_kwargs,test_kwargs):
     transform_train = transforms.Compose(
         augmentations + toTensor + normalize
     )
-    trainset = datasets.CIFAR10w(
+    trainset = datasets.CIFAR10(
         root='../data', train=True, download=True, transform=transform_train)
 
 

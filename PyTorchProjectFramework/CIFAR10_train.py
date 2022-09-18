@@ -257,7 +257,7 @@ def partition_BC_train(args, model, device, train_batches,epoch,
             Add Gaussian noise to gradients
             """
             dist = torch.distributions.normal.Normal(torch.tensor(0.0),
-                                                     torch.tensor((args.noise_multiplier * args.max_grad_norm)))
+                                                     torch.tensor((args.noise_multiplier *  args.max_grad_norm)))
 
             noise = dist.rsample(param.grad.shape).to(device=device)
 

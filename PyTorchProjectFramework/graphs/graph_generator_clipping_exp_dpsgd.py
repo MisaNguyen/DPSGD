@@ -10,8 +10,8 @@ if __name__ == "__main__":
     settings_path = "settings_clipping_exp_cifar10_dpsgd" # old
     # settings_path = "settings_clipping_exp_cifar10_dpsgd_new"
     # settings_path = "settings_clipping_exp_cifar10_dpsgd_large_C_sigma_4"
-    # model_name = "nor_convnet"
-    model_name = "convnet"
+    # model_name = "BNF_convnet"
+    model_name = "nor_convnet"
     # model_name = "LeNet"
     # setting_file_name = "settings_main_theorem(test)"
     # settings = ["setting_" + str(i) for i in range(1,6)]
@@ -20,21 +20,21 @@ if __name__ == "__main__":
     # settings = ["setting_" + str(i) for i in range(16,21)]
     # settings = ["setting_" + str(i) for i in range(21,26)]
     # settings = ["setting_" + str(i) for i in range(26,31)]
-    index = 0
-    s_index_min = 2 # min = 1
+    index = 4
+    s_index_min = 1 # min = 1
     s_index_max = 6 # max = 6
     # settings = ["setting_" + str(i) for i in range(26,29)]
     # settings.append("setting_30")
     settings = ["setting_" + str(5*index+i) for i in range(s_index_min,s_index_max)]
     # settings = ["setting_0" ]
     lr = 0.1
-    Cs = [0.1,0.05,0.01,0.005,0.5,1.0] #old
+    # Cs = [0.1,0.05,0.01,0.005,0.5,1.0] #old
     # Cs = [1.0,1.5,2,2.5,3,3.5]
-    # Cs = [6.0,7.0,8.0,9.0,10.0,20.0]
+    Cs = [6.0,7.0,8.0,9.0,10.0,20.0]
     C = Cs[index]
     sigma = 2
     s = 32 * pow(2, s_index_min-1)
-    draw_DPSGD_IC_case = True
+    draw_DPSGD_IC_case = False
     draw_SGD_case = False
     draw_DPSGD_BC_case = True
     # settings = ["setting_0_c1_s2","setting_0_noclip"]
@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
     # Check whether the specified path exists or not
     isExist = os.path.exists(graph_path)
-    base_path = "./old_data/" + settings_path + "/" + model_name
+    base_path = "./data/" + settings_path + "/" + model_name
     if not isExist:
         # Create a new directory because it does not exist
         os.makedirs(graph_path)
@@ -93,7 +93,7 @@ if __name__ == "__main__":
         """
         Draw graphs
         """
-        plt.subplot(1, 2, 1)
+        plt.subplot(1, 3, 1)
         if(draw_SGD_case):
             plt.plot(SGD_epoch_index, SGD_train_accuracy, label="SGD, s= %f" % (s))
 
@@ -105,7 +105,7 @@ if __name__ == "__main__":
         plt.title('Train accuracy, lr = %f' % lr)
         plt.legend()
 
-        plt.subplot(1, 2, 2)
+        plt.subplot(1, 3, 2)
         if(draw_SGD_case):
             plt.plot(SGD_epoch_index, SGD_test_accuracy, label="SGD, s= %f" % (s))
         if(draw_DPSGD_BC_case):
@@ -113,6 +113,10 @@ if __name__ == "__main__":
         if(draw_DPSGD_IC_case):
             plt.plot(DPSGD_IC_epoch_index, IC_DPSGD_test_accuracy, label="IC, s= %f" % (s))
 
+        plt.subplot(1,3,3)
+        if(draw_DPSGD_BC_case and draw_DPSGD_IC_case):
+            test_acc_ratio = [DPSGD_test_accuracy[i]/ IC_DPSGD_test_accuracy[i] for i in range(len(DPSGD_test_accuracy))]
+            plt.plot(DPSGD_BC_epoch_index, test_acc_ratio, label="BC/IC,s= %f" % (s))
         plt.title('Test accuracy, lr = %f, C = %f, sigma = %f' % (lr,C,sigma))
         plt.xlabel('epoch')
         plt.ylabel('accuracy')
