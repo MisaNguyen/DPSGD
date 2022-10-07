@@ -5,7 +5,7 @@ import os
 import json
 
 def get_data_from_settings(setting_path,setting_name,model_name,experiment,IC,BC,DGN):
-    base_path = "./old_data/" + setting_path + '/'  + model_name + '/' + experiment
+    base_path = "./data/" + setting_path + '/'  + model_name + '/' + experiment
 
     if(DGN):
         base_path += "/DGN"
@@ -89,9 +89,9 @@ if __name__ == "__main__":
     draw_DGN_case = False
     setup_plot('epoch' , 'accuracy',lr ,s ,sigma)
     """SGD DATA"""
-    model_name = "convnet"
+    model_name = "LeNet"
     setting_path = "settings_clipping_exp_cifar10_dpsgd_large_C"
-    s = 256
+    s = 512
     setting_name = "setting_4"
     experiment = "SGD"
 
@@ -217,12 +217,12 @@ if __name__ == "__main__":
     # plt_draw(epoch_index, train_accuracy,test_accuracy,label,C,sigma)
     # plt.legend()
     """SETTING 7 DATA"""
-    model_name = "convnet"
+    model_name = "LeNet"
     setting_path = "settings_clipping_exp_cifar10_dpsgd_large_C"
     draw_BC_case = True
     draw_IC_case = False
     draw_DGN_case = False
-    s = 256
+    s = 512
     C = 20.0
     sigma = 2
     setting_name = "setting_29"
@@ -239,14 +239,14 @@ if __name__ == "__main__":
     plt_draw(epoch_index, train_accuracy,test_accuracy,label,C,sigma)
 
     """SETTING 8 DATA"""
-    model_name = "convnet"
-    setting_path = "settings_clipping_exp_cifar10_dpsgd_large_C_sigma_4"
+    model_name = "LeNet"
+    setting_path = "settings_clipping_exp_cifar10_dpsgd_large_C"
     draw_BC_case = False
     draw_IC_case = True
     draw_DGN_case = False
     s = 256
     C = 10.0
-    sigma = 4
+    sigma = 2
     setting_name = "setting_24"
     experiment = "SGD"
     if (sigma != None):
@@ -260,74 +260,74 @@ if __name__ == "__main__":
     epoch_index = [i for i in range(1, epochs+1)]
     plt_draw(epoch_index, train_accuracy,test_accuracy,label,C,sigma)
 
-    """SETTING 9 DATA"""
-    model_name = "convnet"
-    setting_path = "settings_clipping_exp_cifar10_dpsgd_large_C"
-    draw_BC_case = False
-    draw_IC_case = True
-    draw_DGN_case = False
-    s = 256
-    C = 10.0
-    sigma = 2
-    setting_name = "setting_24"
-    experiment = "SGD"
-    if (sigma != None):
-        label = "BC C= %f, sigma = %f" if draw_BC_case else "IC C= %f, sigma = %f"
-    else:
-        label = "BC C= %f" if draw_BC_case else "IC C= %f"
-
-    train_accuracy, test_accuracy, epochs = get_data_from_settings(
-        setting_path,setting_name,
-        model_name,experiment,
-        draw_IC_case,draw_BC_case,draw_DGN_case)
-    epoch_index = [i for i in range(1, epochs+1)]
-    plt_draw(epoch_index, train_accuracy,test_accuracy,label,C,sigma)
-
-    """SETTING 10 DATA"""
-    model_name = "convnet"
-    setting_path = "settings_clipping_exp_cifar10_dpsgd_large_C"
-    draw_BC_case = True
-    draw_IC_case = False
-    draw_DGN_case = False
-    s = 256
-    C = 10.0
-    sigma = 2
-    setting_name = "setting_24"
-    experiment = "SGD"
-    if (sigma != None):
-        label = "BC C= %f, sigma = %f" if draw_BC_case else "IC C= %f, sigma = %f"
-    else:
-        label = "BC C= %f" if draw_BC_case else "IC C= %f"
-
-    train_accuracy, test_accuracy, epochs = get_data_from_settings(
-        setting_path,setting_name,
-        model_name,experiment,
-        draw_IC_case,draw_BC_case,draw_DGN_case)
-    epoch_index = [i for i in range(1, epochs+1)]
-    plt_draw(epoch_index, train_accuracy,test_accuracy,label,C,sigma)
-
-    """SETTING 11 DATA"""
-    model_name = "convnet"
-    setting_path = "settings_clipping_exp_cifar10_dpsgd_large_C_sigma_4"
-    draw_BC_case = False
-    draw_IC_case = True
-    draw_DGN_case = False
-    s = 256
-    C = 6.0
-    sigma = 4
-    setting_name = "setting_4"
-    experiment = "SGD"
-    if (sigma != None):
-        label = "BC C= %f, sigma = %f" if draw_BC_case else "IC C= %f, sigma = %f"
-    else:
-        label = "BC C= %f" if draw_BC_case else "IC C= %f"
-
-    train_accuracy, test_accuracy, epochs = get_data_from_settings(
-        setting_path,setting_name,
-        model_name,experiment,
-        draw_IC_case,draw_BC_case,draw_DGN_case)
-    epoch_index = [i for i in range(1, epochs+1)]
-    plt_draw(epoch_index, train_accuracy,test_accuracy,label,C,sigma)
+    # """SETTING 9 DATA"""
+    # model_name = "convnet"
+    # setting_path = "settings_clipping_exp_cifar10_dpsgd_large_C"
+    # draw_BC_case = False
+    # draw_IC_case = True
+    # draw_DGN_case = False
+    # s = 256
+    # C = 10.0
+    # sigma = 2
+    # setting_name = "setting_24"
+    # experiment = "SGD"
+    # if (sigma != None):
+    #     label = "BC C= %f, sigma = %f" if draw_BC_case else "IC C= %f, sigma = %f"
+    # else:
+    #     label = "BC C= %f" if draw_BC_case else "IC C= %f"
+    #
+    # train_accuracy, test_accuracy, epochs = get_data_from_settings(
+    #     setting_path,setting_name,
+    #     model_name,experiment,
+    #     draw_IC_case,draw_BC_case,draw_DGN_case)
+    # epoch_index = [i for i in range(1, epochs+1)]
+    # plt_draw(epoch_index, train_accuracy,test_accuracy,label,C,sigma)
+    #
+    # """SETTING 10 DATA"""
+    # model_name = "convnet"
+    # setting_path = "settings_clipping_exp_cifar10_dpsgd_large_C"
+    # draw_BC_case = True
+    # draw_IC_case = False
+    # draw_DGN_case = False
+    # s = 256
+    # C = 10.0
+    # sigma = 2
+    # setting_name = "setting_24"
+    # experiment = "SGD"
+    # if (sigma != None):
+    #     label = "BC C= %f, sigma = %f" if draw_BC_case else "IC C= %f, sigma = %f"
+    # else:
+    #     label = "BC C= %f" if draw_BC_case else "IC C= %f"
+    #
+    # train_accuracy, test_accuracy, epochs = get_data_from_settings(
+    #     setting_path,setting_name,
+    #     model_name,experiment,
+    #     draw_IC_case,draw_BC_case,draw_DGN_case)
+    # epoch_index = [i for i in range(1, epochs+1)]
+    # plt_draw(epoch_index, train_accuracy,test_accuracy,label,C,sigma)
+    #
+    # """SETTING 11 DATA"""
+    # model_name = "convnet"
+    # setting_path = "settings_clipping_exp_cifar10_dpsgd_large_C_sigma_4"
+    # draw_BC_case = False
+    # draw_IC_case = True
+    # draw_DGN_case = False
+    # s = 256
+    # C = 6.0
+    # sigma = 4
+    # setting_name = "setting_4"
+    # experiment = "SGD"
+    # if (sigma != None):
+    #     label = "BC C= %f, sigma = %f" if draw_BC_case else "IC C= %f, sigma = %f"
+    # else:
+    #     label = "BC C= %f" if draw_BC_case else "IC C= %f"
+    #
+    # train_accuracy, test_accuracy, epochs = get_data_from_settings(
+    #     setting_path,setting_name,
+    #     model_name,experiment,
+    #     draw_IC_case,draw_BC_case,draw_DGN_case)
+    # epoch_index = [i for i in range(1, epochs+1)]
+    # plt_draw(epoch_index, train_accuracy,test_accuracy,label,C,sigma)
     plt.legend()
 
     graph_path = "./graph/C_custom_compare"

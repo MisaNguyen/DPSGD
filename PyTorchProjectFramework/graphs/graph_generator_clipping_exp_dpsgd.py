@@ -7,12 +7,12 @@ if __name__ == "__main__":
     # mng = plt.get_current_fig_manager()
     # mng.full_screen_toggle()
     # loading SGD data
-    settings_path = "settings_clipping_exp_cifar10_dpsgd" # old
+    settings_path = "settings_clipping_exp_cifar10_dpsgd_large_C" # old
     # settings_path = "settings_clipping_exp_cifar10_dpsgd_new"
     # settings_path = "settings_clipping_exp_cifar10_dpsgd_large_C_sigma_4"
     # model_name = "BNF_convnet"
-    model_name = "nor_convnet"
-    # model_name = "LeNet"
+    # model_name = "convnet"
+    model_name = "LeNet"
     # setting_file_name = "settings_main_theorem(test)"
     # settings = ["setting_" + str(i) for i in range(1,6)]
     # settings = ["setting_" + str(i) for i in range(6,11)]
@@ -20,8 +20,8 @@ if __name__ == "__main__":
     # settings = ["setting_" + str(i) for i in range(16,21)]
     # settings = ["setting_" + str(i) for i in range(21,26)]
     # settings = ["setting_" + str(i) for i in range(26,31)]
-    index = 4
-    s_index_min = 1 # min = 1
+    index = 0
+    s_index_min = 0 # min = 1
     s_index_max = 6 # max = 6
     # settings = ["setting_" + str(i) for i in range(26,29)]
     # settings.append("setting_30")
@@ -34,7 +34,7 @@ if __name__ == "__main__":
     C = Cs[index]
     sigma = 2
     s = 32 * pow(2, s_index_min-1)
-    draw_DPSGD_IC_case = False
+    draw_DPSGD_IC_case = True
     draw_SGD_case = False
     draw_DPSGD_BC_case = True
     # settings = ["setting_0_c1_s2","setting_0_noclip"]

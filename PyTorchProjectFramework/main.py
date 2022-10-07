@@ -256,7 +256,7 @@ def main():
             else:
                 print("Batch Clipping training")
                 print("double clipping norm")
-                args.max_grad_norm = 2 * args.max_grad_norm
+                # args.max_grad_norm = 2 * args.max_grad_norm
                 if(args.is_partition_train == True):
                     train_accuracy.append(CIFAR10_train.partition_BC_train(args, model, device, batches, epoch, optimizer))
                 else:
