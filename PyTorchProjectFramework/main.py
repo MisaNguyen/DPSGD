@@ -77,7 +77,7 @@ def main():
 
     #Add setting path here
     # settings_file = "settings"
-    settings_file = "settings_clipping_exp_cifar10_dpsgd_large_C"
+    settings_file = "settings_clipping_exp_cifar10_dpsgd"
     print("Running setting: %s.json" % settings_file)
     if(args.load_setting != ""):
         with open(settings_file +".json", "r") as json_file:
@@ -258,6 +258,7 @@ def main():
                 print("double clipping norm")
                 # args.max_grad_norm = 2 * args.max_grad_norm
                 if(args.is_partition_train == True):
+                    out_file_path = out_file_path + "/partitioned"
                     train_accuracy.append(CIFAR10_train.partition_BC_train(args, model, device, batches, epoch, optimizer))
                 else:
                     train_accuracy.append(CIFAR10_train.BC_train(args, model, device, train_loader, epoch, optimizer))
