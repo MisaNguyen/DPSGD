@@ -1,7 +1,7 @@
 {
   "setting_0": {
-    "batch_size": 1024,
-    "microbatch_size": 64,
+    "batch_size": 4096,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 5000,
     "learning_rate": 0.1,
@@ -18,8 +18,8 @@
     "is_individual_clipping": true
   },
   "setting_1": {
-    "batch_size": 64,
-    "microbatch_size": 64,
+    "batch_size": 256,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -36,8 +36,8 @@
     "is_individual_clipping": true
   },
   "setting_2": {
-    "batch_size": 128,
-    "microbatch_size": 64,
+    "batch_size": 512,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -54,8 +54,8 @@
     "is_individual_clipping": true
   },
   "setting_3": {
-    "batch_size": 256,
-    "microbatch_size": 64,
+    "batch_size": 1024,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -72,8 +72,8 @@
     "is_individual_clipping": true
   },
   "setting_4": {
-    "batch_size": 512,
-    "microbatch_size": 64,
+    "batch_size": 2048,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -90,8 +90,8 @@
     "is_individual_clipping": true
   },
   "setting_5": {
-    "batch_size": 1024,
-    "microbatch_size": 64,
+    "batch_size": 4096,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -108,8 +108,8 @@
     "is_individual_clipping": true
   },
   "setting_6": {
-    "batch_size": 64,
-    "microbatch_size": 64,
+    "batch_size": 256,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -126,8 +126,8 @@
     "is_individual_clipping": true
   },
   "setting_7": {
-    "batch_size": 128,
-    "microbatch_size": 64,
+    "batch_size": 512,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -144,8 +144,8 @@
     "is_individual_clipping": true
   },
   "setting_8": {
-    "batch_size": 256,
-    "microbatch_size": 64,
+    "batch_size": 1024,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -162,8 +162,8 @@
     "is_individual_clipping": true
   },
   "setting_9": {
-    "batch_size": 512,
-    "microbatch_size": 64,
+    "batch_size": 2048,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -180,8 +180,8 @@
     "is_individual_clipping": true
   },
   "setting_10": {
-    "batch_size": 1024,
-    "microbatch_size": 64,
+    "batch_size": 4096,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -198,8 +198,8 @@
     "is_individual_clipping": true
   },
   "setting_11": {
-    "batch_size": 64,
-    "microbatch_size": 64,
+    "batch_size": 256,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -216,8 +216,8 @@
     "is_individual_clipping": true
   },
   "setting_12": {
-    "batch_size": 128,
-    "microbatch_size": 64,
+    "batch_size": 512,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -234,8 +234,8 @@
     "is_individual_clipping": true
   },
   "setting_13": {
-    "batch_size": 256,
-    "microbatch_size": 64,
+    "batch_size": 1024,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -252,8 +252,8 @@
     "is_individual_clipping": true
   },
   "setting_14": {
-    "batch_size": 512,
-    "microbatch_size": 64,
+    "batch_size": 2048,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -270,8 +270,8 @@
     "is_individual_clipping": true
   },
   "setting_15": {
-    "batch_size": 1024,
-    "microbatch_size": 64,
+    "batch_size": 4096,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -288,8 +288,8 @@
     "is_individual_clipping": true
   },
   "setting_16": {
-    "batch_size": 64,
-    "microbatch_size": 64,
+    "batch_size": 256,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -306,8 +306,8 @@
     "is_individual_clipping": true
   },
   "setting_17": {
-    "batch_size": 128,
-    "microbatch_size": 64,
+    "batch_size": 512,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -324,8 +324,8 @@
     "is_individual_clipping": true
   },
   "setting_18": {
-    "batch_size": 256,
-    "microbatch_size": 64,
+    "batch_size": 1024,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -342,8 +342,8 @@
     "is_individual_clipping": true
   },
   "setting_19": {
-    "batch_size": 512,
-    "microbatch_size": 64,
+    "batch_size": 2048,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -360,8 +360,8 @@
     "is_individual_clipping": true
   },
   "setting_20": {
-    "batch_size": 1024,
-    "microbatch_size": 64,
+    "batch_size": 4096,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -378,8 +378,8 @@
     "is_individual_clipping": true
   },
   "setting_21": {
-    "batch_size": 64,
-    "microbatch_size": 64,
+    "batch_size": 256,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -396,8 +396,8 @@
     "is_individual_clipping": true
   },
   "setting_22": {
-    "batch_size": 128,
-    "microbatch_size": 64,
+    "batch_size": 512,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -414,8 +414,8 @@
     "is_individual_clipping": true
   },
   "setting_23": {
-    "batch_size": 256,
-    "microbatch_size": 64,
+    "batch_size": 1024,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -432,8 +432,8 @@
     "is_individual_clipping": true
   },
   "setting_24": {
-    "batch_size": 512,
-    "microbatch_size": 64,
+    "batch_size": 2048,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -450,8 +450,8 @@
     "is_individual_clipping": true
   },
   "setting_25": {
-    "batch_size": 1024,
-    "microbatch_size": 64,
+    "batch_size": 4096,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -468,8 +468,8 @@
     "is_individual_clipping": true
   },
   "setting_26": {
-    "batch_size": 64,
-    "microbatch_size": 64,
+    "batch_size": 256,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -486,8 +486,8 @@
     "is_individual_clipping": true
   },
   "setting_27": {
-    "batch_size": 128,
-    "microbatch_size": 64,
+    "batch_size": 512,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -504,8 +504,8 @@
     "is_individual_clipping": true
   },
   "setting_28": {
-    "batch_size": 256,
-    "microbatch_size": 64,
+    "batch_size": 1024,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -522,8 +522,8 @@
     "is_individual_clipping": true
   },
   "setting_29": {
-    "batch_size": 512,
-    "microbatch_size": 64,
+    "batch_size": 2048,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,
@@ -540,8 +540,8 @@
     "is_individual_clipping": true
   },
   "setting_30": {
-    "batch_size": 1024,
-    "microbatch_size": 64,
+    "batch_size": 4096,
+    "microbatch_size": 256,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.1,

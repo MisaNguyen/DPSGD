@@ -7,20 +7,21 @@ import json
 
 if __name__ == "__main__":
     # loading SGD data
-    # settings_path = "settings_clipping_exp_cifar10_dpsgd_new"
-    settings_path = "settings_clipping_exp_cifar10_dpsgd_large_C"
-    model_name = "convnet"
+    settings_path = "settings_clipping_exp_cifar10_dpsgd"
+    # settings_path = "settings_clipping_exp_cifar10_dpsgd_large_C"
+    model_name = "nor_convnet"
+    partitioned = False
     # setting_file_name = "settings_main_theorem(test)"
     # settings = ["setting_" + str(i) for i in range(1,6)]
     # settings = ["setting_" + str(i) for i in range(6,11)]
     # settings = ["setting_" + str(i) for i in range(11,16)]
     # settings = ["setting_" + str(i) for i in range(16,21)]
     lr = 0.1
-    # Cs = [0.1,0.05,0.01,0.005,0.5,1.0]
+    Cs = [0.1,0.05,0.01,0.005,0.5,1.0]
     # Cs = [1.0,1.5,2,2.5,3,3.5]
-    Cs = [6.0,7.0,8.0,9.0,10.0,20.0]
+    # Cs = [6.0,7.0,8.0,9.0,10.0,20.0]
     sigma = 2
-    index=5
+    index = 5
     s_arr = [32,64,128,256,512]
     s = s_arr[index-1]
     draw_IC_case = False

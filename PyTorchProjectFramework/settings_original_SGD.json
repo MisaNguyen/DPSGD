@@ -14,7 +14,7 @@
     "noise_multiplier": 1.5,
     "max_grad_norm": 6.0,
     "optimizer": "SGD",
-    "enable_DP": fasle,
+    "enable_DP": false,
     "diminishing_gradient_norm": false,
     "is_individual_clipping": false
   },
