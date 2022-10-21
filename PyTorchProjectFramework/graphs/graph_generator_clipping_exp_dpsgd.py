@@ -12,62 +12,74 @@ if __name__ == "__main__":
             # Setting 0
             "settings_path": "settings_clipping_exp_cifar10_dpsgd",
             "Cs": [0.1,0.05,0.01,0.005,0.5,1.0],
-            "sigma": 2
+            "sigma": 2,
+            "s_start": 64
         },
         {
             # Setting 1
             "settings_path": "settings_clipping_exp_cifar10_dpsgd_new",
             "Cs": [1.0,1.5,2,2.5,3,3.5],
-            "sigma": 2
+            "sigma": 2,
+            "s_start": 256
         },
         {
             # Setting 2
             "settings_path": "settings_clipping_exp_cifar10_dpsgd_large_C",
             "Cs": [6.0,7.0,8.0,9.0,10.0,20.0],
-            "sigma": 2
+            "sigma": 2,
+            "s_start": 64
         },
         {
             # Setting 3
             "settings_path": "settings_clipping_exp_cifar10_dpsgd_sigma_4",
             "Cs": [0.1,0.05,0.01,0.005,0.5,1.0],
-            "sigma": 4
+            "sigma": 4,
+            "s_start": 64
         },
         {
             # Setting 4
             "settings_path": "settings_clipping_exp_cifar10_dpsgd_new_sigma_4",
             "Cs": [1.0,1.5,2,2.5,3,3.5],
-            "sigma": 4
+            "sigma": 4,
+            "s_start": 256
         },
         {
             # Setting 5
             "settings_path": "settings_clipping_exp_cifar10_dpsgd_large_C_sigma_4",
             "Cs": [6.0,7.0,8.0,9.0,10.0,20.0],
-            "sigma": 4
+            "sigma": 4,
+            "s_start": 64
         },
         {
             # Setting 6
             "settings_path": "settings_clipping_exp_cifar10_dpsgd_sigma_8",
             "Cs": [0.1,0.05,0.01,0.005,0.5,1.0],
-            "sigma": 8
+            "sigma": 8,
+            "s_start": 64
         },
         {
             # Setting 7
             "settings_path": "settings_clipping_exp_cifar10_dpsgd_new_sigma_8",
             "Cs": [1.0,1.5,2,2.5,3,3.5],
-            "sigma": 8
+            "sigma": 8,
+            "s_start": 256
         },
         {
             # Setting 8
             "settings_path": "settings_clipping_exp_cifar10_dpsgd_large_C_sigma_8",
             "Cs": [6.0,7.0,8.0,9.0,10.0,20.0],
-            "sigma": 8
+            "sigma": 8,
+            "s_start": 64
         },
     ]
     models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet"]
     # Get models and settings
-    setting_index = 0
+    setting_index = 7
     models_index = 1
-    settings_path, Cs = settings[setting_index]["settings_path"], settings[setting_index]["Cs"]
+    settings_path, Cs, sigma, s_start = settings[setting_index]["settings_path"], \
+                                        settings[setting_index]["Cs"], \
+                                        settings[setting_index]["sigma"], \
+                                        settings[setting_index]["s_start"]
     model_name = models[models_index]
 
     # Partition setting
@@ -81,7 +93,7 @@ if __name__ == "__main__":
     # settings = ["setting_" + str(i) for i in range(16,21)]
     # settings = ["setting_" + str(i) for i in range(21,26)]
     # settings = ["setting_" + str(i) for i in range(26,31)]
-    index = 4
+    index = 3
     s_index_min = 1 # min = 1
     s_index_max = 6 # max = 6
     # settings = ["setting_" + str(i) for i in range(26,29)]
@@ -93,11 +105,10 @@ if __name__ == "__main__":
     # Cs = [1.0,1.5,2,2.5,3,3.5]
     # Cs = [6.0,7.0,8.0,9.0,10.0,20.0]
     C = Cs[index]
-    sigma = 2
-    s = 64 * pow(2, s_index_min-1)
+    s = s_start * pow(2, s_index_min-1)
     draw_DPSGD_IC_case = True
     draw_SGD_case = False
-    draw_DPSGD_BC_case = True
+    draw_DPSGD_BC_case = False
     # settings = ["setting_0_c1_s2","setting_0_noclip"]
     # settings = ["setting_1","setting_2","setting_3","setting_4"]
     # settings = ["setting_1","setting_2"]
@@ -106,7 +117,7 @@ if __name__ == "__main__":
     graph_path = "./graph/" + settings_path + '/clipping'
 
     number_of_subgraphs = 2
-    if(draw_DPSGD_IC_case):
+    if(draw_DPSGD_IC_case and draw_DPSGD_BC_case):
         number_of_subgraphs = 3
     # Check whether the specified path exists or not
     isExist = os.path.exists(graph_path)
@@ -141,7 +152,7 @@ if __name__ == "__main__":
             experiment = "SGD"
             # bc_data_path  = "./data/" + settings_path + '/' + experiment + '/' + setting +".json"
             bc_data_path  = base_path + '/' + experiment + '/BC/' + setting +".json"
-            print(bc_data_path)
+            # print(bc_data_path)
             with open(bc_data_path, "r") as data_file:
                 data = json.load(data_file)
                 DPSGD_train_accuracy = data["train_accuracy"]
@@ -205,7 +216,12 @@ if __name__ == "__main__":
             prefix = "BC"
         else:
             prefix = "IC"
-    file_name =  '/' + model_name + '_' + prefix + '_lr_' + str(lr) + '_C_' + str(C) + '_sigma_' + str(sigma) + '_' + str(index)
+    fig_index = setting_index
+
+    file_name =  '/' + model_name + '_' + prefix + '_lr_' + str(lr) + '_C_' + str(C) + '_sigma_' + str(sigma) + '_' + str(fig_index)
+    while(os.path.exists(graph_path+ file_name)):
+        fig_index = fig_index+1
+        file_name =  '/' + model_name + '_' + prefix + '_lr_' + str(lr) + '_C_' + str(C) + '_sigma_' + str(sigma) + '_' + str(fig_index)
     fig = plt.gcf()
     fig.set_size_inches((22, 11), forward=False)
     plt.savefig(graph_path + file_name +".png")

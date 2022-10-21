@@ -35,7 +35,7 @@ import CIFAR10_train
 import torch.optim as optim
 # from CIFAR10_train_opacus import train
 """ OPACUS"""
-from opacus import PrivacyEngine
+from optimizers.privacy_engine.opacus_engine import PrivacyEngine
 def main():
     # Training settings
     parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
@@ -104,7 +104,7 @@ def main():
             args.clip_per_layer = False #TODO: add to setting file
             args.secure_rng = False #TODO: add to setting file
             args.shuffle_dataset = True
-            args.is_partition_train = True
+            args.is_partition_train = False
             # args.dataset_name = "MNIST"
             args.dataset_name = "CIFAR10"
             clipping = "per_layer" if args.clip_per_layer else "flat"
@@ -139,16 +139,16 @@ def main():
     # model = AlexNet(num_classes=10).to(device)
     # model_name = "AlexNet"
     # model = SimpleDLA().to(device)
-    # model = convnet(num_classes=10).to(device)
-    # model_name = "convnet"
+    model = convnet(num_classes=10).to(device)
+    model_name = "convnet"
     # model = nor_LeNet().to(device)
     # model_name = "nor_LeNet"
 
     # model = nor_convnet(num_classes=10).to(device)
     # model_name = "nor_convnet"
     # BNF_nor_convnet_model
-    model = BNF_convnet(num_classes=10).to(device)
-    model_name = "BNF_convnet"
+    # model = BNF_convnet(num_classes=10).to(device)
+    # model_name = "BNF_convnet"
 
     """VGG 16 """
     # arch = [64, 64, 'M',
@@ -237,6 +237,8 @@ def main():
             out_file_path = out_file_path + "/IC"
         else:
             out_file_path = out_file_path + "/BC"
+            if(args.is_partition_train == True):
+                out_file_path = out_file_path + "/partitioned"
     else:
         out_file_path = out_file_path + "/SGD"
 
@@ -258,7 +260,7 @@ def main():
                 print("double clipping norm")
                 # args.max_grad_norm = 2 * args.max_grad_norm
                 if(args.is_partition_train == True):
-                    out_file_path = out_file_path + "/partitioned"
+
                     train_accuracy.append(CIFAR10_train.partition_BC_train(args, model, device, batches, epoch, optimizer))
                 else:
                     train_accuracy.append(CIFAR10_train.BC_train(args, model, device, train_loader, epoch, optimizer))

@@ -82,8 +82,28 @@ Input params:
     export: Whether to export the final model (default=True).
 """
 
-
-
+def Compute_S_sens(model, data, target):
+    # Noise
+    # TODO: define data noise (perturbations) here
+    noise = 1
+    # data with noise
+    S_sens = []
+    noisy_data = data # TBD
+    output = model(noisy_data)
+    loss = nn.CrossEntropyLoss(output,target)
+    loss.backward(output)
+    noisy_params = model.parameters()
+    # data
+    output = model(data)
+    loss = nn.CrossEntropyLoss(output,target)
+    loss.backward(output)
+    for noisy_param, params in zip(noisy_params,model.parameters):
+        # ref: https://pytorch.org/docs/stable/generated/torch.linalg.norm.html#torch.linalg.norm
+        # torch.linalg.norm(A, ord=None, dim=None, keepdim=False, *, out=None, dtype=None)
+        LHS_norm = torch.linalg.norm(noisy_param.grad - params.grad)
+        RHS_norm = torch.linalg.norm(noise)
+        S_sens.append(LHS_norm/RHS_norm)
+    return S_sens
 def imshow(img):
     img = img / 2 + 0.5     # unnormalize
     npimg = img.numpy()
