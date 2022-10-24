@@ -243,7 +243,7 @@ def main():
         out_file_path = out_file_path + "/SGD"
 
     # epochs = math.ceil(args.iterations* args.batch_size / dataset_size)
-    epochs = 50 #TODO: remove to calculated based on iterations
+    epochs = 100 #TODO: remove to calculated based on iterations
     print("Total epochs: %f" % epochs)
     print("Saving data to: %s" % out_file_path)
 
