@@ -74,7 +74,8 @@ if __name__ == "__main__":
     ]
     models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet"]
     # Get models and settings
-    setting_index = 7
+    setting_index = 0
+    s_index = 5
     models_index = 1
     settings_path, Cs, sigma, s_start = settings[setting_index]["settings_path"], \
                                         settings[setting_index]["Cs"], \
@@ -93,21 +94,21 @@ if __name__ == "__main__":
     # settings = ["setting_" + str(i) for i in range(16,21)]
     # settings = ["setting_" + str(i) for i in range(21,26)]
     # settings = ["setting_" + str(i) for i in range(26,31)]
-    index = 3
+
     s_index_min = 1 # min = 1
     s_index_max = 6 # max = 6
     # settings = ["setting_" + str(i) for i in range(26,29)]
     # settings.append("setting_30")
-    settings = ["setting_" + str(5*index+i) for i in range(s_index_min,s_index_max)]
+    settings = ["setting_" + str(5*s_index+i) for i in range(s_index_min,s_index_max)]
     # settings = ["setting_0" ]
     lr = 0.1
     # Cs = [0.1,0.05,0.01,0.005,0.5,1.0] #old
     # Cs = [1.0,1.5,2,2.5,3,3.5]
     # Cs = [6.0,7.0,8.0,9.0,10.0,20.0]
-    C = Cs[index]
+    C = Cs[s_index]
     s = s_start * pow(2, s_index_min-1)
-    draw_DPSGD_IC_case = True
-    draw_SGD_case = False
+    draw_DPSGD_IC_case = False
+    draw_SGD_case = True
     draw_DPSGD_BC_case = False
     # settings = ["setting_0_c1_s2","setting_0_noclip"]
     # settings = ["setting_1","setting_2","setting_3","setting_4"]
