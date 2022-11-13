@@ -1,26 +1,42 @@
 
 import torch
+import torchvision
 import argparse
 import json
 import math
 import numpy as np
-from models.Lenet_model import Net
-from models.resnet_model import ResNet18,ResNet34,ResNet50,ResNet101,ResNet152
+
+# from models.resnet_model import ResNet18,ResNet34,ResNet50,ResNet101,ResNet152
+"""MODELS"""
 # from models.densenet_model import densenet40_k12_cifar10
 # from models.alexnet_model import AlexNet
 # from models.alexnet_simple import AlexNet
 # from models.simple_dla import SimpleDLA
-from models.convnet_model import convnet
-from datasets import MNIST_dataset, CIFAR10_dataset_old_2
-from utils.utils import generate_json_data_for_graph
-import MNIST_train, MNIST_validate
-import CIFAR10_train_minibatch_SGD, CIFAR10_validate
 
-import torch.optim as optim
+from models.convnet_model import convnet
+from models.Lenet_model import LeNet
+from models.nor_Lenet_model import nor_LeNet
+# from models.nor_convnet_model import nor_convnet
+from models.BNF_convnet_model import BNF_convnet
+
+# from models.vgg16 import VGGNet
+"""DATASETS"""
+# from datasets import MNIST_dataset, CIFAR10_dataset
+from datasets.dataset_preprocessing import dataset_preprocessing, partition_dataset_preprocessing
+"""UTILS"""
+from utils.utils import generate_json_data_for_graph
 from utils.visualizer import Visualizer
-from CIFAR10_train_opacus import train
+"""TRAIN AND VALIDATE"""
+import MNIST_train, MNIST_validate
+import CIFAR10_validate
+import CIFAR10_train
+# import CIFAR10_train_minibatch_SGD as CIFAR10_train
+"""OPTIMIZERS"""
+import torch.optim as optim
+# from CIFAR10_train_opacus import train
 """ OPACUS"""
-from opacus import PrivacyEngine
+from optimizers.privacy_engine.opacus_engine import PrivacyEngine
+
 def main():
     # Training settings
     parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
@@ -62,15 +78,15 @@ def main():
 
     #Add setting path here
     # settings_file = "settings"
-    settings_file = "settings_clipping_exp_cifar10_dpsgd_large_C"
+    settings_file = "settings_clipping_exp_cifar10_dpsgd"
     print("Running setting: %s.json" % settings_file)
     if(args.load_setting != ""):
         with open(settings_file +".json", "r") as json_file:
             json_data = json.load(json_file)
             setting_data = json_data[args.load_setting]
             # Loading data
-            args.batch_size = setting_data["batch_size"]
-            # args.microbatch_size = setting_data["microbatch_size"]
+            args.batch_size = int(setting_data["batch_size"])
+            args.microbatch_size = setting_data["microbatch_size"]
             args.test_batch_size = setting_data["test_batch_size"]
             args.iterations = setting_data["iterations"]
             args.lr = setting_data["learning_rate"]
@@ -88,6 +104,10 @@ def main():
             args.enable_DP = setting_data["enable_DP"]
             args.clip_per_layer = False #TODO: add to setting file
             args.secure_rng = False #TODO: add to setting file
+            args.shuffle_dataset = True
+            args.is_partition_train = False
+            # args.dataset_name = "MNIST"
+            args.dataset_name = "CIFAR10"
             clipping = "per_layer" if args.clip_per_layer else "flat"
     print("Mode: DGN (%s), IC (%s)" %  (args.enable_diminishing_gradient_norm, args.enable_individual_clipping))
     # if (args.enable_diminishing_gradient_norm == True):
@@ -98,14 +118,17 @@ def main():
 
     device = torch.device("cuda" if use_cuda else "cpu")
     # print(args.batch_size)
-    train_kwargs = {'batch_size': args.batch_size, 'generator': None, 'shuffle': True}
+    if(args.shuffle_dataset):
+        train_kwargs = {'batch_size': args.batch_size,  'shuffle': True}
+    else:
+        train_kwargs = {'batch_size': args.batch_size,  'shuffle': False}
     test_kwargs = {'batch_size': args.test_batch_size, 'shuffle': False}
 
     # train_loader, test_loader = MNIST_dataset.create_dataset(train_kwargs,test_kwargs)
-    train_loader, test_loader, dataset_size = CIFAR10_dataset.create_dataset(train_kwargs,test_kwargs)
-    epochs = math.ceil(args.iterations* args.batch_size / dataset_size)
+
+
     if use_cuda:
-        cuda_kwargs = {'num_workers': 1,
+        cuda_kwargs = {'num_workers': 2,
                        'pin_memory': True,
                        }
         train_kwargs.update(cuda_kwargs)
@@ -115,9 +138,34 @@ def main():
     # model = Net().to(device)
     # model = densenet40_k12_cifar10().to(device)
     # model = AlexNet(num_classes=10).to(device)
+    # model_name = "AlexNet"
     # model = SimpleDLA().to(device)
     model = convnet(num_classes=10).to(device)
     model_name = "convnet"
+    # model = nor_LeNet().to(device)
+    # model_name = "nor_LeNet"
+
+    # model = nor_convnet(num_classes=10).to(device)
+    # model_name = "nor_convnet"
+    # BNF_nor_convnet_model
+    # model = BNF_convnet(num_classes=10).to(device)
+    # model_name = "BNF_convnet"
+
+    """VGG 16 """
+    # arch = [64, 64, 'M',
+    #         128, 128, 'M',
+    #         256, 256, 256, 'M',
+    #         512, 512, 512, 'M',
+    #         512, 512, 512, 'M']
+    # model = VGGNet(in_channels=3, num_classes=10, arch=arch).to(device)
+    # model = torchvision.models.vgg16().to(device)
+    # input_lastLayer = model.classifier[6].in_features
+    # print(input_lastLayer)
+    # model.classifier[6] = torch.nn.Linear(input_lastLayer,10)
+    # model = model.to(device)
+    # input(model)
+    # model = VGG16(num_classes=10).to(device)
+    # model_name = "VGG16"
     # optimizer = MNIST_optimizer.SGD_optimizer(args.lr,model)
     # sigma = 6
     # gradient_norm = 3
@@ -131,13 +179,13 @@ def main():
         #     # momentum=args.momentum,
         #     # weight_decay=args.weight_decay,
         # )
-        optimizer= optim.SGD(
-            [
-                {"params": model.layer1.parameters(), "lr": args.lr},
-                {"params": model.layer2.parameters(),"lr": args.lr},
-                {"params": model.layer3.parameters(), "lr": args.lr},
-                {"params": model.layer4.parameters(), "lr": args.lr},
-            ],
+        optimizer= optim.SGD(params=model.parameters(),
+            # [
+            #     {"params": model.layer1.parameters(), "lr": args.lr},
+            #     {"params": model.layer2.parameters(),"lr": args.lr},
+            #     {"params": model.layer3.parameters(), "lr": args.lr},
+            #     {"params": model.layer4.parameters(), "lr": args.lr},
+            # ],
             lr=args.lr,
         )
     elif args.optimizer == "RMSprop":
@@ -154,12 +202,23 @@ def main():
     train_accuracy = []
     test_accuracy = []
     out_file_path = "./graphs/data/" + settings_file +  "/" + model_name + "/" + args.optimizer
+    # Get training and testing data loaders
+    if(args.is_partition_train == True):
+        batches, test_loader, dataset_size = partition_dataset_preprocessing(args.dataset_name, train_kwargs, test_kwargs,
+                                                                        args.enable_DP,
+                                                                        args.enable_diminishing_gradient_norm,
+                                                                        args.enable_individual_clipping)
+    else:
+        train_loader, test_loader, dataset_size = dataset_preprocessing(args.dataset_name, train_kwargs, test_kwargs,
+                                                                    args.enable_DP,
+                                                                    args.enable_diminishing_gradient_norm,
+                                                                    args.enable_individual_clipping)
+    # DP settings:
     if args.enable_DP:
-        privacy_engine = None
+        # privacy_engine = None
         if (args.enable_diminishing_gradient_norm == True):
             out_file_path = out_file_path + "/DGN"
         if (args.enable_individual_clipping == True):
-            out_file_path = out_file_path + "/IC"
             privacy_engine = PrivacyEngine(
                 secure_mode=args.secure_rng,
             )
@@ -174,29 +233,78 @@ def main():
                 noise_multiplier=args.noise_multiplier,
                 max_grad_norm=args.max_grad_norm,
                 clipping=clipping,
+                poisson_sampling=False,
             )
+            out_file_path = out_file_path + "/IC"
         else:
             out_file_path = out_file_path + "/BC"
-    print("Saving data to: %s" % out_file_path)
-    epochs = 50 #TODO: remove to calculated based on iterations
-    print("Total epochs: %f" % epochs)
+            if(args.is_partition_train == True):
+                out_file_path = out_file_path + "/partitioned"
+    else:
+        out_file_path = out_file_path + "/SGD"
 
+    # epochs = math.ceil(args.iterations* args.batch_size / dataset_size)
+    epochs = 100 #TODO: remove to calculated based on iterations
+    print("Total epochs: %f" % epochs)
+    print("Saving data to: %s" % out_file_path)
+
+    """TRAINING LOOP"""
     for epoch in range(1, epochs + 1):
         print("epoch %s:" % epoch)
-        """
-        TEST
-        """
-        # args.print_freq = args.log_interval
-        # args.disable_dp = False
-        # args.delta = 1/dataset_size
-        # train_accuracy.append(train(
-        #     args, model, train_loader, optimizer, privacy_engine, epoch, device
-        # ))
-        train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, optimizer,
-                                                  args.enable_diminishing_gradient_norm,
-                                                  args.enable_individual_clipping))
+        if args.enable_DP:
+            if(args.enable_individual_clipping):
+                print("Individual Clipping training")
+                # input(list(train_loader))
+                train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, optimizer))
+            else:
+                print("Batch Clipping training")
+                print("double clipping norm")
+                # args.max_grad_norm = 2 * args.max_grad_norm
+                if(args.is_partition_train == True):
 
+                    train_accuracy.append(CIFAR10_train.partition_BC_train(args, model, device, batches, epoch, optimizer))
+                else:
+                    train_accuracy.append(CIFAR10_train.BC_train(args, model, device, train_loader, epoch, optimizer))
+        else:
+            print("SGD training")
+            train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, optimizer))
+        ### UPDATE LEARNING RATE after each batch"""
+        # if(args.enable_diminishing_gradient_norm):
+        #
+        #
+        # iterations_per_epoch = len(train_loader)
+        # # layer_names = []
+        # # # print(len(optimizer.param_groups))
+        # # # print(len(model.named_parameters()))
+        # # # input()
+        # # # for idxparam in model.parameters():
+        # # #     print(param)
+        # # # for param_group in optimizer.param_groups:
+        # # #     print(param_group['lr'])
+        # # # for param_group in optimizer.param_groups:
+        # # #
+        # # #     param_group["lr"] = np.sqrt(iterations_per_epoch)*param_group["param"].layer_max_grad_norm
+        # # parameters = []
+        # # for idx, (name, param) in enumerate(model.named_parameters()):
+        # #     layer_names.append(name)
+        # #     parameters+= [{'params': param,
+        # #                    'lr':     np.sqrt(iterations_per_epoch)*param.layer_max_grad_norm}]
+        # #     print(f'{idx}: lr = {np.sqrt(iterations_per_epoch)*param.layer_max_grad_norm:.6f}, {name}')
+        # # optimizer = optim.SGD(parameters)
+        # else:
+        #     args.lr = args.lr*pow(args.gamma,(epoch-1)*len(train_batches) + batch_idx)
+        #     for param_group in optimizer.param_groups:
+        #         param_group["lr"] = param_group["lr"] * args.gamma
         test_accuracy.append(CIFAR10_validate.test(model, device, test_loader))
+        """
+        Update learning rate if test_accuracy does not increase
+        """
+        if (epoch > 2):
+            if(test_accuracy[-1] <= test_accuracy[-2]):
+                args.lr = args.lr * args.gamma
+                print(args.lr)
+                for param_group in optimizer.param_groups:
+                    param_group["lr"] = args.lr
     generate_json_data_for_graph(out_file_path, args.load_setting, train_accuracy,test_accuracy)
 
     if args.save_model:

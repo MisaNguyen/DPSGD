@@ -22,7 +22,7 @@ from models.BNF_convnet_model import BNF_convnet
 # from models.vgg16 import VGGNet
 """DATASETS"""
 # from datasets import MNIST_dataset, CIFAR10_dataset
-from datasets.dataset_preprocessing import dataset_preprocessing, partition_dataset_preprocessing
+from datasets.dataset_preprocessing import dataset_preprocessing
 """UTILS"""
 from utils.utils import generate_json_data_for_graph
 from utils.visualizer import Visualizer
@@ -77,7 +77,7 @@ def main():
 
     #Add setting path here
     # settings_file = "settings"
-    settings_file = "settings_clipping_exp_cifar10_dpsgd"
+    settings_file = "settings_clipping_exp_cifar10_dpsgd_subsampling"
     print("Running setting: %s.json" % settings_file)
     if(args.load_setting != ""):
         with open(settings_file +".json", "r") as json_file:
@@ -99,15 +99,16 @@ def main():
             args.max_grad_norm = setting_data["max_grad_norm"]
             args.optimizer = setting_data["optimizer"]
             args.enable_diminishing_gradient_norm = setting_data["diminishing_gradient_norm"]
-            args.enable_individual_clipping = setting_data["is_individual_clipping"]
+            # args.enable_individual_clipping = setting_data["is_individual_clipping"]
             args.enable_DP = setting_data["enable_DP"]
-            args.clip_per_layer = False #TODO: add to setting file
-            args.secure_rng = False #TODO: add to setting file
+            # args.clip_per_layer = False #TODO: add to setting file
+            # args.secure_rng = False #TODO: add to setting file
             args.shuffle_dataset = True
-            args.is_partition_train = False
+            # args.is_partition_train = False
+            args.mode = setting_data["data_sampling"]
             # args.dataset_name = "MNIST"
             args.dataset_name = "CIFAR10"
-            clipping = "per_layer" if args.clip_per_layer else "flat"
+
     print("Mode: DGN (%s), IC (%s)" %  (args.enable_diminishing_gradient_norm, args.enable_individual_clipping))
     # if (args.enable_diminishing_gradient_norm == True):
     #     mode = "DGN"
@@ -202,43 +203,23 @@ def main():
     test_accuracy = []
     out_file_path = "./graphs/data/" + settings_file +  "/" + model_name + "/" + args.optimizer
     # Get training and testing data loaders
-    if(args.is_partition_train == True):
-        batches, test_loader, dataset_size = partition_dataset_preprocessing(args.dataset_name, train_kwargs, test_kwargs,
-                                                                        args.enable_DP,
-                                                                        args.enable_diminishing_gradient_norm,
-                                                                        args.enable_individual_clipping)
-    else:
-        train_loader, test_loader, dataset_size = dataset_preprocessing(args.dataset_name, train_kwargs, test_kwargs,
-                                                                    args.enable_DP,
-                                                                    args.enable_diminishing_gradient_norm,
-                                                                    args.enable_individual_clipping)
+    train_batches, test_loader, dataset_size = dataset_preprocessing(args.dataset_name, train_kwargs,
+                                                                     test_kwargs,
+                                                                    )
     # DP settings:
     if args.enable_DP:
         # privacy_engine = None
         if (args.enable_diminishing_gradient_norm == True):
             out_file_path = out_file_path + "/DGN"
-        if (args.enable_individual_clipping == True):
-            privacy_engine = PrivacyEngine(
-                secure_mode=args.secure_rng,
-            )
-            clipping = "per_layer" if args.clip_per_layer else "flat"
-            """
-            Opacus privacy engine
-            """
-            model, optimizer, train_loader = privacy_engine.make_private(
-                module=model,
-                optimizer=optimizer,
-                data_loader=train_loader,
-                noise_multiplier=args.noise_multiplier,
-                max_grad_norm=args.max_grad_norm,
-                clipping=clipping,
-                poisson_sampling=False,
-            )
+        if (args.microbatch_size == 1):
+            print("Individual clipping")
             out_file_path = out_file_path + "/IC"
-        else:
+        elif(args.microbatch_size == args.batch_size):
+            print("Batch clipping")
             out_file_path = out_file_path + "/BC"
-            if(args.is_partition_train == True):
-                out_file_path = out_file_path + "/partitioned"
+        else:
+            print("Normal Mode")
+            out_file_path = out_file_path + "/NM"
     else:
         out_file_path = out_file_path + "/SGD"
 
@@ -251,22 +232,10 @@ def main():
     for epoch in range(1, epochs + 1):
         print("epoch %s:" % epoch)
         if args.enable_DP:
-            if(args.enable_individual_clipping):
-                print("Individual Clipping training")
-                # input(list(train_loader))
-                train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, optimizer))
-            else:
-                print("Batch Clipping training")
-                print("double clipping norm")
-                # args.max_grad_norm = 2 * args.max_grad_norm
-                if(args.is_partition_train == True):
-
-                    train_accuracy.append(CIFAR10_train.partition_BC_train(args, model, device, batches, epoch, optimizer))
-                else:
-                    train_accuracy.append(CIFAR10_train.BC_train(args, model, device, train_loader, epoch, optimizer))
+            train_accuracy.append(CIFAR10_train.DP_train(args, model, device, train_batches, optimizer))
         else:
             print("SGD training")
-            train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, optimizer))
+            train_accuracy.append(CIFAR10_train.train(args, model, device, train_batches, optimizer))
         ### UPDATE LEARNING RATE after each batch"""
         # if(args.enable_diminishing_gradient_norm):
         #
@@ -307,7 +276,7 @@ def main():
     generate_json_data_for_graph(out_file_path, args.load_setting, train_accuracy,test_accuracy)
 
     if args.save_model:
-        torch.save(model.state_dict(), "mnist_cnn.pt")
+        torch.save(model.state_dict(), "cifar10_cnn.pt")
 
 if __name__ == '__main__':
     main()

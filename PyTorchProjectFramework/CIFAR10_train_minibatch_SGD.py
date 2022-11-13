@@ -35,10 +35,10 @@ Input params:
 export: Learning rate generator
 
 """
-def Lr_generator(decay,lr,epoch):
-    lr_sequence = range(epoch)
-    for index in lr_sequence:
-        yield lr*pow(decay,index)
+# def Lr_generator(decay,lr,epoch):
+#     lr_sequence = range(epoch)
+#     for index in lr_sequence:
+#         yield lr*pow(decay,index)
 
 
 """Create sample_rate sequence generator
@@ -50,10 +50,10 @@ Input params:
 export: sample rate generator
 
 """
-def sample_rate_generator(multi,lr,epoch):
-    sr_sequence = range(epoch)
-    for index in sr_sequence:
-        yield lr*pow(multi,index)
+# def sample_rate_generator(multi,lr,epoch):
+#     sr_sequence = range(epoch)
+#     for index in sr_sequence:
+#         yield lr*pow(multi,index)
 
 
 """Create sigma sequence generator
@@ -81,79 +81,78 @@ Input params:
 
 
 
-def imshow(img):
-    img = img / 2 + 0.5     # unnormalize
-    npimg = img.numpy()
-    plt.imshow(np.transpose(npimg, (1, 2, 0)))
-    plt.show()
-"""
-OPACUS code
-"""
-
-def _get_flat_grad_sample(param: torch.Tensor):
-    """
-    Return parameter's per sample gradients as a single tensor.
-    By default, per sample gradients (``p.grad_sample``) are stored as one tensor per
-    batch basis. Therefore, ``p.grad_sample`` is a single tensor if holds results from
-    only one batch, and a list of tensors if gradients are accumulated over multiple
-    steps. This is done to provide visibility into which sample belongs to which batch,
-    and how many batches have been processed.
-    This method returns per sample gradients as a single concatenated tensor, regardless
-    of how many batches have been accumulated
-    Args:
-        p: Parameter tensor. Must have ``grad_sample`` attribute
-    Returns:
-        ``p.grad_sample`` if it's a tensor already, or a single tensor computed by
-        concatenating every tensor in ``p.grad_sample`` if it's a list
-    Raises:
-        ValueError
-            If ``p`` is missing ``grad_sample`` attribute
-    """
-
-    if not hasattr(param, "grad_sample"):
-        raise ValueError(
-            "Per sample grad11ient not found. Are you using GradSampleModule?"
-        )
-    if param.grad_sample is None:
-        raise ValueError(
-            "Per sample gradient is not initialized. Not updated in backward pass?"
-        )
-    if isinstance(param.grad_sample, torch.Tensor):
-        return param.grad_sample
-    elif isinstance(param.grad_sample, list):
-        return torch.cat(param.grad_sample, dim=0)
-    else:
-        raise ValueError(f"Unexpected grad_sample type: {type(param.grad_sample)}")
-
-def grad_samples(params) -> List[torch.Tensor]:
-    """
-    Returns a flat list of per sample gradient tensors (one per parameter)
-    """
-    ret = []
-    for p in params:
-        ret.append(_get_flat_grad_sample(p))
-    return ret
-
-def params(optimizer: Optimizer) -> List[nn.Parameter]:
-    """
-    Return all parameters controlled by the optimizer
-    Args:
-        optimizer: optimizer
-    Returns:
-        Flat list of parameters from all ``param_groups``
-    """
-    ret = []
-    for param_group in optimizer.param_groups:
-        ret += [p for p in param_group["params"] if p.requires_grad]
-    return ret
+# def imshow(img):
+#     img = img / 2 + 0.5     # unnormalize
+#     npimg = img.numpy()
+#     plt.imshow(np.transpose(npimg, (1, 2, 0)))
+#     plt.show()
+# """
+# OPACUS code
+# """
+#
+# def _get_flat_grad_sample(param: torch.Tensor):
+#     """
+#     Return parameter's per sample gradients as a single tensor.
+#     By default, per sample gradients (``p.grad_sample``) are stored as one tensor per
+#     batch basis. Therefore, ``p.grad_sample`` is a single tensor if holds results from
+#     only one batch, and a list of tensors if gradients are accumulated over multiple
+#     steps. This is done to provide visibility into which sample belongs to which batch,
+#     and how many batches have been processed.
+#     This method returns per sample gradients as a single concatenated tensor, regardless
+#     of how many batches have been accumulated
+#     Args:
+#         p: Parameter tensor. Must have ``grad_sample`` attribute
+#     Returns:
+#         ``p.grad_sample`` if it's a tensor already, or a single tensor computed by
+#         concatenating every tensor in ``p.grad_sample`` if it's a list
+#     Raises:
+#         ValueError
+#             If ``p`` is missing ``grad_sample`` attribute
+#     """
+#
+#     if not hasattr(param, "grad_sample"):
+#         raise ValueError(
+#             "Per sample grad11ient not found. Are you using GradSampleModule?"
+#         )
+#     if param.grad_sample is None:
+#         raise ValueError(
+#             "Per sample gradient is not initialized. Not updated in backward pass?"
+#         )
+#     if isinstance(param.grad_sample, torch.Tensor):
+#         return param.grad_sample
+#     elif isinstance(param.grad_sample, list):
+#         return torch.cat(param.grad_sample, dim=0)
+#     else:
+#         raise ValueError(f"Unexpected grad_sample type: {type(param.grad_sample)}")
+#
+# def grad_samples(params) -> List[torch.Tensor]:
+#     """
+#     Returns a flat list of per sample gradient tensors (one per parameter)
+#     """
+#     ret = []
+#     for p in params:
+#         ret.append(_get_flat_grad_sample(p))
+#     return ret
+#
+# def params(optimizer: Optimizer) -> List[nn.Parameter]:
+#     """
+#     Return all parameters controlled by the optimizer
+#     Args:
+#         optimizer: optimizer
+#     Returns:
+#         Flat list of parameters from all ``param_groups``
+#     """
+#     ret = []
+#     for param_group in optimizer.param_groups:
+#         ret += [p for p in param_group["params"] if p.requires_grad]
+#     return ret
 
 def accuracy(preds, labels):
     return (preds == labels).mean()
 """
 END OPACUS code
 """
-# def train(args, model, device, train_loader, optimizer_name, epoch,
-#           visualizer,is_diminishing_gradient_norm, is_individual):
+
 def train(args, model, device, train_loader,
           optimizer,is_diminishing_gradient_norm, is_individual):
     model.train()

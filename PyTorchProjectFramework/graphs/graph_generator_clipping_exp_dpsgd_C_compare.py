@@ -74,7 +74,7 @@ if __name__ == "__main__":
     ]
     models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet"]
     # Get models and settings
-    setting_index = 2
+    setting_index = 1
     index = 5
     models_index = 1
     lr= 0.1
@@ -87,8 +87,8 @@ if __name__ == "__main__":
 
     s_arr = [s_start * pow(2, i) for i in range(6)]
     s = s_arr[index-1]
-    draw_DPSGD_IC_case = True
-    draw_DPSGD_BC_case = False
+    draw_DPSGD_IC_case = False
+    draw_DPSGD_BC_case = True
     # settings = ["setting_0_c1_s2","setting_0_noclip"]
     # settings = ["setting_1","setting_2","setting_3","setting_4"]
     # settings = ["setting_1","setting_2"]

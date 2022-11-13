@@ -176,29 +176,31 @@ def accuracy(preds, labels):
 END OPACUS code
 """
 
-def DP_train(args, model, device, train_batches, optimizer):
+def partition_BC_train(args, model, device, train_batches,epoch,
+             optimizer):
     model.train()
     print("Training using %s optimizer" % optimizer.__class__.__name__)
     train_loss = 0
     train_correct = 0
     total = 0
+    output = 0
     loss = 0
     # Get optimizer
-
+    # train_accuracy = []
+    # test_accuracy = []
     iteration = 0
     losses = []
     top1_acc = []
+    # Store each layer's max grad norm from last round
+    # if(is_diminishing_gradient_norm == True):
+    #     for param in model.parameters():
+    #         if hasattr(param, "layer_max_grad_norm"):
+    #             param.prev_max_grad_norm = param.layer_max_grad_norm
+    # for batch_idx, (data,target) in enumerate(train_loader):
+    # generate & shuffle batches indices
     indices = np.arange(len(train_batches))
-    if (args.mode == "subsampling"):
-        indices = np.arange(len(train_batches))
-        indices = np.random.permutation(indices) # Shuffle indices
-    elif (args.mode == "shuffling"):
-        indices = np.arange(len(train_batches))
-    else:
-        raise Exception("Invalid train mode")
-
-    for batch_idx in range(len(indices)): # Batch loop
-        indice = indices[batch_idx]
+    indices = np.random.permutation(indices)
+    for batch_idx, indice in enumerate(tqdm(indices)): # Batch loop
         optimizer.zero_grad()
         # copy current model
 
@@ -213,11 +215,10 @@ def DP_train(args, model, device, train_batches, optimizer):
                                    lr=args.lr,
                                    )
         batch = train_batches[indice]
-        micro_train_loader = torch.utils.data.DataLoader(batch, batch_size=args.microbatch_size,
-                                                   shuffle=True) # Load each data
+        train_loader = torch.utils.data.DataLoader(batch, batch_size=1, shuffle=True) # Load each data
 
         """ Original SGD updates"""
-        for sample_idx, (data,target) in enumerate(micro_train_loader):
+        for sample_idx, (data,target) in enumerate(train_loader):
             optimizer_clone.zero_grad()
             iteration += 1
             data, target = data.to(device), target.to(device)
@@ -241,8 +242,7 @@ def DP_train(args, model, device, train_batches, optimizer):
                     param.sum_grad = param.sum_grad + param.grad
 
             # Gradient Descent step
-
-            # optimizer_clone.step()
+            optimizer_clone.step()
 
         # Copy sum of grad to the model gradient
         for net1, net2 in zip(model.named_parameters(), model_clone.named_parameters()): # (layer_name, value) for each layer
@@ -277,19 +277,17 @@ def DP_train(args, model, device, train_batches, optimizer):
             Add Gaussian noise to gradients
             """
             dist = torch.distributions.normal.Normal(torch.tensor(0.0),
-                                                     torch.tensor((2 * args.noise_multiplier *  args.max_grad_norm)))
+                                                     torch.tensor((args.noise_multiplier *  args.max_grad_norm)))
 
             noise = dist.rsample(param.grad.shape).to(device=device)
 
             # param.grad = param.grad + noise / args.batch_size
             # input(param.grad)
-            param.grad = (param.grad + noise).div(len(micro_train_loader))
+            param.grad = (param.grad + noise).div(len(train_loader))
             # print("----------------------")
             # input(param.grad)
 
         optimizer.step()
-        if (args.mode == "subsampling"):
-            indices = np.random.permutation(indices) # Reshuffle indices for new round
 
         """
         Calculate top 1 acc
@@ -336,9 +334,8 @@ def BC_train(args, model, device, train_loader,epoch,
     iteration = 0
     losses = []
     top1_acc = []
-    # TODO: add subsampling method
-    for batch_idx, (data,target) in range(len(train_loader)): # Batch loop
 
+    for batch_idx, (data,target) in enumerate(tqdm(train_loader)): # Batch loop
         data, target = data.to(device), target.to(device)
         print(data.shape)
         optimizer.zero_grad()
