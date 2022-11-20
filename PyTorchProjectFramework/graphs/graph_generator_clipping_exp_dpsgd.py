@@ -71,10 +71,32 @@ if __name__ == "__main__":
             "sigma": 8,
             "s_start": 64
         },
+        {
+            # Setting 9
+            "settings_path": "settings_clipping_exp_cifar10_dpsgd_shuffling_IC",
+            "Cs": [0.1,0.05,0.01,0.005,0.5,1.0],
+            "sigma": 8,
+            "s_start": 64
+        },
+        {
+            # Setting 10
+            "settings_path": "settings_clipping_exp_cifar10_dpsgd_new_shuffling_IC",
+            "Cs": [1.0,1.5,2,2.5,3,3.5],
+            "sigma": 8,
+            "s_start": 256
+        },
+        {
+            # Setting 11
+            "settings_path": "settings_clipping_exp_cifar10_dpsgd_large_C_shuffling_IC",
+            "Cs": [6.0,7.0,8.0,9.0,10.0,20.0],
+            "sigma": 8,
+            "s_start": 64
+        },
+
     ]
     models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet"]
     # Get models and settings
-    setting_index = 0
+    setting_index = 10
     s_index = 5
     models_index = 1
     settings_path, Cs, sigma, s_start = settings[setting_index]["settings_path"], \
@@ -107,8 +129,8 @@ if __name__ == "__main__":
     # Cs = [6.0,7.0,8.0,9.0,10.0,20.0]
     C = Cs[s_index]
     s = s_start * pow(2, s_index_min-1)
-    draw_DPSGD_IC_case = False
-    draw_SGD_case = True
+    draw_DPSGD_IC_case = True
+    draw_SGD_case = False
     draw_DPSGD_BC_case = False
     # settings = ["setting_0_c1_s2","setting_0_noclip"]
     # settings = ["setting_1","setting_2","setting_3","setting_4"]
