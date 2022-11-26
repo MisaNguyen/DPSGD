@@ -71,33 +71,38 @@ if __name__ == "__main__":
             "sigma": 8,
             "s_start": 64
         },
-        {
-            # Setting 9
-            "settings_path": "settings_clipping_exp_cifar10_dpsgd_shuffling_IC",
-            "Cs": [0.1,0.05,0.01,0.005,0.5,1.0],
-            "sigma": 8,
-            "s_start": 64
-        },
-        {
-            # Setting 10
-            "settings_path": "settings_clipping_exp_cifar10_dpsgd_new_shuffling_IC",
-            "Cs": [1.0,1.5,2,2.5,3,3.5],
-            "sigma": 8,
-            "s_start": 256
-        },
-        {
-            # Setting 11
-            "settings_path": "settings_clipping_exp_cifar10_dpsgd_large_C_shuffling_IC",
-            "Cs": [6.0,7.0,8.0,9.0,10.0,20.0],
-            "sigma": 8,
-            "s_start": 64
-        },
-
+        # {
+        #     # Setting 9
+        #     "settings_path": "settings_clipping_exp_cifar10_dpsgd_shuffling_IC",
+        #     "Cs": [0.1,0.05,0.01,0.005,0.5,1.0],
+        #     "sigma": 8,
+        #     "s_start": 64
+        # },
+        # {
+        #     # Setting 10
+        #     "settings_path": "settings_clipping_exp_cifar10_dpsgd_new_shuffling_IC",
+        #     "Cs": [1.0,1.5,2,2.5,3,3.5],
+        #     "sigma": 8,
+        #     "s_start": 256
+        # },
+        # {
+        #     # Setting 11
+        #     "settings_path": "settings_clipping_exp_cifar10_dpsgd_large_C_shuffling_IC",
+        #     "Cs": [6.0,7.0,8.0,9.0,10.0,20.0],
+        #     "sigma": 8,
+        #     "s_start": 64
+        # },
     ]
+    # mode = None
+    mode = "shuffling"
+    # mode = "subsampling"
+    draw_DPSGD_IC_case = True
+    draw_SGD_case = False
+    draw_DPSGD_BC_case = True
     models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet"]
     # Get models and settings
-    setting_index = 10
-    s_index = 5
+    setting_index = 1
+    s_index = 3
     models_index = 1
     settings_path, Cs, sigma, s_start = settings[setting_index]["settings_path"], \
                                         settings[setting_index]["Cs"], \
@@ -129,9 +134,7 @@ if __name__ == "__main__":
     # Cs = [6.0,7.0,8.0,9.0,10.0,20.0]
     C = Cs[s_index]
     s = s_start * pow(2, s_index_min-1)
-    draw_DPSGD_IC_case = True
-    draw_SGD_case = False
-    draw_DPSGD_BC_case = False
+
     # settings = ["setting_0_c1_s2","setting_0_noclip"]
     # settings = ["setting_1","setting_2","setting_3","setting_4"]
     # settings = ["setting_1","setting_2"]
@@ -144,8 +147,8 @@ if __name__ == "__main__":
         number_of_subgraphs = 3
     # Check whether the specified path exists or not
     isExist = os.path.exists(graph_path)
-    if (partition):
-        base_path = "./data/" + settings_path + "/partitioned" + "_"+ model_name
+    if (mode != None):
+        base_path = "./data/" + settings_path + "_" + mode
     else:
         base_path = "./data/" + settings_path + "/" + model_name
     # base_path = "./data/" + settings_path + "/" + model_name
@@ -174,7 +177,8 @@ if __name__ == "__main__":
         if(draw_DPSGD_BC_case):
             experiment = "SGD"
             # bc_data_path  = "./data/" + settings_path + '/' + experiment + '/' + setting +".json"
-            bc_data_path  = base_path + '/' + experiment + '/BC/' + setting +".json"
+
+            bc_data_path  = base_path + '_BC/' + model_name + '/' + experiment + '/BC/' + setting +".json"
             # print(bc_data_path)
             with open(bc_data_path, "r") as data_file:
                 data = json.load(data_file)
@@ -185,7 +189,7 @@ if __name__ == "__main__":
 
         if(draw_DPSGD_IC_case):
             experiment = "SGD"
-            ic_data_path = base_path + '/' + experiment + '/IC/' + setting +".json"
+            ic_data_path = base_path + '_IC/' + model_name + '/' + experiment + '/IC/' + setting +".json"
             with open(ic_data_path, "r") as data_file:
                 data = json.load(data_file)
                 IC_DPSGD_train_accuracy = data["train_accuracy"]

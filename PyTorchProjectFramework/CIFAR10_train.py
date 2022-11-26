@@ -188,7 +188,7 @@ def DP_train(args, model, device, train_batches, optimizer):
     iteration = 0
     losses = []
     top1_acc = []
-    indices = np.arange(len(train_batches))
+    # indices = np.arange(len(train_batches))
     if (args.mode == "subsampling"):
         indices = np.arange(len(train_batches))
         indices = np.random.permutation(indices) # Shuffle indices
@@ -235,10 +235,28 @@ def DP_train(args, model, device, train_batches, optimizer):
             loss.backward()
             # Add grad to sum of grad
             for param in model_clone.parameters():
+                """
+                Batch clipping
+                """
+                if(args.enable_diminishing_gradient_norm == True):
+                    # args.max_grad_norm = torch.linalg.norm(param.grad).to("cpu")
+                    # print(args.max_grad_norm)
+                    if not hasattr(param, "prev_max_grad_norm"): #round 1
+                        torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
+                    else: #round 2 onward
+                        torch.nn.utils.clip_grad_norm_(param.grad, max_norm=param.prev_max_grad_norm) # in-place computation
+                    if not hasattr(param, "layer_max_grad_norm"):
+                        param.layer_max_grad_norm  = torch.linalg.norm(param.grad)
+                    else:
+                        param.layer_max_grad_norm = max(param.layer_max_grad_norm, torch.linalg.norm(param.grad)) # get new max_grad_norm
+                    # print(param.layer_max_grad_norm)
+                else:
+                    torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
+
                 if not hasattr(param, "sum_grad"):
                     param.sum_grad = param.grad
                 else:
-                    param.sum_grad = param.sum_grad + param.grad
+                    param.sum_grad = param.sum_grad.add(param.grad)
 
             # Gradient Descent step
 
@@ -254,24 +272,6 @@ def DP_train(args, model, device, train_batches, optimizer):
         for param in model.parameters():
             # param.grad = torch.mul(param.accumulated_grads,1/args.batch_size)
             # param.grad = param_clone.sum_grad.clone # Copy sum_grad
-
-            """
-            Batch clipping
-            """
-            if(args.enable_diminishing_gradient_norm == True):
-                # args.max_grad_norm = torch.linalg.norm(param.grad).to("cpu")
-                # print(args.max_grad_norm)
-                if not hasattr(param, "prev_max_grad_norm"): #round 1
-                    torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
-                else: #round 2 onward
-                    torch.nn.utils.clip_grad_norm_(param.grad, max_norm=param.prev_max_grad_norm) # in-place computation
-                if not hasattr(param, "layer_max_grad_norm"):
-                    param.layer_max_grad_norm  = torch.linalg.norm(param.grad)
-                else:
-                    param.layer_max_grad_norm = max(param.layer_max_grad_norm, torch.linalg.norm(param.grad)) # get new max_grad_norm
-                # print(param.layer_max_grad_norm)
-            else:
-                torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
 
             """
             Add Gaussian noise to gradients
