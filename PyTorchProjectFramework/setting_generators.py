@@ -12,8 +12,8 @@ settings = ["settings_clipping_exp_cifar10_dpsgd",
 
 # data_processing = "subsampling"
 data_processing = "shuffling"
-is_batch_clipping = True
-is_individual_clipping = False
+is_batch_clipping = False
+is_individual_clipping = True
 for setting_file in settings:
 # setting_file = settings[0]
     f = open(setting_file +".json")
