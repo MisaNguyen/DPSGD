@@ -3,6 +3,11 @@ import numpy
 
 import os
 import json
+
+def get_cmap(n, name='hsv'):
+    '''Returns a function that maps each index in 0, 1, ..., n-1 to a distinct
+    RGB color; the keyword argument name must be a standard mpl colormap name.'''
+    return plt.cm.get_cmap(name, n)
 if __name__ == "__main__":
     # mng = plt.get_current_fig_manager()
     # mng.full_screen_toggle()
@@ -94,6 +99,7 @@ if __name__ == "__main__":
         # },
     ]
     # mode = None
+    cmap = get_cmap(30)
     mode = "shuffling"
     # mode = "subsampling"
     draw_DPSGD_IC_case = True
@@ -101,8 +107,8 @@ if __name__ == "__main__":
     draw_DPSGD_BC_case = True
     models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet"]
     # Get models and settings
-    setting_index = 1
-    s_index = 3
+    setting_index = 0
+    s_index = 0
     models_index = 1
     settings_path, Cs, sigma, s_start = settings[setting_index]["settings_path"], \
                                         settings[setting_index]["Cs"], \
@@ -156,7 +162,7 @@ if __name__ == "__main__":
         # Create a new directory because it does not exist
         os.makedirs(graph_path)
         print("The new directory is created: %s" % graph_path)
-    for setting in settings:
+    for setting_idx, setting in enumerate(settings):
         # if (setting == "setting_30"):
         #     s=512
 
@@ -201,30 +207,32 @@ if __name__ == "__main__":
         Draw graphs
         """
         plt.subplot(1, number_of_subgraphs, 1)
+
+        cmap_color = cmap(4*setting_idx)
         if(draw_SGD_case):
-            plt.plot(SGD_epoch_index, SGD_train_accuracy, label="SGD, s= %f" % (s))
+            plt.plot(SGD_epoch_index, SGD_train_accuracy, label="SGD, s= %f" % (s), color=cmap_color)
 
         if(draw_DPSGD_BC_case):
-            plt.plot(DPSGD_BC_epoch_index, DPSGD_train_accuracy, label="BC, s= %f" % (s))
+            plt.plot(DPSGD_BC_epoch_index, DPSGD_train_accuracy, "o-", label="BC, s= %f" % (s), color=cmap_color)
 
         if(draw_DPSGD_IC_case):
-            plt.plot(DPSGD_IC_epoch_index, IC_DPSGD_train_accuracy, label="IC, s= %f" % (s))
+            plt.plot(DPSGD_IC_epoch_index, IC_DPSGD_train_accuracy, "x-", label="IC, s= %f" % (s), color=cmap_color)
         plt.title('Train accuracy, lr = %f' % lr)
         plt.legend()
 
         plt.subplot(1, number_of_subgraphs, 2)
         if(draw_SGD_case):
-            plt.plot(SGD_epoch_index, SGD_test_accuracy, label="SGD, s= %f" % (s))
+            plt.plot(SGD_epoch_index, SGD_test_accuracy, label="SGD, s= %f" % (s), color=cmap_color)
         if(draw_DPSGD_BC_case):
-            plt.plot(DPSGD_BC_epoch_index, DPSGD_test_accuracy, label="BC,s= %f" % (s))
+            plt.plot(DPSGD_BC_epoch_index, DPSGD_test_accuracy, "o-", label="BC,s= %f" % (s), color=cmap_color)
         if(draw_DPSGD_IC_case):
-            plt.plot(DPSGD_IC_epoch_index, IC_DPSGD_test_accuracy, label="IC, s= %f" % (s))
+            plt.plot(DPSGD_IC_epoch_index, IC_DPSGD_test_accuracy, "x-",label="IC, s= %f" % (s), color=cmap_color)
 
 
         if(draw_DPSGD_BC_case and draw_DPSGD_IC_case):
             plt.subplot(1,3,3)
             test_acc_ratio = [DPSGD_test_accuracy[i]/ IC_DPSGD_test_accuracy[i] for i in range(len(DPSGD_test_accuracy))]
-            plt.plot(DPSGD_BC_epoch_index, test_acc_ratio, label="BC/IC,s= %f" % (s))
+            plt.plot(DPSGD_BC_epoch_index, test_acc_ratio, label="BC/IC,s= %f" % (s), color=cmap_color)
         plt.title('Test accuracy, lr = %f, C = %f, sigma = %f' % (lr,C,sigma))
         plt.xlabel('epoch')
         plt.ylabel('accuracy')
