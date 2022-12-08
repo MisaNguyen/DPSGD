@@ -175,8 +175,174 @@ def accuracy(preds, labels):
 """
 END OPACUS code
 """
-
-def DP_train(args, model, device, train_batches, optimizer):
+#
+# def DP_train(args, model, device, train_batches, optimizer):
+#     model.train()
+#     print("Training using %s optimizer" % optimizer.__class__.__name__)
+#     train_loss = 0
+#     train_correct = 0
+#     total = 0
+#     loss = 0
+#     # Get optimizer
+#
+#     iteration = 0
+#     losses = []
+#     top1_acc = []
+#     # indices = np.arange(len(train_batches))
+#     if (args.mode == "subsampling"):
+#         indices = np.arange(len(train_batches))
+#         indices = np.random.permutation(indices) # Shuffle indices
+#     elif (args.mode == "shuffling"):
+#         indices = np.arange(len(train_batches))
+#     else:
+#         raise Exception("Invalid train mode")
+#
+#     for batch_idx in range(len(indices)): # Batch loop
+#         indice = indices[batch_idx]
+#         optimizer.zero_grad()
+#         # copy current model
+#
+#         model_clone = copy.deepcopy(model)
+#         optimizer_clone= optim.SGD(model_clone.parameters(),
+#                                    # [
+#                                    #     {"params": model_clone.layer1.parameters(), "lr": args.lr},
+#                                    #     {"params": model_clone.layer2.parameters(),"lr": args.lr},
+#                                    #     {"params": model_clone.layer3.parameters(), "lr": args.lr},
+#                                    #     {"params": model_clone.layer4.parameters(), "lr": args.lr},
+#                                    # ],
+#                                    lr=args.lr,
+#                                    )
+#         batch = train_batches[indice]
+#         micro_train_loader = torch.utils.data.DataLoader(batch, batch_size=args.microbatch_size,
+#                                                    shuffle=True) # Load each data
+#
+#         """ Original SGD updates"""
+#         for sample_idx, (data,target) in enumerate(micro_train_loader):
+#             optimizer_clone.zero_grad()
+#             iteration += 1
+#             data, target = data.to(device), target.to(device)
+#             # print(target)
+#             # output = model(data) # input as batch size = 1
+#             # loss = nn.CrossEntropyLoss()(output, target)
+#             # loss.backward()
+#
+#             # compute output
+#             output = model_clone(data)
+#             # compute loss
+#             loss = nn.CrossEntropyLoss()(output, target)
+#             losses.append(loss.item())
+#             # compute gradient
+#             loss.backward()
+#             # Add grad to sum of grad
+#             for param in model_clone.parameters():
+#
+#                 # """
+#                 # Batch clipping each "sample"
+#                 # """
+#                 # if(args.enable_diminishing_gradient_norm == True):
+#                 #     # args.max_grad_norm = torch.linalg.norm(param.grad).to("cpu")
+#                 #     # print(args.max_grad_norm)
+#                 #     if not hasattr(param, "prev_max_grad_norm"): #round 1
+#                 #         torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
+#                 #     else: #round 2 onward
+#                 #         torch.nn.utils.clip_grad_norm_(param.grad, max_norm=param.prev_max_grad_norm) # in-place computation
+#                 #     if not hasattr(param, "layer_max_grad_norm"):
+#                 #         param.layer_max_grad_norm  = torch.linalg.norm(param.grad)
+#                 #     else:
+#                 #         param.layer_max_grad_norm = max(param.layer_max_grad_norm, torch.linalg.norm(param.grad)) # get new max_grad_norm
+#                 #     # print(param.layer_max_grad_norm)
+#                 # else:
+#                 #     torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
+#
+#                 if not hasattr(param, "sum_grad"):
+#                     param.sum_grad = param.grad
+#                 else:
+#                     param.sum_grad = param.sum_grad.add(param.grad)
+#
+#             # Gradient Descent step
+#
+#             # optimizer_clone.step()
+#
+#         # Copy sum of grad to the model gradient
+#         for net1, net2 in zip(model.named_parameters(), model_clone.named_parameters()): # (layer_name, value) for each layer
+#             # net1[1].grad = net2[1].sum_grad
+#             net1[1].grad = net2[1].sum_grad.div(len(micro_train_loader))
+#         # Reset sum_grad
+#         for param in model_clone.parameters():
+#             delattr(param, 'sum_grad')
+#         # Update model
+#         for param in model.parameters():
+#             # param.grad = torch.mul(param.accumulated_grads,1/args.batch_size)
+#             # param.grad = param_clone.sum_grad.clone # Copy sum_grad
+#             """
+#             Batch clipping for each "micro batch"
+#             """
+#             if(args.enable_diminishing_gradient_norm == True):
+#                 # args.max_grad_norm = torch.linalg.norm(param.grad).to("cpu")
+#                 # print(args.max_grad_norm)
+#                 if not hasattr(param, "prev_max_grad_norm"): #round 1
+#                     torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
+#                 else: #round 2 onward
+#                     torch.nn.utils.clip_grad_norm_(param.grad, max_norm=param.prev_max_grad_norm) # in-place computation
+#                 if not hasattr(param, "layer_max_grad_norm"):
+#                     param.layer_max_grad_norm  = torch.linalg.norm(param.grad)
+#                 else:
+#                     param.layer_max_grad_norm = max(param.layer_max_grad_norm, torch.linalg.norm(param.grad)) # get new max_grad_norm
+#                 # print(param.layer_max_grad_norm)
+#             else:
+#                 torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
+#             """
+#             Add Gaussian noise to gradients
+#             """
+#             dist = torch.distributions.normal.Normal(torch.tensor(0.0),
+#                                                      torch.tensor((2 * args.noise_multiplier *  args.max_grad_norm)))
+#
+#             noise = dist.rsample(param.grad.shape).to(device=device)
+#
+#             # param.grad = param.grad + noise / args.batch_size
+#             # input(param.grad)
+#             # param.grad = (param.grad + noise).div(len(micro_train_loader))
+#             param.grad = param.grad + noise.div(len(micro_train_loader))
+#             # print("----------------------")
+#             # input(param.grad)
+#
+#         optimizer.step()
+#         if (args.mode == "subsampling"):
+#             indices = np.random.permutation(indices) # Reshuffle indices for new round
+#
+#         """
+#         Calculate top 1 acc
+#         """
+#         batch = train_batches[indice]
+#         # input(len(batch))
+#         data_loader = torch.utils.data.DataLoader(batch, batch_size=args.microbatch_size) # Load each data
+#         for data, target in data_loader:
+#             data, target = data.to(device), target.to(device)
+#             output = model(data)
+#             preds = np.argmax(output.detach().cpu().numpy(), axis=1)
+#             labels = target.detach().cpu().numpy()
+#             acc1 = accuracy(preds, labels)
+#             top1_acc.append(acc1)
+#             # scheduler.step()
+#             # input("HERE")
+#             if batch_idx % (args.log_interval*len(indices)) == 0:
+#
+#                 train_loss += loss.item()
+#                 prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
+#
+#                 total += target.size(0)
+#
+#                 train_correct += np.sum(prediction[1].cpu().numpy() == target.cpu().numpy())
+#                 print(
+#                     f"Loss: {np.mean(losses):.6f} "
+#                     f"Acc@1: {np.mean(top1_acc):.6f} "
+#                 )
+#             if args.dry_run:
+#                 break
+#     return np.mean(top1_acc)
+# def train(args, model, device, train_loader, optimizer_name, epoch,
+#           visualizer,is_diminishing_gradient_norm, is_individual):
+def DP_train(args, model, device, train_loader,optimizer):
     model.train()
     print("Training using %s optimizer" % optimizer.__class__.__name__)
     train_loss = 0
@@ -189,16 +355,16 @@ def DP_train(args, model, device, train_batches, optimizer):
     losses = []
     top1_acc = []
     # indices = np.arange(len(train_batches))
-    if (args.mode == "subsampling"):
-        indices = np.arange(len(train_batches))
-        indices = np.random.permutation(indices) # Shuffle indices
-    elif (args.mode == "shuffling"):
-        indices = np.arange(len(train_batches))
-    else:
-        raise Exception("Invalid train mode")
+    # if (args.mode == "subsampling"):
+    #     indices = np.arange(len(train_batches))
+    #     indices = np.random.permutation(indices) # Shuffle indices
+    # elif (args.mode == "shuffling"):
+    #     indices = np.arange(len(train_batches))
+    # else:
+    #     raise Exception("Invalid train mode")
 
-    for batch_idx in range(len(indices)): # Batch loop
-        indice = indices[batch_idx]
+    for batch_idx, (batch_data,batch_target) in enumerate(train_loader): # Batch loop
+        # indice = indices[batch_idx]
         optimizer.zero_grad()
         # copy current model
 
@@ -212,9 +378,10 @@ def DP_train(args, model, device, train_batches, optimizer):
                                    # ],
                                    lr=args.lr,
                                    )
-        batch = train_batches[indice]
+        # batch = train_batches[indice]
+        batch = TensorDataset(batch_data,batch_target)
         micro_train_loader = torch.utils.data.DataLoader(batch, batch_size=args.microbatch_size,
-                                                   shuffle=True) # Load each data
+                                                         shuffle=True) # Load each data
 
         """ Original SGD updates"""
         for sample_idx, (data,target) in enumerate(micro_train_loader):
@@ -313,7 +480,7 @@ def DP_train(args, model, device, train_batches, optimizer):
         """
         Calculate top 1 acc
         """
-        batch = train_batches[indice]
+        # batch = train_batches[indice]
         # input(len(batch))
         data_loader = torch.utils.data.DataLoader(batch, batch_size=args.microbatch_size) # Load each data
         for data, target in data_loader:
@@ -325,7 +492,7 @@ def DP_train(args, model, device, train_batches, optimizer):
             top1_acc.append(acc1)
             # scheduler.step()
             # input("HERE")
-            if batch_idx % (args.log_interval*len(indices)) == 0:
+            if batch_idx % (args.log_interval*len(train_loader)) == 0:
 
                 train_loss += loss.item()
                 prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
@@ -339,167 +506,6 @@ def DP_train(args, model, device, train_batches, optimizer):
                 )
             if args.dry_run:
                 break
-    return np.mean(top1_acc)
-# def train(args, model, device, train_loader, optimizer_name, epoch,
-#           visualizer,is_diminishing_gradient_norm, is_individual):
-def BC_train(args, model, device, train_loader,epoch,
-          optimizer):
-    model.train()
-    print("Training using %s optimizer" % optimizer.__class__.__name__)
-    train_loss = 0
-    train_correct = 0
-    total = 0
-    output = 0
-    loss = 0
-    # Get optimizer
-    iteration = 0
-    losses = []
-    top1_acc = []
-    # TODO: add subsampling method
-    for batch_idx, (data,target) in range(len(train_loader)): # Batch loop
-
-        data, target = data.to(device), target.to(device)
-        print(data.shape)
-        optimizer.zero_grad()
-        # copy current model
-
-        model_clone = copy.deepcopy(model)
-        optimizer_clone= optim.SGD(model_clone.parameters(),
-            # [
-            #     {"params": model_clone.layer1.parameters(), "lr": args.lr},
-            #     {"params": model_clone.layer2.parameters(),"lr": args.lr},
-            #     {"params": model_clone.layer3.parameters(), "lr": args.lr},
-            #     {"params": model_clone.layer4.parameters(), "lr": args.lr},
-            # ],
-            lr=args.lr,
-        )
-        BatchData = TensorDataset(data,target)
-        mini_train_loader = torch.utils.data.DataLoader(BatchData, batch_size=args.microbatch_size, shuffle=True) # Load each data
-
-        """ Original SGD updates"""
-        for sample_idx, (micro_data,micro_target) in enumerate(mini_train_loader):
-            optimizer_clone.zero_grad()
-            iteration += 1
-            micro_data, micro_target = micro_data.to(device), micro_target.to(device)
-            print(micro_data.shape)
-            # print(target)
-            # output = model(data) # input as batch size = 1
-            # loss = nn.CrossEntropyLoss()(output, target)
-            # loss.backward()
-
-            # compute output
-            output = model_clone(micro_data)
-            # compute loss
-            loss = nn.CrossEntropyLoss()(output, micro_target)
-            losses.append(loss.item())
-            # compute gradient
-            loss.backward()
-            # Add grad to sum of grad
-            for param in model_clone.parameters():
-                if not hasattr(param, "sum_grad"):
-                    param.sum_grad = param.grad
-                else:
-                    param.sum_grad = param.sum_grad + param.grad
-
-            # Gradient Descent step
-            optimizer_clone.step()
-
-        # Copy sum of grad to the model gradient
-        for net1, net2 in zip(model.named_parameters(), model_clone.named_parameters()): # (layer_name, value) for each layer
-            net1[1].grad = net2[1].sum_grad
-        # Reset sum_grad
-        for param in model_clone.parameters():
-            delattr(param, 'sum_grad')
-        # Update model
-        for param in model.parameters():
-            # param.grad = torch.mul(param.accumulated_grads,1/args.batch_size)
-            # param.grad = param_clone.sum_grad.clone # Copy sum_grad
-
-            """
-            Batch clipping
-            """
-            if(args.enable_diminishing_gradient_norm == True):
-                # args.max_grad_norm = torch.linalg.norm(param.grad).to("cpu")
-                # print(args.max_grad_norm)
-                if not hasattr(param, "prev_max_grad_norm"): #round 1
-                    torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
-                else: #round 2 onward
-                    torch.nn.utils.clip_grad_norm_(param.grad, max_norm=param.prev_max_grad_norm) # in-place computation
-                if not hasattr(param, "layer_max_grad_norm"):
-                    param.layer_max_grad_norm  = torch.linalg.norm(param.grad)
-                else:
-                    param.layer_max_grad_norm = max(param.layer_max_grad_norm, torch.linalg.norm(param.grad)) # get new max_grad_norm
-                # print(param.layer_max_grad_norm)
-            else:
-                torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
-
-            """
-            Add Gaussian noise to gradients
-            """
-            dist = torch.distributions.normal.Normal(torch.tensor(0.0),
-                                                 torch.tensor((2*args.noise_multiplier * args.max_grad_norm)))
-
-            noise = dist.rsample(param.grad.shape).to(device=device)
-
-            # param.grad = param.grad + noise / args.batch_size
-            # input(param.grad)
-            param.grad = (param.grad + noise).div(len(train_loader))
-            # print("----------------------")
-            # input(param.grad)
-
-        optimizer.step()
-
-        """
-        Calculate top 1 acc
-        """
-        output = model(data)
-        preds = np.argmax(output.detach().cpu().numpy(), axis=1)
-        labels = target.detach().cpu().numpy()
-        acc1 = accuracy(preds, labels)
-        top1_acc.append(acc1)
-        # scheduler.step()
-        # input("HERE")
-        if batch_idx % args.log_interval == 0:
-
-            train_loss += loss.item()
-            prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
-
-            total += target.size(0)
-
-            train_correct += np.sum(prediction[1].cpu().numpy() == target.cpu().numpy())
-            print(
-                f"Loss: {np.mean(losses):.6f} "
-                f"Acc@1: {np.mean(top1_acc):.6f} "
-            )
-        if args.dry_run:
-            break
-        # ### UPDATE LEARNING RATE after each batch"""
-        # if(args.enable_diminishing_gradient_norm):
-        #
-        #
-        #     iterations_per_epoch = len(train_loader)
-        # # layer_names = []
-        # # # print(len(optimizer.param_groups))
-        # # # print(len(model.named_parameters()))
-        # # # input()
-        # # # for idxparam in model.parameters():
-        # # #     print(param)
-        # # # for param_group in optimizer.param_groups:
-        # # #     print(param_group['lr'])
-        # # # for param_group in optimizer.param_groups:
-        # # #
-        # # #     param_group["lr"] = np.sqrt(iterations_per_epoch)*param_group["param"].layer_max_grad_norm
-        # # parameters = []
-        # # for idx, (name, param) in enumerate(model.named_parameters()):
-        # #     layer_names.append(name)
-        # #     parameters+= [{'params': param,
-        # #                    'lr':     np.sqrt(iterations_per_epoch)*param.layer_max_grad_norm}]
-        # #     print(f'{idx}: lr = {np.sqrt(iterations_per_epoch)*param.layer_max_grad_norm:.6f}, {name}')
-        # # optimizer = optim.SGD(parameters)
-        # else:
-        #     args.lr = args.lr*pow(args.gamma,(epoch-1)*len(train_batches) + batch_idx)
-        #     for param_group in optimizer.param_groups:
-        #         param_group["lr"] = param_group["lr"] * args.gamma
     return np.mean(top1_acc)
 
 

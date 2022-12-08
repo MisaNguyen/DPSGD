@@ -77,7 +77,15 @@ def main():
 
     #Add setting path here
     # settings_file = "settings"
-    settings_file = "settings_clipping_exp_cifar10_dpsgd_subsampling"
+    """
+    Define sampling method here
+    """
+    # mode = "subsampling"
+    mode = "shuffling"
+    # mode = None
+    settings_file = "settings_clipping_exp_cifar10_dpsgd"
+    if (mode != None):
+        settings_file = settings_file + "_" + mode
     print("Running setting: %s.json" % settings_file)
     if(args.load_setting != ""):
         with open(settings_file +".json", "r") as json_file:
@@ -203,9 +211,13 @@ def main():
     test_accuracy = []
     out_file_path = "./graphs/data/" + settings_file +  "/" + model_name + "/" + args.optimizer
     # Get training and testing data loaders
-    train_batches, test_loader, dataset_size = dataset_preprocessing(args.dataset_name, train_kwargs,
-                                                                     test_kwargs,
-                                                                    )
+    # train_batches, test_loader, dataset_size = dataset_preprocessing(args.dataset_name, train_kwargs,
+    #                                                                  test_kwargs,
+    #                                                                 )
+
+    train_loader, test_loader, dataset_size = dataset_preprocessing(args.dataset_name, train_kwargs,
+                                                                     test_kwargs,mode
+                                                                     )
     # DP settings:
     if args.enable_DP:
         # privacy_engine = None
@@ -232,10 +244,10 @@ def main():
     for epoch in range(1, epochs + 1):
         print("epoch %s:" % epoch)
         if args.enable_DP:
-            train_accuracy.append(CIFAR10_train.DP_train(args, model, device, train_batches, optimizer))
+            train_accuracy.append(CIFAR10_train.DP_train(args, model, device, train_loader, optimizer))
         else:
             print("SGD training")
-            train_accuracy.append(CIFAR10_train.train(args, model, device, train_batches, optimizer))
+            train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, optimizer))
         ### UPDATE LEARNING RATE after each batch"""
         # if(args.enable_diminishing_gradient_norm):
         #

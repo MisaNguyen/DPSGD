@@ -1,6 +1,6 @@
 from datasets import MNIST_dataset, CIFAR10_dataset
 
-def dataset_preprocessing(dataset_name, train_kwargs, test_kwargs):
+def dataset_preprocessing(dataset_name, train_kwargs, test_kwargs, mode):
     if(dataset_name == "MNIST"):
         dataset = MNIST_dataset
         print("Processing MNIST dataset")
@@ -9,6 +9,13 @@ def dataset_preprocessing(dataset_name, train_kwargs, test_kwargs):
         print("Processing Cifar10 dataset")
     else:
         raise Exception("Invalid dataset name, try: MNIST, CIFAR10")
-
-    train_batches, test_loader , dataset_size = dataset.shuffling_preprocessing(train_kwargs,test_kwargs)
-    return train_batches, test_loader , dataset_size
+    if (mode == "shuffling"):
+        # train_batches, test_loader , dataset_size = dataset.shuffling_preprocessing(train_kwargs,test_kwargs)
+        train_loader, test_loader , dataset_size = dataset.shuffling_preprocessing(train_kwargs,test_kwargs)
+        # return train_batches, test_loader , dataset_size
+    elif (mode == "subsampling"):
+        train_loader, test_loader , dataset_size = dataset.subsampling_preprocessing(train_kwargs,test_kwargs)
+        # return train_loader, test_loader , dataset_size
+    else:
+        train_loader, test_loader , dataset_size = dataset.data_preprocessing(train_kwargs,test_kwargs)
+    return train_loader, test_loader , dataset_size

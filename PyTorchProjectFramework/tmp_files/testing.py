@@ -1,5 +1,5 @@
-from torch.utils.data import Dataset
-import torch
+from torch.utils.data import Dataset, RandomSampler, DataLoader
+# import torch
 from numpy.random import choice
 
 from tmp_files.opacus_sampler import DistributedUniformWithReplacementSampler, UniformWithReplacementSampler
@@ -26,18 +26,20 @@ if __name__ == '__main__':
     sampling_method = "subsampling"
     sample_rate = 1/2 # = batch_size / len(dataset)
     epochs = 10
+    sampler = RandomSampler(dataset[:10], replacement=True, num_samples=6)
+    train_loader = DataLoader(dataset[:10], sampler=sampler, batch_size=2)
 
-    number_of_batches = len(dataset[:10]) // train_kwargs['batch_size']
-    batches_length = [train_kwargs['batch_size']] * number_of_batches
-    """ No drop last option"""
-    if len(dataset[:10]) % train_kwargs['batch_size'] != 0:
-        batches_length.append(len(dataset[:10]) % train_kwargs['batch_size'])
-    """ Split train dataset into batches"""
-    batches = torch.utils.data.random_split(dataset[:10], batches_length)
-    for batch_idx , batch in enumerate(batches):
-        print("id:",batch_idx)
-        for data in batch:
-            print(data)
+    # number_of_batches = len(dataset[:10]) // train_kwargs['batch_size']
+    # batches_length = [train_kwargs['batch_size']] * number_of_batches
+    # """ No drop last option"""
+    # if len(dataset[:10]) % train_kwargs['batch_size'] != 0:
+    #     batches_length.append(len(dataset[:10]) % train_kwargs['batch_size'])
+    # """ Split train dataset into batches"""
+    # batches = torch.utils.data.random_split(dataset[:10], batches_length)
+    # for batch_idx , batch in enumerate(batches):
+    #     print("id:",batch_idx)
+    #     for data in batch:
+    #         print(data)
     # generator = torch.Generator()
     # batch_sampler = DistributedUniformWithReplacementSampler(
     #     total_size=len(dataset),  # type: ignore[assignment, arg-type]
@@ -56,18 +58,18 @@ if __name__ == '__main__':
     #     train_loader = torch.utils.data.DataLoader(dataset[:10],
     #                                                **train_kwargs
     #                                                )
-    # for epoch in range(epochs):
-    #     print("E:",epoch)
-    #     # print("loader:", train_loader)
-    #     # print(len(train_loader))
-    #     for batch_idx, data in enumerate(train_loader): # Batch loop
-    #
-    #             # Uniformly pick indexes, ref: https://numpy.org/doc/stable/reference/random/generated/numpy.random.choice.html
-    #             # Replace = true => index can appear multiple time,
-    #             # p = None => Uniform distribution
-    #             # Size = None => Output single value
-    #             # index= choice(len(train_loader), size=None, replace=True, p=None)
-    #         # data = train_loader
-    #         print(batch_idx)
-    #         # print(data_x)
-    #         print(data)
+    for epoch in range(epochs):
+        print("E:",epoch)
+        # print("loader:", train_loader)
+        # print(len(train_loader))
+        for batch_idx, data in enumerate(train_loader): # Batch loop
+
+                # Uniformly pick indexes, ref: https://numpy.org/doc/stable/reference/random/generated/numpy.random.choice.html
+                # Replace = true => index can appear multiple time,
+                # p = None => Uniform distribution
+                # Size = None => Output single value
+                # index= choice(len(train_loader), size=None, replace=True, p=None)
+            # data = train_loader
+            print(batch_idx)
+            # print(data_x)
+            print(data)

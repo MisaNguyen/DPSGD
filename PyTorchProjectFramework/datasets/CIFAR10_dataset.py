@@ -74,21 +74,22 @@ def shuffling_preprocessing(train_kwargs,test_kwargs):
         root='../data', train=True, download=True, transform=transform_train)
     print("Finished normalizing dataset.")
 
-    """ FULLY SHUFFLE AND DIVIDING DATASET INTO BATCHES"""
-    number_of_batches = len(trainset) // train_kwargs['batch_size']
-    batches_length = [train_kwargs['batch_size']] * number_of_batches
-    """ No drop last option"""
-    if len(trainset) % train_kwargs['batch_size'] != 0:
-        batches_length.append(len(trainset) % train_kwargs['batch_size'])
-    """ Split train dataset into batches"""
-    train_batches = torch.utils.data.random_split(trainset, batches_length)
+    # """ FULLY SHUFFLE AND DIVIDING DATASET INTO BATCHES"""
+    # number_of_batches = len(trainset) // train_kwargs['batch_size']
+    # batches_length = [train_kwargs['batch_size']] * number_of_batches
+    # """ No drop last option"""
+    # if len(trainset) % train_kwargs['batch_size'] != 0:
+    #     batches_length.append(len(trainset) % train_kwargs['batch_size'])
+    # """ Split train dataset into batches"""
+    # train_batches = torch.utils.data.random_split(trainset, batches_length)
 
-    # print('\nTraining Set:')
-    # for images, labels in train_batches:
-    #     print('Image batch dimensions:', images.size())
-    #     print('Image label dimensions:', labels.size())
-    #     print(labels[:10])
-    #     break
+    train_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)
+    print('\nTraining Set:')
+    for images, labels in train_loader:
+        print('Image batch dimensions:', images.size())
+        print('Image label dimensions:', labels.size())
+        print(labels[:10])
+        break
     test_loader = torch.utils.data.DataLoader(testset, **test_kwargs)
     # Checking the dataset
     print('\nTesting Set:')
@@ -99,81 +100,119 @@ def shuffling_preprocessing(train_kwargs,test_kwargs):
         break
     # return train_loader, test_loader
     dataset_size = len(trainset)
-    return train_batches, test_loader, dataset_size
+    return train_loader, test_loader, dataset_size
+    # return train_batches, test_loader, dataset_size
 
-# def shuffling_preprocessing(train_kwargs,test_kwargs):
-#     print('==> Preparing data..')
-#     """-------------------- NORMALIZING-------------------"""
-#
-#     toTensor = [
-#         transforms.ToTensor(),
-#     ]
-#     augmentations = [
-#         transforms.RandomCrop(32, padding=4),
-#         transforms.RandomHorizontalFlip(),
-#     ]
-#
-#     train_normalize = [
-#         transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-#         #transforms.Normalize(test_mean, test_std),
-#     ]
-#     test_normalize = [
-#         transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-#         #transforms.Normalize(test_mean, test_std),
-#     ]
-#     transform_test = transforms.Compose(
-#         augmentations + toTensor
-#         + test_normalize
-#     )
-#     transform_train = transforms.Compose(
-#         augmentations + toTensor
-#         + train_normalize
-#     )
-#     testset = datasets.CIFAR10(
-#         root='../data', train=False, download=True, transform=transform_test)
-#     # testset = MyDataset(testset,transform=transform_test)
-#
-#     trainset = datasets.CIFAR10(
-#         root='../data', train=True, download=True, transform=transform_train)
-#     print("Finished normalizing dataset.")
-#
-#
-#     train_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)
-#     test_loader = torch.utils.data.DataLoader(testset, **test_kwargs)
-#     # print(train_kwargs['batch_size'])
-#     # print(train_kwargs['microbatch_size'])
-#     # minibatch_loader, microbatch_loader = get_data_loaders(train_kwargs['batch_size'],
-#     #                                                        train_kwargs['microbatch_size'],
-#     #                                                        len(trainset)) # iteration = training set size = 1 epoch
-#     # train_minibatch_loader = minibatch_loader(trainset)
-#
-#     # Checking the dataset
-#     print('Training Set:\n')
-#     for images, labels in train_loader:
-#         print('Image batch dimensions:', images.size())
-#         print('Image label dimensions:', labels.size())
-#         print(labels[:10])
-#         break
-#
-#
-#     # # Checking the dataset
-#     # print('\nValidation Set:')
-#     # for images, labels in valid_loader:
-#     #     print('Image batch dimensions:', images.size())
-#     #     print('Image label dimensions:', labels.size())
-#     #     print(labels[:10])
-#     #     break
-#
-#     # Checking the dataset
-#     print('\nTesting Set:')
-#     for images, labels in test_loader:
-#         print('Image batch dimensions:', images.size())
-#         print('Image label dimensions:', labels.size())
-#         print(labels[:10])
-#         break
-#     return train_loader, test_loader
-#     dataset_size = len(trainset)
-#     return train_loader, test_loader, dataset_size
+def subsampling_preprocessing(train_kwargs,test_kwargs):
+    """-------------------- NORMALIZING-------------------"""
+
+    toTensor = [
+        transforms.ToTensor(),
+    ]
+    augmentations = [
+        transforms.RandomCrop(32, padding=4),
+        transforms.RandomHorizontalFlip(),
+    ]
+
+    train_normalize = [
+        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+        #transforms.Normalize(test_mean, test_std),
+    ]
+    test_normalize = [
+        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+        #transforms.Normalize(test_mean, test_std),
+    ]
+    transform_test = transforms.Compose(
+        augmentations + toTensor
+        + test_normalize
+    )
+    transform_train = transforms.Compose(
+        augmentations + toTensor
+        + train_normalize
+    )
+    testset = datasets.CIFAR10(
+        root='../data', train=False, download=True, transform=transform_test)
+    # testset = MyDataset(testset,transform=transform_test)
+
+    trainset = datasets.CIFAR10(
+        root='../data', train=True, download=True, transform=transform_train)
+    print("Finished normalizing dataset.")
+
+    sampler = torch.utils.data.RandomSampler(trainset, replacement=True, num_samples=len(trainset))
+    train_loader = torch.utils.data.DataLoader(trainset, sampler=sampler, **train_kwargs)
+    print('\nTraining Set:')
+    for images, labels in train_loader:
+        print('Image batch dimensions:', images.size())
+        print('Image label dimensions:', labels.size())
+        print(labels[:10])
+        break
+    test_loader = torch.utils.data.DataLoader(testset, **test_kwargs)
+    # Checking the dataset
+    print('\nTesting Set:')
+    for images, labels in test_loader:
+        print('Image batch dimensions:', images.size())
+        print('Image label dimensions:', labels.size())
+        print(labels[:10])
+        break
+    # return train_loader, test_loader
+    dataset_size = len(trainset)
+    return train_loader, test_loader, dataset_size
+
+
+
+def data_preprocessing(train_kwargs,test_kwargs):
+    """-------------------- NORMALIZING-------------------"""
+
+    toTensor = [
+        transforms.ToTensor(),
+    ]
+    augmentations = [
+        transforms.RandomCrop(32, padding=4),
+        transforms.RandomHorizontalFlip(),
+    ]
+
+    train_normalize = [
+        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+        #transforms.Normalize(test_mean, test_std),
+    ]
+    test_normalize = [
+        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+        #transforms.Normalize(test_mean, test_std),
+    ]
+    transform_test = transforms.Compose(
+        augmentations + toTensor
+        + test_normalize
+    )
+    transform_train = transforms.Compose(
+        augmentations + toTensor
+        + train_normalize
+    )
+    testset = datasets.CIFAR10(
+        root='../data', train=False, download=True, transform=transform_test)
+    # testset = MyDataset(testset,transform=transform_test)
+
+    trainset = datasets.CIFAR10(
+        root='../data', train=True, download=True, transform=transform_train)
+    print("Finished normalizing dataset.")
+
+    train_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)
+    print('\nTraining Set:')
+    for images, labels in train_loader:
+        print('Image batch dimensions:', images.size())
+        print('Image label dimensions:', labels.size())
+        print(labels[:10])
+        break
+    test_loader = torch.utils.data.DataLoader(testset, **test_kwargs)
+    # Checking the dataset
+    print('\nTesting Set:')
+    for images, labels in test_loader:
+        print('Image batch dimensions:', images.size())
+        print('Image label dimensions:', labels.size())
+        print(labels[:10])
+        break
+    # return train_loader, test_loader
+    dataset_size = len(trainset)
+    return train_loader, test_loader, dataset_size
 
 if __name__ == "__main__":
     train_kwargs = {'batch_size': 16}
