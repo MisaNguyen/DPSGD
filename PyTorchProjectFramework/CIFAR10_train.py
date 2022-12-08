@@ -474,8 +474,8 @@ def DP_train(args, model, device, train_loader,optimizer):
             # input(param.grad)
 
         optimizer.step()
-        if (args.mode == "subsampling"):
-            indices = np.random.permutation(indices) # Reshuffle indices for new round
+        # if (args.mode == "subsampling"):
+        #     indices = np.random.permutation(indices) # Reshuffle indices for new round
 
         """
         Calculate top 1 acc

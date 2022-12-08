@@ -80,8 +80,8 @@ def main():
     """
     Define sampling method here
     """
-    # mode = "subsampling"
-    mode = "shuffling"
+    mode = "subsampling"
+    # mode = "shuffling"
     # mode = None
     settings_file = "settings_clipping_exp_cifar10_dpsgd"
     if (mode != None):
@@ -93,7 +93,7 @@ def main():
             setting_data = json_data[args.load_setting]
             # Loading data
             args.batch_size = int(setting_data["batch_size"])
-            args.microbatch_size = setting_data["microbatch_size"]
+            args.microbatch_size = int(setting_data["microbatch_size"])
             args.test_batch_size = setting_data["test_batch_size"]
             args.iterations = setting_data["iterations"]
             args.lr = setting_data["learning_rate"]
