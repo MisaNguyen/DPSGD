@@ -72,7 +72,9 @@ def main():
     parser.add_argument('--enable-diminishing-gradient-norm', type=bool, default=False, metavar='DGN',
                         help='Enable diminishing gradient norm mode')
     parser.add_argument('--enable-individual-clipping', type=bool, default=False, metavar='IC',
-                        help='Enable individual clippng mode')
+                        help='Enable individual clipping mode')
+    parser.add_argument('--enable-batch-clipping', type=bool, default=False, metavar='IC',
+                        help='Enable batch clipping mode')
     args = parser.parse_args()
 
     #Add setting path here
@@ -107,7 +109,8 @@ def main():
             args.max_grad_norm = setting_data["max_grad_norm"]
             args.optimizer = setting_data["optimizer"]
             args.enable_diminishing_gradient_norm = setting_data["diminishing_gradient_norm"]
-            # args.enable_individual_clipping = setting_data["is_individual_clipping"]
+            args.enable_individual_clipping = setting_data["is_individual_clipping"]
+            args.enable_batch_clipping = False
             args.enable_DP = setting_data["enable_DP"]
             # args.clip_per_layer = False #TODO: add to setting file
             # args.secure_rng = False #TODO: add to setting file
@@ -116,7 +119,10 @@ def main():
             args.mode = setting_data["data_sampling"]
             # args.dataset_name = "MNIST"
             args.dataset_name = "CIFAR10"
-
+    if(args.enable_individual_clipping):
+        settings_file = settings_file + "_IC"
+    elif(args.enable_batch_clipping):
+        settings_file = settings_file + "_BC"
     print("Mode: DGN (%s), IC (%s)" %  (args.enable_diminishing_gradient_norm, args.enable_individual_clipping))
     # if (args.enable_diminishing_gradient_norm == True):
     #     mode = "DGN"
