@@ -82,12 +82,18 @@ def main():
     """
     Define sampling method here
     """
+    enable_individual_clipping = True
+    enable_batch_clipping = False
     mode = "subsampling"
     # mode = "shuffling"
     # mode = None
     settings_file = "settings_clipping_exp_cifar10_dpsgd"
     if (mode != None):
         settings_file = settings_file + "_" + mode
+    if(enable_individual_clipping):
+        settings_file = settings_file + "_IC"
+    elif(enable_batch_clipping):
+        settings_file = settings_file + "_BC"
     print("Running setting: %s.json" % settings_file)
     if(args.load_setting != ""):
         with open(settings_file +".json", "r") as json_file:
@@ -109,8 +115,8 @@ def main():
             args.max_grad_norm = setting_data["max_grad_norm"]
             args.optimizer = setting_data["optimizer"]
             args.enable_diminishing_gradient_norm = setting_data["diminishing_gradient_norm"]
-            args.enable_individual_clipping = setting_data["is_individual_clipping"]
-            args.enable_batch_clipping = False
+            # args.enable_individual_clipping = setting_data["is_individual_clipping"]
+            # args.enable_batch_clipping = False
             args.enable_DP = setting_data["enable_DP"]
             # args.clip_per_layer = False #TODO: add to setting file
             # args.secure_rng = False #TODO: add to setting file
@@ -119,10 +125,7 @@ def main():
             args.mode = setting_data["data_sampling"]
             # args.dataset_name = "MNIST"
             args.dataset_name = "CIFAR10"
-    if(args.enable_individual_clipping):
-        settings_file = settings_file + "_IC"
-    elif(args.enable_batch_clipping):
-        settings_file = settings_file + "_BC"
+
     print("Mode: DGN (%s), IC (%s)" %  (args.enable_diminishing_gradient_norm, args.enable_individual_clipping))
     # if (args.enable_diminishing_gradient_norm == True):
     #     mode = "DGN"
