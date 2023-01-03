@@ -218,7 +218,7 @@ def main():
     visualizer = None
     train_accuracy = []
     test_accuracy = []
-    out_file_path = "./graphs/data/" + settings_file +  "/" + model_name + "/" + args.optimizer
+    out_file_path = "./graphs/data_avg/" + settings_file +  "/" + model_name + "/" + args.optimizer
     # Get training and testing data loaders
     # train_batches, test_loader, dataset_size = dataset_preprocessing(args.dataset_name, train_kwargs,
     #                                                                  test_kwargs,

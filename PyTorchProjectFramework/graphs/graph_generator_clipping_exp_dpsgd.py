@@ -4,6 +4,9 @@ import numpy
 import os
 import json
 
+import numpy as np
+
+
 def get_cmap(n, name='hsv'):
     '''Returns a function that maps each index in 0, 1, ..., n-1 to a distinct
     RGB color; the keyword argument name must be a standard mpl colormap name.'''
@@ -100,22 +103,22 @@ if __name__ == "__main__":
     ]
     # mode = None
     cmap = get_cmap(30)
-    mode = "shuffling"
-    settings_path, Cs, sigma, s_start = settings
+
     # mode = "subsampling"
+    mode = "shuffling"
     draw_DPSGD_IC_case = True
     draw_SGD_case = False
-    draw_DPSGD_BC_case = True
+    draw_DPSGD_BC_case = False
     models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet"]
     # Get models and settings
-    setting_index = 0
-    s_index = 2
-    models_index = [setting_index]["settings_path"], \
+    setting_index = 2
+    s_index = 5
+    models_index = 1
+    model_name = models[models_index]
+    settings_path, Cs, sigma, s_start = settings[setting_index]["settings_path"], \
                                         settings[setting_index]["Cs"], \
                                         settings[setting_index]["sigma"], \
                                         settings[setting_index]["s_start"]
-    model_name = models[models_index]
-
     # Partition setting
     partition = False
 
@@ -148,9 +151,9 @@ if __name__ == "__main__":
     # settings = ["setting_0"]
     graph_path = "./graph/" + settings_path + '/clipping'
 
-    number_of_subgraphs = 2
+    number_of_subgraphs = 3
     if(draw_DPSGD_IC_case and draw_DPSGD_BC_case):
-        number_of_subgraphs = 3
+        number_of_subgraphs = number_of_subgraphs + 1
     # Check whether the specified path exists or not
     isExist = os.path.exists(graph_path)
     if (mode != None):
@@ -165,7 +168,7 @@ if __name__ == "__main__":
     for setting_idx, setting in enumerate(settings):
         # if (setting == "setting_30"):
         #     s=512
-
+        print("Setting:", setting_idx)
         """
         Load experiments data
         """
@@ -188,10 +191,11 @@ if __name__ == "__main__":
             # print(bc_data_path)
             with open(bc_data_path, "r") as data_file:
                 data = json.load(data_file)
-                DPSGD_train_accuracy = data["train_accuracy"]
-                DPSGD_test_accuracy = data["test_accuracy"]
-                DPSGD_BC_epochs = len(DPSGD_train_accuracy)
+                BC_DPSGD_train_accuracy = data["train_accuracy"]
+                BC_DPSGD_test_accuracy = data["test_accuracy"]
+                DPSGD_BC_epochs = len(BC_DPSGD_train_accuracy)
                 DPSGD_BC_epoch_index = [i for i in range(1, DPSGD_BC_epochs+1)]
+
 
         if(draw_DPSGD_IC_case):
             experiment = "SGD"
@@ -207,36 +211,50 @@ if __name__ == "__main__":
         Draw graphs
         """
         plt.subplot(1, number_of_subgraphs, 1)
-
+        plt.title('Train accuracy, lr = %f' % lr)
         cmap_color = cmap(4*setting_idx)
         if(draw_SGD_case):
             plt.plot(SGD_epoch_index, SGD_train_accuracy, label="SGD, s= %f" % (s), color=cmap_color)
-
+            mu = [0 for E in SGD_epoch_index]
+            print("SGD training acc:", SGD_train_accuracy[-1])
         if(draw_DPSGD_BC_case):
-            plt.plot(DPSGD_BC_epoch_index, DPSGD_train_accuracy, "o-", label="BC, s= %f" % (s), color=cmap_color)
+            plt.plot(DPSGD_BC_epoch_index, BC_DPSGD_train_accuracy, "o-", label="BC, s= %f" % (s), color=cmap_color)
+            plt.subplot(1,number_of_subgraphs,number_of_subgraphs)
+            mu = [np.sqrt(E)/sigma for E in DPSGD_BC_epoch_index]
+            mu_index = DPSGD_BC_epoch_index
+            print("BC training acc:", BC_DPSGD_train_accuracy[-1])
 
         if(draw_DPSGD_IC_case):
             plt.plot(DPSGD_IC_epoch_index, IC_DPSGD_train_accuracy, "x-", label="IC, s= %f" % (s), color=cmap_color)
-        plt.title('Train accuracy, lr = %f' % lr)
+            plt.subplot(1,number_of_subgraphs,number_of_subgraphs)
+            mu = [np.sqrt(E)/sigma for E in DPSGD_IC_epoch_index]
+            mu_index = DPSGD_IC_epoch_index
+            print("IC training acc:", IC_DPSGD_train_accuracy[-1])
         plt.legend()
 
         plt.subplot(1, number_of_subgraphs, 2)
+        plt.title('Test accuracy, lr = %f, C = %f, sigma = %f' % (lr,C,sigma))
         if(draw_SGD_case):
             plt.plot(SGD_epoch_index, SGD_test_accuracy, label="SGD, s= %f" % (s), color=cmap_color)
+            print("SGD training acc:", SGD_test_accuracy[-1])
         if(draw_DPSGD_BC_case):
-            plt.plot(DPSGD_BC_epoch_index, DPSGD_test_accuracy, "o-", label="BC,s= %f" % (s), color=cmap_color)
+            plt.plot(DPSGD_BC_epoch_index, BC_DPSGD_test_accuracy, "o-", label="BC,s= %f" % (s), color=cmap_color)
+            print("BC training acc:", BC_DPSGD_test_accuracy[-1])
         if(draw_DPSGD_IC_case):
             plt.plot(DPSGD_IC_epoch_index, IC_DPSGD_test_accuracy, "x-",label="IC, s= %f" % (s), color=cmap_color)
-
-
+            print("IC training acc:", IC_DPSGD_test_accuracy[-1])
+        plt.legend()
+        if(draw_DPSGD_BC_case or draw_DPSGD_IC_case):
+            plt.subplot(1,number_of_subgraphs,3)
+            plt.plot(mu_index, mu, label="mu per epoch", color=cmap_color)
+            plt.legend()
         if(draw_DPSGD_BC_case and draw_DPSGD_IC_case):
-            plt.subplot(1,3,3)
-            test_acc_ratio = [DPSGD_test_accuracy[i]/ IC_DPSGD_test_accuracy[i] for i in range(len(DPSGD_test_accuracy))]
+            plt.subplot(1,number_of_subgraphs,4)
+            test_acc_ratio = [BC_DPSGD_test_accuracy[i]/ IC_DPSGD_test_accuracy[i] for i in range(len(DPSGD_test_accuracy))]
             plt.plot(DPSGD_BC_epoch_index, test_acc_ratio, label="BC/IC,s= %f" % (s), color=cmap_color)
-        plt.title('Test accuracy, lr = %f, C = %f, sigma = %f' % (lr,C,sigma))
+            plt.legend()
         plt.xlabel('epoch')
         plt.ylabel('accuracy')
-        plt.legend()
         s = s*2
     if(draw_SGD_case and draw_DPSGD_BC_case):
         prefix = "SGD_BC"
