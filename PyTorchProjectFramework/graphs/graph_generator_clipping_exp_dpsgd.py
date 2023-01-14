@@ -103,16 +103,16 @@ if __name__ == "__main__":
     ]
     # mode = None
     cmap = get_cmap(30)
-
+    data_folder = "data_avg"
     # mode = "subsampling"
-    mode = "shuffling"
+    mode = "subsampling"
     draw_DPSGD_IC_case = True
     draw_SGD_case = False
     draw_DPSGD_BC_case = False
     models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet"]
     # Get models and settings
-    setting_index = 2
-    s_index = 5
+    setting_index = 0
+    s_index = 4
     models_index = 1
     model_name = models[models_index]
     settings_path, Cs, sigma, s_start = settings[setting_index]["settings_path"], \
@@ -157,9 +157,9 @@ if __name__ == "__main__":
     # Check whether the specified path exists or not
     isExist = os.path.exists(graph_path)
     if (mode != None):
-        base_path = "./data/" + settings_path + "_" + mode
+        base_path = "./" + data_folder + "/" + settings_path + "_" + mode
     else:
-        base_path = "./data/" + settings_path + "/" + model_name
+        base_path = "./" + data_folder + "/" + settings_path + "/" + model_name
     # base_path = "./data/" + settings_path + "/" + model_name
     if not isExist:
         # Create a new directory because it does not exist
