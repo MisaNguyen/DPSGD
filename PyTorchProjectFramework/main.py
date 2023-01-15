@@ -84,8 +84,8 @@ def main():
     """
     enable_individual_clipping = True
     enable_batch_clipping = False
-    mode = "subsampling"
-    # mode = "shuffling"
+    # mode = "subsampling"
+    mode = "shuffling"
     # mode = None
     settings_file = "settings_clipping_exp_cifar10_dpsgd"
     if (mode != None):
@@ -123,8 +123,8 @@ def main():
             args.shuffle_dataset = True
             # args.is_partition_train = False
             args.mode = setting_data["data_sampling"]
-            # args.dataset_name = "MNIST"
-            args.dataset_name = "CIFAR10"
+            args.dataset_name = "MNIST"
+            # args.dataset_name = "CIFAR10"
 
     print("Mode: DGN (%s), IC (%s)" %  (args.enable_diminishing_gradient_norm, args.enable_individual_clipping))
     # if (args.enable_diminishing_gradient_norm == True):
@@ -157,8 +157,10 @@ def main():
     # model = AlexNet(num_classes=10).to(device)
     # model_name = "AlexNet"
     # model = SimpleDLA().to(device)
-    model = convnet(num_classes=10).to(device)
-    model_name = "convnet"
+    # model = convnet(num_classes=10).to(device)
+    # model_name = "convnet"
+    model = LeNet().to(device)
+    model_name = "LeNet"
     # model = nor_LeNet().to(device)
     # model_name = "nor_LeNet"
 

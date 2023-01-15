@@ -11,9 +11,11 @@ PytorchProjectFramework/accountants/graphs/graph/*
 
 PytorchProjectFramework/graphs/graph/*
 PytorchProjectFramework/graphs/data/*
+PytorchProjectFramework/graphs/data_avg/*
 PytorchProjectFramework/graphs/data_client/*
 PytorchProjectFramework/graphs/data_mixing/*
 PytorchProjectFramework/graphs/old_data/*
 PytorchProjectFramework/graphs/old_data_2/*
 PytorchProjectFramework/graphs/old_data_3/*
+
 PytorchProjectFramework/*.tar
