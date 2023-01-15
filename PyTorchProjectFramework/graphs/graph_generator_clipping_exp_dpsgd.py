@@ -104,15 +104,15 @@ if __name__ == "__main__":
     # mode = None
     cmap = get_cmap(30)
     data_folder = "data_avg"
+    mode = "shuffling"
     # mode = "subsampling"
-    mode = "subsampling"
     draw_DPSGD_IC_case = True
     draw_SGD_case = False
     draw_DPSGD_BC_case = False
     models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet"]
     # Get models and settings
     setting_index = 0
-    s_index = 4
+    s_index = 3
     models_index = 1
     model_name = models[models_index]
     settings_path, Cs, sigma, s_start = settings[setting_index]["settings_path"], \
@@ -236,13 +236,13 @@ if __name__ == "__main__":
         plt.title('Test accuracy, lr = %f, C = %f, sigma = %f' % (lr,C,sigma))
         if(draw_SGD_case):
             plt.plot(SGD_epoch_index, SGD_test_accuracy, label="SGD, s= %f" % (s), color=cmap_color)
-            print("SGD training acc:", SGD_test_accuracy[-1])
+            print("SGD test acc:", SGD_test_accuracy[-1])
         if(draw_DPSGD_BC_case):
             plt.plot(DPSGD_BC_epoch_index, BC_DPSGD_test_accuracy, "o-", label="BC,s= %f" % (s), color=cmap_color)
-            print("BC training acc:", BC_DPSGD_test_accuracy[-1])
+            print("BC test acc:", BC_DPSGD_test_accuracy[-1])
         if(draw_DPSGD_IC_case):
             plt.plot(DPSGD_IC_epoch_index, IC_DPSGD_test_accuracy, "x-",label="IC, s= %f" % (s), color=cmap_color)
-            print("IC training acc:", IC_DPSGD_test_accuracy[-1])
+            print("IC test acc:", IC_DPSGD_test_accuracy[-1])
         plt.legend()
         if(draw_DPSGD_BC_case or draw_DPSGD_IC_case):
             plt.subplot(1,number_of_subgraphs,3)
