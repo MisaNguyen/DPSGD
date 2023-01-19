@@ -17,5 +17,6 @@ PytorchProjectFramework/graphs/data_mixing/*
 PytorchProjectFramework/graphs/old_data/*
 PytorchProjectFramework/graphs/old_data_2/*
 PytorchProjectFramework/graphs/old_data_3/*
+PytorchProjectFramework/graphs/data_marten_algo/*
 
 PytorchProjectFramework/*.tar

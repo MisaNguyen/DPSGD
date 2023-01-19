@@ -84,8 +84,8 @@ def main():
     """
     enable_individual_clipping = True
     enable_batch_clipping = False
-    # mode = "subsampling"
-    mode = "shuffling"
+    mode = "subsampling"
+    # mode = "shuffling"
     # mode = None
     settings_file = "settings_clipping_exp_cifar10_dpsgd"
     if (mode != None):
@@ -123,8 +123,9 @@ def main():
             args.shuffle_dataset = True
             # args.is_partition_train = False
             args.mode = setting_data["data_sampling"]
-            args.dataset_name = "MNIST"
-            # args.dataset_name = "CIFAR10"
+            # args.dataset_name = "MNIST"
+            args.dataset_name = "CIFAR10"
+            # args.enable_DP = False #TODO: Change here before upload to github
 
     print("Mode: DGN (%s), IC (%s)" %  (args.enable_diminishing_gradient_norm, args.enable_individual_clipping))
     # if (args.enable_diminishing_gradient_norm == True):
@@ -220,7 +221,7 @@ def main():
     visualizer = None
     train_accuracy = []
     test_accuracy = []
-    out_file_path = "./graphs/data_avg/" + settings_file +  "/" + model_name + "/" + args.optimizer
+    out_file_path = "./graphs/data_marten_algo/" + settings_file +  "/" + model_name + "/" + args.optimizer
     # Get training and testing data loaders
     # train_batches, test_loader, dataset_size = dataset_preprocessing(args.dataset_name, train_kwargs,
     #                                                                  test_kwargs,

@@ -104,16 +104,16 @@ if __name__ == "__main__":
     # mode = None
     cmap = get_cmap(30)
     data_folder = "data_avg"
-    mode = "shuffling"
-    # mode = "subsampling"
+    # mode = "shuffling"
+    mode = "subsampling"
     draw_DPSGD_IC_case = True
     draw_SGD_case = False
     draw_DPSGD_BC_case = False
     models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet"]
     # Get models and settings
     setting_index = 0
-    s_index = 3
-    models_index = 1
+    s_index = 0
+    models_index = 0
     model_name = models[models_index]
     settings_path, Cs, sigma, s_start = settings[setting_index]["settings_path"], \
                                         settings[setting_index]["Cs"], \
