@@ -10,10 +10,11 @@ settings = ["settings_clipping_exp_cifar10_dpsgd",
             "settings_clipping_exp_cifar10_dpsgd_large_C_sigma_4",
             "settings_clipping_exp_cifar10_dpsgd_large_C_sigma_8",]
 
-# data_processing = "subsampling"
-data_processing = "shuffling"
+data_processing = "subsampling"
+# data_processing = "shuffling"
+
 is_batch_clipping = False
-is_individual_clipping = True
+is_individual_clipping = False
 for setting_file in settings:
 # setting_file = settings[0]
     f = open(setting_file +".json")

@@ -468,8 +468,8 @@ def DP_train(args, model, device, train_loader,optimizer):
 
             # param.grad = param.grad + noise / args.batch_size
             # input(param.grad)
-            # param.grad = (param.grad + noise).div(len(micro_train_loader))
-            param.grad = param.grad + noise.div(len(micro_train_loader))
+            param.grad = (param.grad + noise).div(len(micro_train_loader))
+            # param.grad = param.grad + noise.div(len(micro_train_loader))
             # print("----------------------")
             # input(param.grad)
 
