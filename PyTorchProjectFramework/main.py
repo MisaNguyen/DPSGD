@@ -82,7 +82,7 @@ def main():
     """
     Define sampling method here
     """
-    enable_individual_clipping = True
+    enable_individual_clipping = False
     enable_batch_clipping = False
     mode = "subsampling"
     # mode = "shuffling"
@@ -123,8 +123,8 @@ def main():
             args.shuffle_dataset = True
             # args.is_partition_train = False
             args.mode = setting_data["data_sampling"]
-            # args.dataset_name = "MNIST"
-            args.dataset_name = "CIFAR10"
+            args.dataset_name = "MNIST"
+            # args.dataset_name = "CIFAR10"
             # args.enable_DP = False #TODO: Change here before upload to github
 
     print("Mode: DGN (%s), IC (%s)" %  (args.enable_diminishing_gradient_norm, args.enable_individual_clipping))
@@ -231,6 +231,7 @@ def main():
                                                                      test_kwargs,mode
                                                                      )
     # DP settings:
+    print(args.microbatch_size)
     if args.enable_DP:
         # privacy_engine = None
         if (args.enable_diminishing_gradient_norm == True):

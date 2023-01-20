@@ -1,7 +1,7 @@
 {
   "setting_0": {
     "batch_size": 1024,
-    "microbatch_size": 1024,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 5000,
     "learning_rate": 0.025,
@@ -41,7 +41,7 @@
   },
   "setting_2": {
     "batch_size": 128,
-    "microbatch_size": 128,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -61,7 +61,7 @@
   },
   "setting_3": {
     "batch_size": 256,
-    "microbatch_size": 256,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -81,7 +81,7 @@
   },
   "setting_4": {
     "batch_size": 512,
-    "microbatch_size": 512,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -101,7 +101,7 @@
   },
   "setting_5": {
     "batch_size": 1024,
-    "microbatch_size": 1024,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -141,7 +141,7 @@
   },
   "setting_7": {
     "batch_size": 128,
-    "microbatch_size": 128,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -161,7 +161,7 @@
   },
   "setting_8": {
     "batch_size": 256,
-    "microbatch_size": 256,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -181,7 +181,7 @@
   },
   "setting_9": {
     "batch_size": 512,
-    "microbatch_size": 512,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -201,7 +201,7 @@
   },
   "setting_10": {
     "batch_size": 1024,
-    "microbatch_size": 1024,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -241,7 +241,7 @@
   },
   "setting_12": {
     "batch_size": 128,
-    "microbatch_size": 128,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -261,7 +261,7 @@
   },
   "setting_13": {
     "batch_size": 256,
-    "microbatch_size": 256,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -281,7 +281,7 @@
   },
   "setting_14": {
     "batch_size": 512,
-    "microbatch_size": 512,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -301,7 +301,7 @@
   },
   "setting_15": {
     "batch_size": 1024,
-    "microbatch_size": 1024,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -341,7 +341,7 @@
   },
   "setting_17": {
     "batch_size": 128,
-    "microbatch_size": 128,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -361,7 +361,7 @@
   },
   "setting_18": {
     "batch_size": 256,
-    "microbatch_size": 256,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -381,7 +381,7 @@
   },
   "setting_19": {
     "batch_size": 512,
-    "microbatch_size": 512,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -401,7 +401,7 @@
   },
   "setting_20": {
     "batch_size": 1024,
-    "microbatch_size": 1024,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -441,7 +441,7 @@
   },
   "setting_22": {
     "batch_size": 128,
-    "microbatch_size": 128,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -461,7 +461,7 @@
   },
   "setting_23": {
     "batch_size": 256,
-    "microbatch_size": 256,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -481,7 +481,7 @@
   },
   "setting_24": {
     "batch_size": 512,
-    "microbatch_size": 512,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -501,7 +501,7 @@
   },
   "setting_25": {
     "batch_size": 1024,
-    "microbatch_size": 1024,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -541,7 +541,7 @@
   },
   "setting_27": {
     "batch_size": 128,
-    "microbatch_size": 128,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -561,7 +561,7 @@
   },
   "setting_28": {
     "batch_size": 256,
-    "microbatch_size": 256,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -581,7 +581,7 @@
   },
   "setting_29": {
     "batch_size": 512,
-    "microbatch_size": 512,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -601,7 +601,7 @@
   },
   "setting_30": {
     "batch_size": 1024,
-    "microbatch_size": 1024,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
