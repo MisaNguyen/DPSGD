@@ -403,23 +403,23 @@ def DP_train(args, model, device, train_loader,optimizer):
             # Add grad to sum of grad
             for param in model_clone.parameters():
 
-                """
-                Batch clipping each "sample"
-                """
-                if(args.enable_diminishing_gradient_norm == True):
-                    # args.max_grad_norm = torch.linalg.norm(param.grad).to("cpu")
-                    # print(args.max_grad_norm)
-                    if not hasattr(param, "prev_max_grad_norm"): #round 1
-                        torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
-                    else: #round 2 onward
-                        torch.nn.utils.clip_grad_norm_(param.grad, max_norm=param.prev_max_grad_norm) # in-place computation
-                    if not hasattr(param, "layer_max_grad_norm"):
-                        param.layer_max_grad_norm  = torch.linalg.norm(param.grad)
-                    else:
-                        param.layer_max_grad_norm = max(param.layer_max_grad_norm, torch.linalg.norm(param.grad)) # get new max_grad_norm
-                    # print(param.layer_max_grad_norm)
-                else:
-                    torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
+                # """
+                # Batch clipping each "sample"
+                # """
+                # if(args.enable_diminishing_gradient_norm == True):
+                #     # args.max_grad_norm = torch.linalg.norm(param.grad).to("cpu")
+                #     # print(args.max_grad_norm)
+                #     if not hasattr(param, "prev_max_grad_norm"): #round 1
+                #         torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
+                #     else: #round 2 onward
+                #         torch.nn.utils.clip_grad_norm_(param.grad, max_norm=param.prev_max_grad_norm) # in-place computation
+                #     if not hasattr(param, "layer_max_grad_norm"):
+                #         param.layer_max_grad_norm  = torch.linalg.norm(param.grad)
+                #     else:
+                #         param.layer_max_grad_norm = max(param.layer_max_grad_norm, torch.linalg.norm(param.grad)) # get new max_grad_norm
+                #     # print(param.layer_max_grad_norm)
+                # else:
+                #     torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
 
                 if not hasattr(param, "sum_grad"):
                     param.sum_grad = param.grad
@@ -432,8 +432,8 @@ def DP_train(args, model, device, train_loader,optimizer):
 
         # Copy sum of grad to the model gradient
         for net1, net2 in zip(model.named_parameters(), model_clone.named_parameters()): # (layer_name, value) for each layer
-            net1[1].grad = net2[1].sum_grad
-            # net1[1].grad = net2[1].sum_grad.div(len(micro_train_loader)) # Averaging the gradients
+            # net1[1].grad = net2[1].sum_grad
+            net1[1].grad = net2[1].sum_grad.div(len(micro_train_loader)) # Averaging the gradients
         # Reset sum_grad
         for param in model_clone.parameters():
             delattr(param, 'sum_grad')
@@ -441,23 +441,23 @@ def DP_train(args, model, device, train_loader,optimizer):
         for param in model.parameters():
             # param.grad = torch.mul(param.accumulated_grads,1/args.batch_size)
             # param.grad = param_clone.sum_grad.clone # Copy sum_grad
-            # """
-            # Batch clipping for each "micro batch"
-            # """
-            # if(args.enable_diminishing_gradient_norm == True):
-            #     # args.max_grad_norm = torch.linalg.norm(param.grad).to("cpu")
-            #     # print(args.max_grad_norm)
-            #     if not hasattr(param, "prev_max_grad_norm"): #round 1
-            #         torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
-            #     else: #round 2 onward
-            #         torch.nn.utils.clip_grad_norm_(param.grad, max_norm=param.prev_max_grad_norm) # in-place computation
-            #     if not hasattr(param, "layer_max_grad_norm"):
-            #         param.layer_max_grad_norm  = torch.linalg.norm(param.grad)
-            #     else:
-            #         param.layer_max_grad_norm = max(param.layer_max_grad_norm, torch.linalg.norm(param.grad)) # get new max_grad_norm
-            #     # print(param.layer_max_grad_norm)
-            # else:
-            #     torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
+            """
+            Batch clipping for each "micro batch"
+            """
+            if(args.enable_diminishing_gradient_norm == True):
+                # args.max_grad_norm = torch.linalg.norm(param.grad).to("cpu")
+                # print(args.max_grad_norm)
+                if not hasattr(param, "prev_max_grad_norm"): #round 1
+                    torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
+                else: #round 2 onward
+                    torch.nn.utils.clip_grad_norm_(param.grad, max_norm=param.prev_max_grad_norm) # in-place computation
+                if not hasattr(param, "layer_max_grad_norm"):
+                    param.layer_max_grad_norm  = torch.linalg.norm(param.grad)
+                else:
+                    param.layer_max_grad_norm = max(param.layer_max_grad_norm, torch.linalg.norm(param.grad)) # get new max_grad_norm
+                # print(param.layer_max_grad_norm)
+            else:
+                torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
             """
             Add Gaussian noise to gradients
             """
@@ -468,8 +468,8 @@ def DP_train(args, model, device, train_loader,optimizer):
 
             # param.grad = param.grad + noise / args.batch_size
             # input(param.grad)
-            param.grad = (param.grad + noise).div(len(micro_train_loader))
-            # param.grad = param.grad + noise.div(len(micro_train_loader))
+            # param.grad = (param.grad + noise).div(len(micro_train_loader))
+            param.grad = param.grad + noise.div(len(micro_train_loader))
             # print("----------------------")
             # input(param.grad)
 
