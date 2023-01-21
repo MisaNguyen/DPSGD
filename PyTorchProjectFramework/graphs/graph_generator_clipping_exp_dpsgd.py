@@ -103,16 +103,17 @@ if __name__ == "__main__":
     ]
     # mode = None
     cmap = get_cmap(30)
-    data_folder = "data_avg"
+    data_folder = "data_marten_algo"
     mode = "shuffling"
     # mode = "subsampling"
     draw_DPSGD_IC_case = False
     draw_SGD_case = False
-    draw_DPSGD_BC_case = True
+    draw_DPSGD_BC_case = False
+    draw_mixing_case = True
     models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet"]
     # Get models and settings
     setting_index = 0
-    s_index = 2
+    s_index =3
     models_index = 0
     model_name = models[models_index]
     settings_path, Cs, sigma, s_start = settings[setting_index]["settings_path"], \
@@ -131,7 +132,7 @@ if __name__ == "__main__":
     # settings = ["setting_" + str(i) for i in range(21,26)]
     # settings = ["setting_" + str(i) for i in range(26,31)]
 
-    s_index_min = 1 # min = 1
+    s_index_min =  2# min = 1
     s_index_max = 6 # max = 6
     # settings = ["setting_" + str(i) for i in range(26,29)]
     # settings.append("setting_30")
@@ -174,7 +175,8 @@ if __name__ == "__main__":
         """
         if(draw_SGD_case):
             experiment = "SGD"
-            sgd_data_path  = base_path + '/' + experiment + '/' + setting +".json"
+            # sgd_data_path  = base_path + '/' + experiment + '/' + setting +".json"
+            sgd_data_path = base_path + '/' + model_name + '/' + experiment + '/SGD/' + setting +".json"
             print(sgd_data_path)
             with open(sgd_data_path, "r") as data_file:
                 data = json.load(data_file)
@@ -207,6 +209,16 @@ if __name__ == "__main__":
                 DPSGD_IC_epochs = len(IC_DPSGD_train_accuracy)
                 DPSGD_IC_epoch_index = [i for i in range(1, DPSGD_IC_epochs+1)]
 
+        if(draw_mixing_case):
+            experiment = "SGD"
+            ic_data_path = base_path + '/' + model_name + '/' + experiment + '/NM/' + setting +".json"
+            with open(ic_data_path, "r") as data_file:
+                data = json.load(data_file)
+                Mixing_DPSGD_train_accuracy = data["train_accuracy"]
+                Mixing_DPSGD_test_accuracy = data["test_accuracy"]
+                DPSGD_Mixing_epochs = len(Mixing_DPSGD_train_accuracy)
+                DPSGD_Mixing_epoch_index = [i for i in range(1, DPSGD_Mixing_epochs+1)]
+
         """
         Draw graphs
         """
@@ -230,6 +242,13 @@ if __name__ == "__main__":
             mu = [np.sqrt(E)/sigma for E in DPSGD_IC_epoch_index]
             mu_index = DPSGD_IC_epoch_index
             print("IC training acc:", IC_DPSGD_train_accuracy[-1])
+
+        if(draw_mixing_case):
+            plt.plot(DPSGD_Mixing_epoch_index, Mixing_DPSGD_train_accuracy, "x-", label="mixing, s= %f" % (s), color=cmap_color)
+            plt.subplot(1,number_of_subgraphs,number_of_subgraphs)
+            mu = [np.sqrt(E)/sigma for E in DPSGD_Mixing_epoch_index]
+            mu_index = DPSGD_Mixing_epoch_index
+            print("Mixing training acc:", Mixing_DPSGD_train_accuracy[-1])
         plt.legend()
 
         plt.subplot(1, number_of_subgraphs, 2)
@@ -243,8 +262,11 @@ if __name__ == "__main__":
         if(draw_DPSGD_IC_case):
             plt.plot(DPSGD_IC_epoch_index, IC_DPSGD_test_accuracy, "x-",label="IC, s= %f" % (s), color=cmap_color)
             print("IC test acc:", IC_DPSGD_test_accuracy[-1])
+        if(draw_mixing_case):
+            plt.plot(DPSGD_Mixing_epoch_index, Mixing_DPSGD_test_accuracy, "x-",label="Mixing, s= %f" % (s), color=cmap_color)
+            print("Mixing test acc:", Mixing_DPSGD_test_accuracy[-1])
         plt.legend()
-        if(draw_DPSGD_BC_case or draw_DPSGD_IC_case):
+        if(draw_DPSGD_BC_case or draw_DPSGD_IC_case or draw_mixing_case):
             plt.subplot(1,number_of_subgraphs,3)
             plt.plot(mu_index, mu, label="mu per epoch", color=cmap_color)
             plt.legend()
