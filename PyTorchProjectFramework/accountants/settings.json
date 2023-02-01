@@ -2,11 +2,11 @@
   "setting_1": {
     "sampling_batch": 64,
     "num_examples"
-    : 50000,
-    "epochs": 50,
-    "learning_rate": 0.1,
+    : 60000,
+    "epochs": 40,
+    "learning_rate": 0.025,
     "noise_multiplier": 2,
-    "max_grad_norm": 1.0
+    "max_grad_norm":10
   },
   "setting_2": {
     "epochs"

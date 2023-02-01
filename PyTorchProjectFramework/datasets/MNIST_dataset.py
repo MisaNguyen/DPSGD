@@ -343,6 +343,7 @@ def subsampling_preprocessing(train_kwargs,test_kwargs):
         root='../data', train=True, download=True, transform=transform_train)
     print("Finished normalizing dataset.")
     print(train_kwargs)
+
     del train_kwargs['shuffle']
     sampler = torch.utils.data.RandomSampler(trainset, replacement=True, num_samples=len(trainset))
     train_loader = torch.utils.data.DataLoader(trainset, sampler=sampler, **train_kwargs)
