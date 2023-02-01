@@ -1,3 +1,4 @@
+import matplotlib
 import matplotlib.pyplot  as plt
 import numpy
 
@@ -6,7 +7,12 @@ import json
 
 import numpy as np
 
-
+# font = {'family' : 'normal',
+#         'weight' : 'bold',
+#         'size'   : 22}
+#
+# matplotlib.rc('font', **font)
+plt.rcParams.update({'font.size': 40})
 def get_cmap(n, name='hsv'):
     '''Returns a function that maps each index in 0, 1, ..., n-1 to a distinct
     RGB color; the keyword argument name must be a standard mpl colormap name.'''
@@ -103,18 +109,20 @@ if __name__ == "__main__":
     ]
     # mode = None
     cmap = get_cmap(30)
-    data_folder = "data_marten_algo"
+    data_folder = "data_sum"
     mode = "shuffling"
     # mode = "subsampling"
     draw_DPSGD_IC_case = False
-    draw_SGD_case = False
+    draw_SGD_case = True
     draw_DPSGD_BC_case = False
-    draw_mixing_case = True
+    draw_mixing_case = False
+    enable_mu = False
+    draw_training_acc = False
     models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet"]
     # Get models and settings
     setting_index = 0
-    s_index =3
-    models_index = 0
+    s_index =0
+    models_index = 1
     model_name = models[models_index]
     settings_path, Cs, sigma, s_start = settings[setting_index]["settings_path"], \
                                         settings[setting_index]["Cs"], \
@@ -132,13 +140,13 @@ if __name__ == "__main__":
     # settings = ["setting_" + str(i) for i in range(21,26)]
     # settings = ["setting_" + str(i) for i in range(26,31)]
 
-    s_index_min =  2# min = 1
+    s_index_min = 1 # min = 1
     s_index_max = 6 # max = 6
     # settings = ["setting_" + str(i) for i in range(26,29)]
     # settings.append("setting_30")
     settings = ["setting_" + str(5*s_index+i) for i in range(s_index_min,s_index_max)]
     # settings = ["setting_0" ]
-    lr = 0.1
+    lr = 0.025
     # Cs = [0.1,0.05,0.01,0.005,0.5,1.0] #old
     # Cs = [1.0,1.5,2,2.5,3,3.5]
     # Cs = [6.0,7.0,8.0,9.0,10.0,20.0]
@@ -152,8 +160,12 @@ if __name__ == "__main__":
     # settings = ["setting_0"]
     graph_path = "./graph/" + settings_path + '/clipping'
 
-    number_of_subgraphs = 3
-    if(draw_DPSGD_IC_case and draw_DPSGD_BC_case):
+    number_of_subgraphs = 1
+    if (enable_mu):
+        number_of_subgraphs = number_of_subgraphs + 1
+    if(draw_training_acc):
+        number_of_subgraphs = number_of_subgraphs + 1
+    if(draw_DPSGD_BC_case and draw_DPSGD_IC_case):
         number_of_subgraphs = number_of_subgraphs + 1
     # Check whether the specified path exists or not
     isExist = os.path.exists(graph_path)
@@ -222,54 +234,61 @@ if __name__ == "__main__":
         """
         Draw graphs
         """
-        plt.subplot(1, number_of_subgraphs, 1)
-        plt.title('Train accuracy, lr = %f' % lr)
         cmap_color = cmap(4*setting_idx)
+        if(draw_training_acc):
+
+            plt.subplot(1, number_of_subgraphs, 1)
+            plt.title('Train accuracy, lr = %f' % lr)
+
+            if(draw_SGD_case):
+                plt.plot(SGD_epoch_index, SGD_train_accuracy, label="SGD, s= %d" % (s), color=cmap_color)
+                mu = [0 for E in SGD_epoch_index]
+                print("SGD training acc:", SGD_train_accuracy[-1])
+            if(draw_DPSGD_BC_case):
+                plt.plot(DPSGD_BC_epoch_index, BC_DPSGD_train_accuracy, "o-", label="BC, sm= %d" % (s), color=cmap_color)
+                plt.subplot(1,number_of_subgraphs,number_of_subgraphs)
+                mu = [np.sqrt(E)/sigma for E in DPSGD_BC_epoch_index]
+                mu_index = DPSGD_BC_epoch_index
+                print("BC training acc:", BC_DPSGD_train_accuracy[-1])
+
+            if(draw_DPSGD_IC_case):
+                plt.plot(DPSGD_IC_epoch_index, IC_DPSGD_train_accuracy, "x-", label="IC, sm= %d" % (s), color=cmap_color)
+                plt.subplot(1,number_of_subgraphs,number_of_subgraphs)
+                mu = [np.sqrt(E)/sigma for E in DPSGD_IC_epoch_index]
+                mu_index = DPSGD_IC_epoch_index
+                print("IC training acc:", IC_DPSGD_train_accuracy[-1])
+
+            if(draw_mixing_case):
+                plt.plot(DPSGD_Mixing_epoch_index, Mixing_DPSGD_train_accuracy, "x-", label="mixing, sm= %f" % (s), color=cmap_color)
+                plt.subplot(1,number_of_subgraphs,number_of_subgraphs)
+                mu = [np.sqrt(E)/sigma for E in DPSGD_Mixing_epoch_index]
+                mu_index = DPSGD_Mixing_epoch_index
+                print("Mixing training acc:", Mixing_DPSGD_train_accuracy[-1])
+            plt.legend()
+        # input(number_of_subgraphs)
+        if(draw_training_acc):
+            plt.subplot(1, number_of_subgraphs, 2)
+        else:
+            plt.subplot(1, number_of_subgraphs, 1)
+        plt.title('Test accuracy, lr = %s, C = %s, sigma = %d' % (str(lr).strip('0'),str(C).strip('0'),sigma))
         if(draw_SGD_case):
-            plt.plot(SGD_epoch_index, SGD_train_accuracy, label="SGD, s= %f" % (s), color=cmap_color)
-            mu = [0 for E in SGD_epoch_index]
-            print("SGD training acc:", SGD_train_accuracy[-1])
-        if(draw_DPSGD_BC_case):
-            plt.plot(DPSGD_BC_epoch_index, BC_DPSGD_train_accuracy, "o-", label="BC, s= %f" % (s), color=cmap_color)
-            plt.subplot(1,number_of_subgraphs,number_of_subgraphs)
-            mu = [np.sqrt(E)/sigma for E in DPSGD_BC_epoch_index]
-            mu_index = DPSGD_BC_epoch_index
-            print("BC training acc:", BC_DPSGD_train_accuracy[-1])
-
-        if(draw_DPSGD_IC_case):
-            plt.plot(DPSGD_IC_epoch_index, IC_DPSGD_train_accuracy, "x-", label="IC, s= %f" % (s), color=cmap_color)
-            plt.subplot(1,number_of_subgraphs,number_of_subgraphs)
-            mu = [np.sqrt(E)/sigma for E in DPSGD_IC_epoch_index]
-            mu_index = DPSGD_IC_epoch_index
-            print("IC training acc:", IC_DPSGD_train_accuracy[-1])
-
-        if(draw_mixing_case):
-            plt.plot(DPSGD_Mixing_epoch_index, Mixing_DPSGD_train_accuracy, "x-", label="mixing, s= %f" % (s), color=cmap_color)
-            plt.subplot(1,number_of_subgraphs,number_of_subgraphs)
-            mu = [np.sqrt(E)/sigma for E in DPSGD_Mixing_epoch_index]
-            mu_index = DPSGD_Mixing_epoch_index
-            print("Mixing training acc:", Mixing_DPSGD_train_accuracy[-1])
-        plt.legend()
-
-        plt.subplot(1, number_of_subgraphs, 2)
-        plt.title('Test accuracy, lr = %f, C = %f, sigma = %f' % (lr,C,sigma))
-        if(draw_SGD_case):
-            plt.plot(SGD_epoch_index, SGD_test_accuracy, label="SGD, s= %f" % (s), color=cmap_color)
+            plt.plot(SGD_epoch_index, SGD_test_accuracy, label="SGD, s= %d" % (s), color=cmap_color)
             print("SGD test acc:", SGD_test_accuracy[-1])
         if(draw_DPSGD_BC_case):
-            plt.plot(DPSGD_BC_epoch_index, BC_DPSGD_test_accuracy, "o-", label="BC,s= %f" % (s), color=cmap_color)
+            plt.plot(DPSGD_BC_epoch_index, BC_DPSGD_test_accuracy, "o-", label="BC,sm= %d" % (s), color=cmap_color)
             print("BC test acc:", BC_DPSGD_test_accuracy[-1])
         if(draw_DPSGD_IC_case):
-            plt.plot(DPSGD_IC_epoch_index, IC_DPSGD_test_accuracy, "x-",label="IC, s= %f" % (s), color=cmap_color)
+            plt.plot(DPSGD_IC_epoch_index, IC_DPSGD_test_accuracy, "x-",label="IC, sm= %d" % (s), color=cmap_color)
             print("IC test acc:", IC_DPSGD_test_accuracy[-1])
         if(draw_mixing_case):
-            plt.plot(DPSGD_Mixing_epoch_index, Mixing_DPSGD_test_accuracy, "x-",label="Mixing, s= %f" % (s), color=cmap_color)
+            plt.plot(DPSGD_Mixing_epoch_index, Mixing_DPSGD_test_accuracy, "x-",label="MC, sm= %d" % (s), color=cmap_color)
             print("Mixing test acc:", Mixing_DPSGD_test_accuracy[-1])
         plt.legend()
-        if(draw_DPSGD_BC_case or draw_DPSGD_IC_case or draw_mixing_case):
-            plt.subplot(1,number_of_subgraphs,3)
-            plt.plot(mu_index, mu, label="mu per epoch", color=cmap_color)
-            plt.legend()
+        if(enable_mu):
+            if(draw_DPSGD_BC_case or draw_DPSGD_IC_case or draw_mixing_case):
+                plt.subplot(1,number_of_subgraphs,3)
+                plt.plot(mu_index, mu, label="mu per epoch", color=cmap_color)
+                plt.legend()
         if(draw_DPSGD_BC_case and draw_DPSGD_IC_case):
             plt.subplot(1,number_of_subgraphs,4)
             test_acc_ratio = [BC_DPSGD_test_accuracy[i]/ IC_DPSGD_test_accuracy[i] for i in range(len(DPSGD_test_accuracy))]
@@ -291,12 +310,14 @@ if __name__ == "__main__":
             prefix = "BC"
         else:
             prefix = "IC"
+    if(draw_mixing_case):
+        prefix = "MC"
     fig_index = setting_index
 
-    file_name =  '/' + model_name + '_' + prefix + '_lr_' + str(lr) + '_C_' + str(C) + '_sigma_' + str(sigma) + '_' + str(fig_index)
+    file_name =  '/' + model_name + '_'+ mode + '_' + prefix + '_lr_' + str(lr) + '_C_' + str(C) + '_sigma_' + str(sigma) + '_' + str(fig_index)
     while(os.path.exists(graph_path+ file_name)):
         fig_index = fig_index+1
-        file_name =  '/' + model_name + '_' + prefix + '_lr_' + str(lr) + '_C_' + str(C) + '_sigma_' + str(sigma) + '_' + str(fig_index)
+        file_name =  '/' + model_name + '_' + mode + '_' + prefix + '_lr_' + str(lr) + '_C_' + str(C) + '_sigma_' + str(sigma) + '_' + str(fig_index)
     fig = plt.gcf()
     fig.set_size_inches((22, 11), forward=False)
     plt.savefig(graph_path + file_name +".png")

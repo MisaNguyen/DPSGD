@@ -6,7 +6,7 @@ import json
 import math
 import numpy as np
 
-# from models.resnet_model import ResNet18,ResNet34,ResNet50,ResNet101,ResNet152
+from models.resnet_model import ResNet18,ResNet34,ResNet50,ResNet101,ResNet152
 """MODELS"""
 # from models.densenet_model import densenet40_k12_cifar10
 # from models.alexnet_model import AlexNet
@@ -25,7 +25,7 @@ from models.BNF_convnet_model import BNF_convnet
 from datasets.dataset_preprocessing import dataset_preprocessing
 """UTILS"""
 from utils.utils import generate_json_data_for_graph
-from utils.visualizer import Visualizer
+# from utils.visualizer import Visualizer
 """TRAIN AND VALIDATE"""
 import MNIST_train, MNIST_validate
 import CIFAR10_validate
@@ -82,10 +82,10 @@ def main():
     """
     Define sampling method here
     """
-    enable_individual_clipping = True
-    enable_batch_clipping = False
-    mode = "subsampling"
-    # mode = "shuffling"
+    enable_individual_clipping = False
+    enable_batch_clipping = True
+    # mode = "subsampling"
+    mode = "shuffling"
     # mode = None
     settings_file = "settings_clipping_exp_cifar10_dpsgd"
     if (mode != None):
@@ -117,7 +117,8 @@ def main():
             args.enable_diminishing_gradient_norm = setting_data["diminishing_gradient_norm"]
             # args.enable_individual_clipping = setting_data["is_individual_clipping"]
             # args.enable_batch_clipping = False
-            args.enable_DP = setting_data["enable_DP"]
+            # args.enable_DP = setting_data["enable_DP"]
+            args.enable_DP = True
             # args.clip_per_layer = False #TODO: add to setting file
             # args.secure_rng = False #TODO: add to setting file
             args.shuffle_dataset = True
@@ -289,6 +290,8 @@ def main():
         #     for param_group in optimizer.param_groups:
         #         param_group["lr"] = param_group["lr"] * args.gamma
         test_accuracy.append(CIFAR10_validate.test(model, device, test_loader))
+        if(epoch % 5 == 0):
+            args.max_grad_norm = args.max_grad_norm / 2
         """
         Update learning rate if test_accuracy does not increase
         """

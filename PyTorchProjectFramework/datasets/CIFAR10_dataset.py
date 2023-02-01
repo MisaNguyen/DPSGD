@@ -74,6 +74,7 @@ def shuffling_preprocessing(train_kwargs,test_kwargs):
         root='../data', train=True, download=True, transform=transform_train)
     print("Finished normalizing dataset.")
 
+
     # """ FULLY SHUFFLE AND DIVIDING DATASET INTO BATCHES"""
     # number_of_batches = len(trainset) // train_kwargs['batch_size']
     # batches_length = [train_kwargs['batch_size']] * number_of_batches
@@ -137,7 +138,7 @@ def subsampling_preprocessing(train_kwargs,test_kwargs):
     trainset = datasets.CIFAR10(
         root='../data', train=True, download=True, transform=transform_train)
     print("Finished normalizing dataset.")
-    print(train_kwargs)
+
     del train_kwargs['shuffle']
     sampler = torch.utils.data.RandomSampler(trainset, replacement=True, num_samples=len(trainset))
     train_loader = torch.utils.data.DataLoader(trainset, sampler=sampler, **train_kwargs)

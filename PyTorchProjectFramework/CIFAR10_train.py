@@ -547,7 +547,15 @@ def train(args, model, device, train_loader,
         # compute gradient and do SGD step
         loss.backward()
         optimizer.step()
-
+        count=0
+        for param in model.parameters():
+            count = count + 1
+            print("layer #%d:" % count )
+            print("shape=", param.grad.shape)
+            print("norm= ",param.grad.data.norm(2))
+            print("norm_avg= ",param.grad.data.norm(2)/ param.grad.shape[0])
+            print('-'*20)
+        input()
         if np.isnan(loss.cpu().detach().numpy()):
             print("NaN loss")
             print(batch_idx)
@@ -557,7 +565,7 @@ def train(args, model, device, train_loader,
             print(output)
             print("previous loss", previous_loss)
             print("previous output", previous_output)
-            input()
+            # input()
             for param in model.parameters():
                 print(param.grad)
         # ### UPDATE LEARNING RATE """
