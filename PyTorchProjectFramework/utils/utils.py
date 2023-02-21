@@ -81,3 +81,14 @@ def generate_json_data_for_graph(out_file_path: str,setting : str,train_accuracy
 
     with open(out_file_path + '/' + setting + '.json', "w") as data_file:
         json.dump(json_output, data_file,indent=2)
+
+def json_to_file(out_file_path: str,setting : str, json_str:str):
+    isExist = os.path.exists(out_file_path)
+
+    if not isExist:
+        # Create a new directory because it does not exist
+        os.makedirs(out_file_path)
+        print("The new directory is created: %s" % out_file_path)
+
+    with open(out_file_path + '/' + setting + '.json', "a") as data_file:
+        json.dump(json_str, data_file,indent=2)

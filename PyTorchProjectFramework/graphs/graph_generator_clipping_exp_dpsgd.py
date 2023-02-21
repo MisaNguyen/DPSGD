@@ -113,16 +113,16 @@ if __name__ == "__main__":
     mode = "shuffling"
     # mode = "subsampling"
     draw_DPSGD_IC_case = False
-    draw_SGD_case = True
-    draw_DPSGD_BC_case = False
+    draw_SGD_case = False
+    draw_DPSGD_BC_case = True
     draw_mixing_case = False
     enable_mu = False
     draw_training_acc = False
-    models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet"]
+    models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet", "resnet18"]
     # Get models and settings
     setting_index = 0
-    s_index =0
-    models_index = 1
+    s_index =2
+    models_index = 5
     model_name = models[models_index]
     settings_path, Cs, sigma, s_start = settings[setting_index]["settings_path"], \
                                         settings[setting_index]["Cs"], \
