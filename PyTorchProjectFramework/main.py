@@ -24,7 +24,7 @@ from models.BNF_convnet_model import BNF_convnet
 # from datasets import MNIST_dataset, CIFAR10_dataset
 from datasets.dataset_preprocessing import dataset_preprocessing
 """UTILS"""
-from utils.utils import generate_json_data_for_graph
+from utils.utils import generate_json_data_for_graph, json_to_file
 # from utils.visualizer import Visualizer
 """TRAIN AND VALIDATE"""
 import MNIST_train, MNIST_validate
@@ -124,6 +124,8 @@ def main():
             args.shuffle_dataset = True
             # args.is_partition_train = False
             args.mode = setting_data["data_sampling"]
+            # args.clipping = "layerwise"
+            args.clipping = "all"
             # args.dataset_name = "MNIST"
             args.dataset_name = "CIFAR10"
             # args.enable_DP = False #TODO: Change here before upload to github
@@ -159,8 +161,10 @@ def main():
     # model = AlexNet(num_classes=10).to(device)
     # model_name = "AlexNet"
     # model = SimpleDLA().to(device)
-    model = convnet(num_classes=10).to(device)
-    model_name = "convnet"
+    # model = convnet(num_classes=10).to(device)
+    # model_name = "convnet"
+    model = ResNet18().to(device)
+    model_name = "resnet18"
     # model = LeNet().to(device)
     # model_name = "LeNet"
     # model = nor_LeNet().to(device)
@@ -222,7 +226,7 @@ def main():
     visualizer = None
     train_accuracy = []
     test_accuracy = []
-    out_file_path = "./graphs/data_sum/" + settings_file +  "/" + model_name + "/" + args.optimizer
+    out_file_path = "./graphs/data_sum/" + settings_file +  "/" + model_name + "/" + args.optimizer + "/" + str(args.clipping)
     # Get training and testing data loaders
     # train_batches, test_loader, dataset_size = dataset_preprocessing(args.dataset_name, train_kwargs,
     #                                                                  test_kwargs,
@@ -261,8 +265,14 @@ def main():
             train_accuracy.append(CIFAR10_train.DP_train(args, model, device, train_loader, optimizer))
         else:
             print("SGD training")
-            train_accuracy.append(CIFAR10_train.train(args, model, device, train_loader, optimizer))
-        ### UPDATE LEARNING RATE after each batch"""
+            train_acc, gradient_stats = CIFAR10_train.train(args, model, device, train_loader, optimizer,epoch)
+            train_accuracy.append(train_acc)
+            grad_out_file_path = out_file_path + "/grad"
+            print("HERE")
+            print(gradient_stats)
+            json_to_file(grad_out_file_path, args.load_setting, gradient_stats)
+
+        ### UPDATE LEARNING RATE after each batch
         # if(args.enable_diminishing_gradient_norm):
         #
         #
@@ -290,8 +300,11 @@ def main():
         #     for param_group in optimizer.param_groups:
         #         param_group["lr"] = param_group["lr"] * args.gamma
         test_accuracy.append(CIFAR10_validate.test(model, device, test_loader))
-        if(epoch % 5 == 0):
-            args.max_grad_norm = args.max_grad_norm / 2
+        """
+        DECREASE C VALUE
+        """
+        # if(epoch % 5 == 0):
+        #     args.max_grad_norm = args.max_grad_norm / 2
         """
         Update learning rate if test_accuracy does not increase
         """
