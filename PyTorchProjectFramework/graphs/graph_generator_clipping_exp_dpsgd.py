@@ -118,11 +118,11 @@ if __name__ == "__main__":
     draw_mixing_case = False
     enable_mu = False
     draw_training_acc = False
-    models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet", "resnet18"]
+    models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet", "resnet18", "squarenet"]
     # Get models and settings
     setting_index = 0
     s_index =2
-    models_index = 5
+    models_index = 6
     model_name = models[models_index]
     settings_path, Cs, sigma, s_start = settings[setting_index]["settings_path"], \
                                         settings[setting_index]["Cs"], \
@@ -141,7 +141,7 @@ if __name__ == "__main__":
     # settings = ["setting_" + str(i) for i in range(26,31)]
 
     s_index_min = 1 # min = 1
-    s_index_max = 6 # max = 6
+    s_index_max = 5 # max = 6
     # settings = ["setting_" + str(i) for i in range(26,29)]
     # settings.append("setting_30")
     settings = ["setting_" + str(5*s_index+i) for i in range(s_index_min,s_index_max)]
@@ -201,7 +201,7 @@ if __name__ == "__main__":
             experiment = "SGD"
             # bc_data_path  = "./data/" + settings_path + '/' + experiment + '/' + setting +".json"
 
-            bc_data_path  = base_path + '_BC/' + model_name + '/' + experiment + '/BC/' + setting +".json"
+            bc_data_path  = base_path + '_BC/' + model_name + '/' + experiment + '/all/BC/' + setting +".json"
             # print(bc_data_path)
             with open(bc_data_path, "r") as data_file:
                 data = json.load(data_file)

@@ -90,5 +90,5 @@ def json_to_file(out_file_path: str,setting : str, json_str:str):
         os.makedirs(out_file_path)
         print("The new directory is created: %s" % out_file_path)
 
-    with open(out_file_path + '/' + setting + '.json', "a") as data_file:
+    with open(out_file_path + '/' + setting + '.json', "w") as data_file:
         json.dump(json_str, data_file,indent=2)
