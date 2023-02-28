@@ -402,13 +402,37 @@ def DP_train(args, model, device, train_loader,optimizer):
             losses.append(loss.item())
             # compute gradient
             loss.backward()
+
             # Add grad to sum of grad
             """
             Batch clipping each "microbatch"
             """
             if(args.clipping == "layerwise"):
-                for param in model_clone.parameters():
-                    print("Clipping method: layerwise")
+                each_layer_C = []
+                """
+                Layerwise custom C
+                """
+
+                prev_layer_norm = None
+                for name, param in model_clone.named_parameters():
+                    if param.requires_grad:
+                        layer_name = "layer_" + str(name)
+                        current_layer_norm = param.grad.data.norm(2).clone().detach()
+
+                        if not each_layer_C:
+                            each_layer_C.append(args.max_grad_norm)
+                        else:
+                            C_ratio = current_layer_norm / prev_layer_norm
+
+                            each_layer_C.append(each_layer_C[-1]*float(C_ratio))
+                        prev_layer_norm = current_layer_norm
+
+                # print(each_layer_C)
+
+                """------------------------------------------------"""
+
+                for layer_idx, param in enumerate(model_clone.parameters()):
+
                     """
                     Clip each layer gradients with args.max_grad_norm
                     """
@@ -425,7 +449,17 @@ def DP_train(args, model, device, train_loader,optimizer):
                             param.layer_max_grad_norm = max(param.layer_max_grad_norm, torch.linalg.norm(param.grad)) # get new max_grad_norm
                         # print(param.layer_max_grad_norm)
                     else:
-                        torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
+                        # torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
+                        torch.nn.utils.clip_grad_norm_(param.grad, max_norm=each_layer_C[layer_idx]) # in-place computation, layerwise clipping
+                    """
+                    Accumulate gradients
+                    """
+                    if not hasattr(param, "sum_grad"):
+                        param.sum_grad = param.grad
+                        # print(param.sum_grad)
+                    else:
+                        param.sum_grad = param.sum_grad.add(param.grad)
+                        # print(param.sum_grad)
 
             elif (args.clipping == "all"):
                 print("Clipping method: all")
@@ -438,9 +472,9 @@ def DP_train(args, model, device, train_loader,optimizer):
                 flat_grad = []
                 for param in model_clone.parameters():
                     if isinstance(param.grad, torch.Tensor):
-                        layer_grad = param.grad # sample grad
+                        layer_grad = param.grad.cpu() # sample grad
                     elif isinstance(param.grad, list):
-                        layer_grad = torch.cat(param.grad, dim=0) # batch grad
+                        layer_grad = torch.cat(param.grad, dim=0).cpu() # batch grad
                     flat_grad.append(layer_grad)
 
                 each_layer_norm = [flat_grad[i].flatten().norm(2,dim=-1) for i in range(len(flat_grad))] # Get each layer norm
@@ -455,11 +489,21 @@ def DP_train(args, model, device, train_loader,optimizer):
                 ### sqrt(a^2+b^2)/X*C = C
                 ### sqrt(a^2 C^2/X^2 + b^2 C^2/X^2) = C
                 """
-                Clipping step
+                Clip all gradients
                 """
                 if (flat_grad_norm > args.max_grad_norm):
                     for param in model_clone.parameters():
                         param.grad = param.grad / flat_grad_norm * args.max_grad_norm
+                """
+                Accumulate gradients
+                """
+                if not hasattr(param, "sum_grad"):
+                    param.sum_grad = param.grad
+                    # print(param.sum_grad)
+                else:
+                    param.sum_grad = param.sum_grad.add(param.grad)
+                    # print(param.sum_grad)
+
                 """ ======="""
                 # flat_grad = []
                 # for param in model_clone.parameters():
@@ -478,16 +522,6 @@ def DP_train(args, model, device, train_loader,optimizer):
                 # input()
             else:
                 raise ValueError("Invalid clipping mode, available options: all, layerwise")
-            """
-            Accumulate gradients
-            """
-            for param in model_clone.parameters():
-                if not hasattr(param, "sum_grad"):
-                    param.sum_grad = param.grad
-                    # print(param.sum_grad)
-                else:
-                    param.sum_grad = param.sum_grad.add(param.grad)
-                    # print(param.sum_grad)
 
                 """
                 Clip the entire flat gradients
@@ -537,7 +571,7 @@ def DP_train(args, model, device, train_loader,optimizer):
         for param in model_clone.parameters():
             delattr(param, 'sum_grad')
         # Update model
-        for param in model.parameters():
+        for layer_idx, param in enumerate(model.parameters()):
             # param.grad = torch.mul(param.accumulated_grads,1/args.batch_size)
             # param.grad = param_clone.sum_grad.clone # Copy sum_grad
             # """
@@ -560,9 +594,12 @@ def DP_train(args, model, device, train_loader,optimizer):
             """
             Add Gaussian noise to gradients
             """
+            """--------------STATIC NOISE-----------------"""
+            # dist = torch.distributions.normal.Normal(torch.tensor(0.0),
+            #                                          torch.tensor((2 * args.noise_multiplier *  args.max_grad_norm)))
+            """--------------LAYERWISE NOISE-----------------"""
             dist = torch.distributions.normal.Normal(torch.tensor(0.0),
-                                                     torch.tensor((2 * args.noise_multiplier *  args.max_grad_norm)))
-
+                                                     torch.tensor((2 * each_layer_C[layer_idx] *  args.max_grad_norm)))
             noise = dist.rsample(param.grad.shape).to(device=device)
 
             # param.grad = param.grad + noise / args.batch_size
@@ -643,25 +680,29 @@ def train(args, model, device, train_loader,
         top1_acc.append(acc1)
         # compute loss
         previous_loss = loss
+        previous_loss = loss
         previous_output = output
         loss = nn.CrossEntropyLoss()(output, target)
         losses.append(loss.item())
         # compute gradient and do SGD step
         loss.backward()
         optimizer.step()
-        count=0
-        for param in model.parameters():
-            count = count + 1
-            layer_numer = "layer_" + str(count)
-            if (layer_numer in gradient_stats):
-                gradient_stats[layer_numer]["norm"].append(float(param.grad.data.norm(2)))
-                gradient_stats[layer_numer]["norm_avg"].append(float(param.grad.data.norm(2)/ param.grad.shape[0]))
-            else:
-                gradient_stats[layer_numer] = {}
-                gradient_stats[layer_numer]["shape"] = param.grad.shape
-                # print(type(param.grad.shape))
-                gradient_stats[layer_numer]["norm"] = [float(param.grad.data.norm(2))]
-                gradient_stats[layer_numer]["norm_avg"] = [float(param.grad.data.norm(2)/ param.grad.shape[0])]
+        # count=0
+        for layer_idx, (name, param) in enumerate(model.named_parameters()):
+            if param.requires_grad:
+                # count = count + 1
+                # layer_number = "layer_" + str(count)
+                layer_name = "layer_" + str(name)
+                # print(layer_name)
+                if (layer_name in gradient_stats):
+                    gradient_stats[layer_name]["norm"].append(float(param.grad.data.norm(2)))
+                    gradient_stats[layer_name]["norm_avg"].append(float(param.grad.data.norm(2)/ param.grad.shape[0]))
+                else:
+                    gradient_stats[layer_name] = {}
+                    gradient_stats[layer_name]["shape"] = param.grad.shape
+                    # print(type(param.grad.shape))
+                    gradient_stats[layer_name]["norm"] = [float(param.grad.data.norm(2))]
+                    gradient_stats[layer_name]["norm_avg"] = [float(param.grad.data.norm(2)/ param.grad.shape[0])]
 
             """
             {"epoch": 0,

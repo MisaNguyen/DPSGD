@@ -13,6 +13,7 @@ from models.resnet_model import ResNet18,ResNet34,ResNet50,ResNet101,ResNet152
 # from models.alexnet_simple import AlexNet
 # from models.simple_dla import SimpleDLA
 
+from models.square_model import SquareNet
 from models.convnet_model import convnet
 from models.Lenet_model import LeNet
 from models.nor_Lenet_model import nor_LeNet
@@ -88,12 +89,7 @@ def main():
     mode = "shuffling"
     # mode = None
     settings_file = "settings_clipping_exp_cifar10_dpsgd"
-    if (mode != None):
-        settings_file = settings_file + "_" + mode
-    if(enable_individual_clipping):
-        settings_file = settings_file + "_IC"
-    elif(enable_batch_clipping):
-        settings_file = settings_file + "_BC"
+    logging = True
     print("Running setting: %s.json" % settings_file)
     if(args.load_setting != ""):
         with open(settings_file +".json", "r") as json_file:
@@ -124,12 +120,22 @@ def main():
             args.shuffle_dataset = True
             # args.is_partition_train = False
             args.mode = setting_data["data_sampling"]
-            # args.clipping = "layerwise"
-            args.clipping = "all"
+            args.clipping = "layerwise"
+            # args.clipping = "all"
+            args.C_decay = 0.9
             # args.dataset_name = "MNIST"
             args.dataset_name = "CIFAR10"
             # args.enable_DP = False #TODO: Change here before upload to github
 
+    if(logging == True):
+        print("Clipping method: ", args.clipping)
+    if (mode != None):
+        settings_file = settings_file + "_" + mode
+    if(args.enable_DP):
+        if(enable_individual_clipping):
+            settings_file = settings_file + "_IC"
+        elif(enable_batch_clipping):
+            settings_file = settings_file + "_BC"
     print("Mode: DGN (%s), IC (%s)" %  (args.enable_diminishing_gradient_norm, args.enable_individual_clipping))
     # if (args.enable_diminishing_gradient_norm == True):
     #     mode = "DGN"
@@ -165,6 +171,8 @@ def main():
     # model_name = "convnet"
     model = ResNet18().to(device)
     model_name = "resnet18"
+    # model = SquareNet().to(device)
+    # model_name = "squarenet"
     # model = LeNet().to(device)
     # model_name = "LeNet"
     # model = nor_LeNet().to(device)
@@ -226,7 +234,10 @@ def main():
     visualizer = None
     train_accuracy = []
     test_accuracy = []
-    out_file_path = "./graphs/data_sum/" + settings_file +  "/" + model_name + "/" + args.optimizer + "/" + str(args.clipping)
+    if(args.enable_DP == True):
+        out_file_path = "./graphs/data_sum/" + settings_file +  "/" + model_name + "/" + args.optimizer + "/" + str(args.clipping)
+    else:
+        out_file_path = "./graphs/data_sum/" + settings_file +  "/" + model_name + "/" + args.optimizer
     # Get training and testing data loaders
     # train_batches, test_loader, dataset_size = dataset_preprocessing(args.dataset_name, train_kwargs,
     #                                                                  test_kwargs,
@@ -254,10 +265,11 @@ def main():
         out_file_path = out_file_path + "/SGD"
 
     # epochs = math.ceil(args.iterations* args.batch_size / dataset_size)
-    epochs = 100 #TODO: remove to calculated based on iterations
+    epochs = 10 #TODO: remove to calculated based on iterations
     print("Total epochs: %f" % epochs)
     print("Saving data to: %s" % out_file_path)
-
+    save_grad = True
+    grad_array = []
     """TRAINING LOOP"""
     for epoch in range(1, epochs + 1):
         print("epoch %s:" % epoch)
@@ -267,10 +279,14 @@ def main():
             print("SGD training")
             train_acc, gradient_stats = CIFAR10_train.train(args, model, device, train_loader, optimizer,epoch)
             train_accuracy.append(train_acc)
-            grad_out_file_path = out_file_path + "/grad"
-            print("HERE")
-            print(gradient_stats)
-            json_to_file(grad_out_file_path, args.load_setting, gradient_stats)
+            if(save_grad):
+                grad_array.append(gradient_stats)
+            # print("HERE")
+            # print(gradient_stats)
+        test_accuracy.append(CIFAR10_validate.test(model, device, test_loader))
+    if (save_grad):
+        grad_out_file_path = out_file_path + "/grad"
+        json_to_file(grad_out_file_path, args.load_setting, grad_array)
 
         ### UPDATE LEARNING RATE after each batch
         # if(args.enable_diminishing_gradient_norm):
@@ -299,12 +315,12 @@ def main():
         #     args.lr = args.lr*pow(args.gamma,(epoch-1)*len(train_batches) + batch_idx)
         #     for param_group in optimizer.param_groups:
         #         param_group["lr"] = param_group["lr"] * args.gamma
-        test_accuracy.append(CIFAR10_validate.test(model, device, test_loader))
+
         """
         DECREASE C VALUE
         """
-        # if(epoch % 5 == 0):
-        #     args.max_grad_norm = args.max_grad_norm / 2
+        if(args.C_decay < 1 and args.C_decay > 0):
+            args.max_grad_norm = args.max_grad_norm * args.C_decay
         """
         Update learning rate if test_accuracy does not increase
         """
