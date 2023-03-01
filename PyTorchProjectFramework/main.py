@@ -91,6 +91,13 @@ def main():
     settings_file = "settings_clipping_exp_cifar10_dpsgd"
     logging = True
     print("Running setting: %s.json" % settings_file)
+    if (mode != None):
+        settings_file = settings_file + "_" + mode
+    if(args.enable_DP):
+        if(enable_individual_clipping):
+            settings_file = settings_file + "_IC"
+        elif(enable_batch_clipping):
+            settings_file = settings_file + "_BC"
     if(args.load_setting != ""):
         with open(settings_file +".json", "r") as json_file:
             json_data = json.load(json_file)
@@ -129,13 +136,7 @@ def main():
 
     if(logging == True):
         print("Clipping method: ", args.clipping)
-    if (mode != None):
-        settings_file = settings_file + "_" + mode
-    if(args.enable_DP):
-        if(enable_individual_clipping):
-            settings_file = settings_file + "_IC"
-        elif(enable_batch_clipping):
-            settings_file = settings_file + "_BC"
+
     print("Mode: DGN (%s), IC (%s)" %  (args.enable_diminishing_gradient_norm, args.enable_individual_clipping))
     # if (args.enable_diminishing_gradient_norm == True):
     #     mode = "DGN"
@@ -265,7 +266,7 @@ def main():
         out_file_path = out_file_path + "/SGD"
 
     # epochs = math.ceil(args.iterations* args.batch_size / dataset_size)
-    epochs = 10 #TODO: remove to calculated based on iterations
+    epochs = 50 #TODO: remove to calculated based on iterations
     print("Total epochs: %f" % epochs)
     print("Saving data to: %s" % out_file_path)
     save_grad = True
