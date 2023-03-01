@@ -20,7 +20,7 @@ from torch.utils.data import TensorDataset
 from tqdm import tqdm
 import CIFAR10_validate
 
-from opt_einsum.contract import contract
+# from opt_einsum.contract import contract
 from datetime import datetime, timedelta
 import copy
 """ Schedulers """
