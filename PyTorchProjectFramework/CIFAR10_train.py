@@ -599,7 +599,7 @@ def DP_train(args, model, device, train_loader,optimizer):
             #                                          torch.tensor((2 * args.noise_multiplier *  args.max_grad_norm)))
             """--------------LAYERWISE NOISE-----------------"""
             dist = torch.distributions.normal.Normal(torch.tensor(0.0),
-                                                     torch.tensor((2 * each_layer_C[layer_idx] *  args.max_grad_norm)))
+                                                     torch.tensor((2 * args.each_layer_C[layer_idx] *  args.max_grad_norm)))
             noise = dist.rsample(param.grad.shape).to(device=device)
 
             # param.grad = param.grad + noise / args.batch_size
