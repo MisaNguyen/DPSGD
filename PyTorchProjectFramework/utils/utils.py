@@ -97,9 +97,9 @@ def json_to_file(out_file_path: str,setting : str, json_str:str):
 def compute_layerwise_C(C_dataset_loader, model, epochs, device, optimizer, C_start):
     print("Generating layerwise C values")
     for epoch in range(epochs):
-        print("epoch:",epoch)
+        # print("epoch:",epoch)
         for sample_idx, (data,target) in enumerate(C_dataset_loader):
-            print("sample_idx",sample_idx)
+            # print("sample_idx",sample_idx)
             optimizer.zero_grad()
             data, target = data.to(device), target.to(device)
 
