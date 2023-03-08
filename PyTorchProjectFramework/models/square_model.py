@@ -51,6 +51,6 @@ class SquareNet(nn.Module):
         x = self.linear5(x)
         x = self.relu5(x)
         # x = self.sig5(x)
-        x = self.tanh(x)
+        # x = self.tanh(x)
         x = self.softmax(x)
         return x
