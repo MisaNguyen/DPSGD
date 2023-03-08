@@ -11,11 +11,11 @@ def dataset_preprocessing(dataset_name, train_kwargs, test_kwargs, mode):
         raise Exception("Invalid dataset name, try: MNIST, CIFAR10")
     if (mode == "shuffling"):
         # train_batches, test_loader , dataset_size = dataset.shuffling_preprocessing(train_kwargs,test_kwargs)
-        train_loader, test_loader , dataset_size = dataset.shuffling_preprocessing(train_kwargs,test_kwargs)
-        # return train_batches, test_loader , dataset_size
+        C_dataset_loader, train_loader, test_loader , dataset_size = dataset.shuffling_preprocessing(train_kwargs,test_kwargs)
+
     elif (mode == "subsampling"):
-        train_loader, test_loader , dataset_size = dataset.subsampling_preprocessing(train_kwargs,test_kwargs)
+        C_dataset_loader, train_loader, test_loader , dataset_size = dataset.subsampling_preprocessing(train_kwargs,test_kwargs)
         # return train_loader, test_loader , dataset_size
     else:
-        train_loader, test_loader , dataset_size = dataset.data_preprocessing(train_kwargs,test_kwargs)
-    return train_loader, test_loader , dataset_size
+        C_dataset_loader, train_loader, test_loader , dataset_size = dataset.data_preprocessing(train_kwargs,test_kwargs)
+    return C_dataset_loader, train_loader, test_loader , dataset_size

@@ -83,8 +83,9 @@ def shuffling_preprocessing(train_kwargs,test_kwargs):
     #     batches_length.append(len(trainset) % train_kwargs['batch_size'])
     # """ Split train dataset into batches"""
     # train_batches = torch.utils.data.random_split(trainset, batches_length)
-
+    trainset , C_dataset = torch.utils.data.random_split(trainset, [47000, 3000])
     train_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)
+    C_dataset_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)
     print('\nTraining Set:')
     for images, labels in train_loader:
         print('Image batch dimensions:', images.size())
@@ -101,7 +102,7 @@ def shuffling_preprocessing(train_kwargs,test_kwargs):
         break
     # return train_loader, test_loader
     dataset_size = len(trainset)
-    return train_loader, test_loader, dataset_size
+    return C_dataset_loader, train_loader, test_loader, dataset_size
     # return train_batches, test_loader, dataset_size
 
 def subsampling_preprocessing(train_kwargs,test_kwargs):
@@ -138,10 +139,12 @@ def subsampling_preprocessing(train_kwargs,test_kwargs):
     trainset = datasets.CIFAR10(
         root='../data', train=True, download=True, transform=transform_train)
     print("Finished normalizing dataset.")
+    trainset , C_dataset = torch.utils.data.random_split(trainset, [47000, 3000])
 
     del train_kwargs['shuffle']
     sampler = torch.utils.data.RandomSampler(trainset, replacement=True, num_samples=len(trainset))
     train_loader = torch.utils.data.DataLoader(trainset, sampler=sampler, **train_kwargs)
+    C_dataset_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)
     print('\nTraining Set:')
     for images, labels in train_loader:
         print('Image batch dimensions:', images.size())
@@ -158,7 +161,7 @@ def subsampling_preprocessing(train_kwargs,test_kwargs):
         break
     # return train_loader, test_loader
     dataset_size = len(trainset)
-    return train_loader, test_loader, dataset_size
+    return C_dataset_loader, train_loader, test_loader, dataset_size
 
 
 
@@ -196,8 +199,9 @@ def data_preprocessing(train_kwargs,test_kwargs):
     trainset = datasets.CIFAR10(
         root='../data', train=True, download=True, transform=transform_train)
     print("Finished normalizing dataset.")
-
+    trainset , C_dataset = torch.utils.data.random_split(trainset, [47000, 3000])
     train_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)
+    C_dataset_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)
     print('\nTraining Set:')
     for images, labels in train_loader:
         print('Image batch dimensions:', images.size())
@@ -214,7 +218,7 @@ def data_preprocessing(train_kwargs,test_kwargs):
         break
     # return train_loader, test_loader
     dataset_size = len(trainset)
-    return train_loader, test_loader, dataset_size
+    return C_dataset_loader, train_loader, test_loader, dataset_size
 
 if __name__ == "__main__":
     train_kwargs = {'batch_size': 16}

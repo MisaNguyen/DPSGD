@@ -408,24 +408,24 @@ def DP_train(args, model, device, train_loader,optimizer):
             Batch clipping each "microbatch"
             """
             if(args.clipping == "layerwise"):
-                each_layer_C = []
-                """
-                Layerwise custom C
-                """
-
-                prev_layer_norm = None
-                for name, param in model_clone.named_parameters():
-                    if param.requires_grad:
-                        layer_name = "layer_" + str(name)
-                        current_layer_norm = param.grad.data.norm(2).clone().detach()
-
-                        if not each_layer_C:
-                            each_layer_C.append(args.max_grad_norm)
-                        else:
-                            C_ratio = current_layer_norm / prev_layer_norm
-
-                            each_layer_C.append(each_layer_C[-1]*float(C_ratio))
-                        prev_layer_norm = current_layer_norm
+                # each_layer_C = []
+                # """
+                # Layerwise custom C
+                # """
+                #
+                # prev_layer_norm = None
+                # for name, param in model_clone.named_parameters():
+                #     if param.requires_grad:
+                #         layer_name = "layer_" + str(name)
+                #         current_layer_norm = param.grad.data.norm(2).clone().detach()
+                #
+                #         if not each_layer_C:
+                #             each_layer_C.append(args.max_grad_norm)
+                #         else:
+                #             C_ratio = current_layer_norm / prev_layer_norm
+                #
+                #             each_layer_C.append(each_layer_C[-1]*float(C_ratio))
+                #         prev_layer_norm = current_layer_norm
 
                 # print(each_layer_C)
 
@@ -450,7 +450,7 @@ def DP_train(args, model, device, train_loader,optimizer):
                         # print(param.layer_max_grad_norm)
                     else:
                         # torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
-                        torch.nn.utils.clip_grad_norm_(param.grad, max_norm=each_layer_C[layer_idx]) # in-place computation, layerwise clipping
+                        torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.each_layer_C[layer_idx]) # in-place computation, layerwise clipping
                     """
                     Accumulate gradients
                     """
@@ -679,7 +679,7 @@ def train(args, model, device, train_loader,
         acc1 = accuracy(preds, labels)
         top1_acc.append(acc1)
         # compute loss
-        previous_loss = loss
+        # previous_loss = loss
         previous_loss = loss
         previous_output = output
         loss = nn.CrossEntropyLoss()(output, target)
@@ -703,6 +703,10 @@ def train(args, model, device, train_loader,
                     # print(type(param.grad.shape))
                     gradient_stats[layer_name]["norm"] = [float(param.grad.data.norm(2))]
                     gradient_stats[layer_name]["norm_avg"] = [float(param.grad.data.norm(2)/ param.grad.shape[0])]
+            # print("layer_name:", layer_name)
+            # print("norm", param.grad.data.norm(2))
+            # print("avg_norm:", float(param.grad.data.norm(2)/ param.grad.shape[0]))
+            # input()
 
             """
             {"epoch": 0,

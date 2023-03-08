@@ -5,7 +5,7 @@ import argparse
 import json
 import math
 import numpy as np
-
+import copy
 from models.resnet_model import ResNet18,ResNet34,ResNet50,ResNet101,ResNet152
 """MODELS"""
 # from models.densenet_model import densenet40_k12_cifar10
@@ -26,6 +26,7 @@ from models.BNF_convnet_model import BNF_convnet
 from datasets.dataset_preprocessing import dataset_preprocessing
 """UTILS"""
 from utils.utils import generate_json_data_for_graph, json_to_file
+from utils.utils import compute_layerwise_C
 # from utils.visualizer import Visualizer
 """TRAIN AND VALIDATE"""
 import MNIST_train, MNIST_validate
@@ -84,7 +85,7 @@ def main():
     Define sampling method here
     """
     enable_individual_clipping = False
-    enable_batch_clipping = True
+    enable_batch_clipping = False
     # mode = "subsampling"
     mode = "shuffling"
     # mode = None
@@ -93,11 +94,11 @@ def main():
     print("Running setting: %s.json" % settings_file)
     if (mode != None):
         settings_file = settings_file + "_" + mode
-    if(args.enable_DP):
-        if(enable_individual_clipping):
-            settings_file = settings_file + "_IC"
-        elif(enable_batch_clipping):
-            settings_file = settings_file + "_BC"
+    # if(args.enable_DP):
+    if(enable_individual_clipping):
+        settings_file = settings_file + "_IC"
+    elif(enable_batch_clipping):
+        settings_file = settings_file + "_BC"
     if(args.load_setting != ""):
         with open(settings_file +".json", "r") as json_file:
             json_data = json.load(json_file)
@@ -207,6 +208,7 @@ def main():
     # optimizer_name = "SGD"
 
     if args.optimizer == "SGD":
+
         # optimizer = optim.SGD(
         #     model.parameters(),
         #     lr=args.lr,
@@ -244,9 +246,17 @@ def main():
     #                                                                  test_kwargs,
     #                                                                 )
 
-    train_loader, test_loader, dataset_size = dataset_preprocessing(args.dataset_name, train_kwargs,
+    C_dataset_loader, train_loader, test_loader, dataset_size = dataset_preprocessing(args.dataset_name, train_kwargs,
                                                                      test_kwargs,mode
                                                                      )
+    if (args.clipping == "layerwise"):
+        at_epoch = 5
+        dummy_model = copy.deepcopy(model)
+        optimizer_clone= optim.SGD(dummy_model.parameters(),
+                                   lr=args.lr,
+                                   )
+        args.each_layer_C = compute_layerwise_C(C_dataset_loader, dummy_model, at_epoch, device, optimizer_clone, args.max_grad_norm)
+        print(args.each_layer_C)
     # DP settings:
     print(args.microbatch_size)
     if args.enable_DP:
@@ -266,7 +276,7 @@ def main():
         out_file_path = out_file_path + "/SGD"
 
     # epochs = math.ceil(args.iterations* args.batch_size / dataset_size)
-    epochs = 50 #TODO: remove to calculated based on iterations
+    epochs = 40 #TODO: remove to calculated based on iterations
     print("Total epochs: %f" % epochs)
     print("Saving data to: %s" % out_file_path)
     save_grad = True

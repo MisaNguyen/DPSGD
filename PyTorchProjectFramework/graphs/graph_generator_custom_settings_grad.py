@@ -76,14 +76,14 @@ def plt_draw(epoch_index, train_accuracy,test_accuracy,epoch_grad,label,sigma,s)
     per_layer_grad_norm = [per_layer_grad[i]["norm"] for i in range(number_of_layers-4)]
     plt.boxplot(per_layer_grad_norm)
     plt.xticks([i for i in range(1, number_of_layers+1)], layer_names)
-    plt.title("Gradient Norm")
+    plt.title("Gradient Norm, epoch: " + str(epoch_num))
     """-------------------"""
     plt.subplot2grid((3,2), (2,0), colspan=2)
     per_layer_grad_norm_avg = [per_layer_grad[i]["norm_avg"] for i in range(number_of_layers-4)]
     # input(per_layer_grad_norm)
     plt.boxplot(per_layer_grad_norm_avg)
     plt.xticks([i for i in range(1, number_of_layers+1)], layer_names)
-    plt.title("Gradient Avg Norm")
+    plt.title("Gradient Avg Norm, epoch:" + str(epoch_num))
     """-------------------"""
     ax = plt.gca()
     plt.setp(ax.get_xticklabels(), rotation=30, horizontalalignment='right')
@@ -109,7 +109,7 @@ if __name__ == "__main__":
     C = 10
     lr = 0.1
     draw_IC_case = False
-    draw_BC_case = True
+    draw_BC_case = False
     label = "BC sigma = %f, s = %f" if draw_BC_case else "IC sigma = %f, s = %f"
     setup_plot('epoch' , 'accuracy',lr ,C)
     # """SGD DATA 512"""
@@ -142,7 +142,7 @@ if __name__ == "__main__":
         False,False)
     print(train_accuracy)
     epoch_index = [i for i in range(1, epochs+1)]
-    epoch = 4
+    epoch = 10
 
     epoch_grad = get_grad_from_settings(setting_path,setting_name,model_name,experiment,False,False,epoch)
 
@@ -286,13 +286,14 @@ if __name__ == "__main__":
         print("The new directory is created: %s" % graph_path)
 
         # s = s*2
-    file_name = '/dpsgd_sigma_comparing_lr_' + str(lr) + '_C_' + str(C)
+    file_name = '/grad_compare_epoch_' + str(epoch)
     if (draw_IC_case):
         file_name = '/IC_dpsgd_sigma_comparing_lr_' + str(lr) + '_C_' + str(C)
     if (draw_BC_case):
         file_name = '/BC_dpsgd_sigma_comparing_lr_' + str(lr) + '_C_' + str(C)
     fig = plt.gcf()
     fig.set_size_inches((22, 11), forward=False)
+    print("saving to " + graph_path)
     plt.savefig(graph_path + file_name +".png")
     plt.show()
     # plt.clf()
