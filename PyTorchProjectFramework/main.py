@@ -38,6 +38,33 @@ import torch.optim as optim
 # from CIFAR10_train_opacus import train
 """ OPACUS"""
 from optimizers.privacy_engine.opacus_engine import PrivacyEngine
+
+def get_optimizer(opt_name,model,lr):
+    if opt_name == "SGD":
+
+        # optimizer = optim.SGD(
+        #     model.parameters(),
+        #     lr=args.lr,
+        #     # momentum=args.momentum,
+        #     # weight_decay=args.weight_decay,
+        # )
+        optimizer= optim.SGD(params=model.parameters(),
+                             # [
+                             #     {"params": model.layer1.parameters(), "lr": args.lr},
+                             #     {"params": model.layer2.parameters(),"lr": args.lr},
+                             #     {"params": model.layer3.parameters(), "lr": args.lr},
+                             #     {"params": model.layer4.parameters(), "lr": args.lr},
+                             # ],
+                             lr=lr,
+                             )
+    elif opt_name == "RMSprop":
+        optimizer = optim.RMSprop(model.parameters(), lr=lr)
+    elif opt_name == "Adam":
+        optimizer = optim.Adam(model.parameters(), lr=lr)
+    else:
+        # print(args.optimizer)
+        raise NotImplementedError("Optimizer not recognized. Please check spelling")
+    return optimizer
 def main():
     # Training settings
     parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
@@ -186,6 +213,7 @@ def main():
     # model = BNF_convnet(num_classes=10).to(device)
     # model_name = "BNF_convnet"
 
+    optimizer = get_optimizer(args.optimizer,model ,args.lr)
     """VGG 16 """
     # arch = [64, 64, 'M',
     #         128, 128, 'M',
@@ -207,30 +235,7 @@ def main():
     # optimizer_name = "DPSGD"
     # optimizer_name = "SGD"
 
-    if args.optimizer == "SGD":
 
-        # optimizer = optim.SGD(
-        #     model.parameters(),
-        #     lr=args.lr,
-        #     # momentum=args.momentum,
-        #     # weight_decay=args.weight_decay,
-        # )
-        optimizer= optim.SGD(params=model.parameters(),
-            # [
-            #     {"params": model.layer1.parameters(), "lr": args.lr},
-            #     {"params": model.layer2.parameters(),"lr": args.lr},
-            #     {"params": model.layer3.parameters(), "lr": args.lr},
-            #     {"params": model.layer4.parameters(), "lr": args.lr},
-            # ],
-            lr=args.lr,
-        )
-    elif args.optimizer == "RMSprop":
-        optimizer = optim.RMSprop(model.parameters(), lr=args.lr)
-    elif args.optimizer == "Adam":
-        optimizer = optim.Adam(model.parameters(), lr=args.lr)
-    else:
-        # print(args.optimizer)
-        raise NotImplementedError("Optimizer not recognized. Please check spelling")
 
     print('Initializing visualization...')
     # visualizer = Visualizer({"name": "MNIST DPSGD"})
@@ -252,10 +257,10 @@ def main():
     if (args.clipping == "layerwise"):
         at_epoch = 5
         dummy_model = copy.deepcopy(model)
-        optimizer_clone= optim.SGD(dummy_model.parameters(),
-                                   lr=args.lr,
-                                   )
-        args.each_layer_C = compute_layerwise_C(C_dataset_loader, dummy_model, at_epoch, device, optimizer_clone, args.max_grad_norm)
+        dummy_optimizer = get_optimizer(args.optimizer,dummy_model ,args.lr)
+        
+        args.each_layer_C = compute_layerwise_C(C_dataset_loader, dummy_model, at_epoch, device,
+                                                dummy_optimizer, args.max_grad_norm)
         print(args.each_layer_C)
     # DP settings:
     print(args.microbatch_size)
@@ -276,10 +281,10 @@ def main():
         out_file_path = out_file_path + "/SGD"
 
     # epochs = math.ceil(args.iterations* args.batch_size / dataset_size)
-    epochs = 40 #TODO: remove to calculated based on iterations
+    epochs = 50 #TODO: remove to calculated based on iterations
     print("Total epochs: %f" % epochs)
     print("Saving data to: %s" % out_file_path)
-    save_grad = True
+    save_grad = False
     grad_array = []
     """TRAINING LOOP"""
     for epoch in range(1, epochs + 1):
