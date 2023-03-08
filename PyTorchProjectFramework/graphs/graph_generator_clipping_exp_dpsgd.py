@@ -123,7 +123,7 @@ if __name__ == "__main__":
     models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet", "resnet18", "squarenet"]
     # Get models and settings
     setting_index = 0
-    s_index =3
+    s_index =2
     models_index = 5
     model_name = models[models_index]
     settings_path, Cs, sigma, s_start = settings[setting_index]["settings_path"], \
@@ -204,8 +204,8 @@ if __name__ == "__main__":
             # bc_data_path  = "./data/" + settings_path + '/' + experiment + '/' + setting +".json"
 
             bc_data_path  = base_path + '_BC/' + model_name + '/' + experiment \
-                            + '/' + clipping_mode + '/BC_run_2/' + setting +".json"
-            # print(bc_data_path)
+                            + '/' + clipping_mode + '/BC/' + setting +".json"
+            print("bc_data_path:",bc_data_path)
             with open(bc_data_path, "r") as data_file:
                 data = json.load(data_file)
                 BC_DPSGD_train_accuracy = data["train_accuracy"]
