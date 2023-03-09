@@ -258,7 +258,7 @@ def main():
         at_epoch = 5
         dummy_model = copy.deepcopy(model)
         dummy_optimizer = get_optimizer(args.optimizer,dummy_model ,args.lr)
-        
+
         args.each_layer_C = compute_layerwise_C(C_dataset_loader, dummy_model, at_epoch, device,
                                                 dummy_optimizer, args.max_grad_norm)
         print(args.each_layer_C)
@@ -337,6 +337,9 @@ def main():
         """
         if(args.C_decay < 1 and args.C_decay > 0):
             args.max_grad_norm = args.max_grad_norm * args.C_decay
+            # Recompute each layer C
+            args.each_layer_C = compute_layerwise_C(C_dataset_loader, model, 1, device,
+                                                    optimizer, args.max_grad_norm)
         """
         Update learning rate if test_accuracy does not increase
         """
