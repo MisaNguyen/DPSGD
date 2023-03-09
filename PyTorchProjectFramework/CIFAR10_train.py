@@ -30,6 +30,8 @@ from scheduler.gradient_norm_scheduler import StepGN_normal
 # from torch.optim.lr_scheduler import ReduceLROnPlateau
 """ Optimizers """
 from optimizers import *
+""" Utils"""
+from utils.utils import compute_layerwise_C
 """Create learning_rate sequence generator
     
 Input params:
