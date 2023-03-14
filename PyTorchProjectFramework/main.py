@@ -260,7 +260,7 @@ def main():
         dummy_optimizer = get_optimizer(args.optimizer,dummy_model ,args.lr)
 
         args.each_layer_C = compute_layerwise_C(C_dataset_loader, dummy_model, at_epoch, device,
-                                                dummy_optimizer, args.max_grad_norm)
+                                                dummy_optimizer, args.max_grad_norm,True)
         print(args.each_layer_C)
     # DP settings:
     print(args.microbatch_size)
@@ -339,7 +339,7 @@ def main():
             args.max_grad_norm = args.max_grad_norm * args.C_decay
             # Recompute each layer C
             args.each_layer_C = compute_layerwise_C(C_dataset_loader, model, 1, device,
-                                                    optimizer, args.max_grad_norm)
+                                                    optimizer, args.max_grad_norm,False)
         """
         Update learning rate if test_accuracy does not increase
         """

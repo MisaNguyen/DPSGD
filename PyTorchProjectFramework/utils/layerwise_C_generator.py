@@ -3,7 +3,7 @@ import torch.nn as nn
 Compute the master C for each layer given a set of the data at certain epoch
 """
 
-def compute_layerwise_C(C_dataset, model, epochs, device, optimizer, C_start):
+def compute_layerwise_C(C_dataset, model, epochs, device, optimizer, C_start, update_mode=False):
     for epoch in range(epochs):
         data, target = C_dataset
         optimizer.zero_grad()
@@ -24,7 +24,8 @@ def compute_layerwise_C(C_dataset, model, epochs, device, optimizer, C_start):
 
         # compute gradient and do SGD step
         loss.backward()
-        optimizer.step()
+        if(update_mode):
+            optimizer.step()
     each_layer_C = []
     for name, param in model.named_parameters():
         if param.requires_grad:
