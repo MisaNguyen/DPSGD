@@ -112,7 +112,7 @@ def main():
     Define sampling method here
     """
     enable_individual_clipping = False
-    enable_batch_clipping = False
+    enable_batch_clipping = True
     # mode = "subsampling"
     mode = "shuffling"
     # mode = None
