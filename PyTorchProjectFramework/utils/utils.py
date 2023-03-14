@@ -94,7 +94,7 @@ def json_to_file(out_file_path: str,setting : str, json_str:str):
     with open(out_file_path + '/' + setting + '.json', "w") as data_file:
         json.dump(json_str, data_file,indent=2)
 
-def compute_layerwise_C(C_dataset_loader, model, epochs, device, optimizer, C_start):
+def compute_layerwise_C(C_dataset_loader, model, epochs, device, optimizer, C_start, update_mode=False):
     print("Generating layerwise C values")
     for epoch in range(epochs):
         # print("epoch:",epoch)
@@ -118,7 +118,8 @@ def compute_layerwise_C(C_dataset_loader, model, epochs, device, optimizer, C_st
 
             # compute gradient and do SGD step
             loss.backward()
-            optimizer.step()
+            if (update_mode):
+                optimizer.step()
     each_layer_C = []
     for name, param in model.named_parameters():
         if param.requires_grad:
