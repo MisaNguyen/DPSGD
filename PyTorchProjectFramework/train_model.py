@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 from torch.utils.data import TensorDataset
 
 from tqdm import tqdm
-import CIFAR10_validate
+import validate_model
 
 # from opt_einsum.contract import contract
 from datetime import datetime, timedelta

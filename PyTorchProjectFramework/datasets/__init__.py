@@ -34,7 +34,7 @@
 #     """Create a dataset given the configuration (loaded from the json file).
 #
 #     This function wraps the class CustomDatasetDataLoader.
-#         This is the main interface between this package and train.py/validate.py
+#         This is the main interface between this package and train_model.py/validate_model.py
 #
 #     Example:
 #         from datasets import create_dataset

@@ -43,7 +43,7 @@ def find_model_using_name(model_name):
 def create_model(configuration):
     """Create a model given the configuration.
 
-    This is the main interface between this package and train.py/validate.py
+    This is the main interface between this package and train_model.py/validate_model.py
     """
     model = find_model_using_name(configuration['model_name'])
     instance = model(configuration)
