@@ -1,7 +1,8 @@
 data/*
 cifar10/*
-
 results/*
+
+PytorchProjectFramework/archive/*
 
 PytorchProjectFramework/accountant_graph/*
 PytorchProjectFramework/accountants/graphs/data/*

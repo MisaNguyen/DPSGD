@@ -1,43 +1,33 @@
 
 import torch
-import torchvision
 import argparse
 import json
-import math
-import numpy as np
 import copy
-from models.resnet_model import ResNet18,ResNet34,ResNet50,ResNet101,ResNet152
+from models.resnet_model import ResNet18
+
 """MODELS"""
 # from models.densenet_model import densenet40_k12_cifar10
 # from models.alexnet_model import AlexNet
 # from models.alexnet_simple import AlexNet
 # from models.simple_dla import SimpleDLA
-
-from models.square_model import SquareNet
-from models.convnet_model import convnet
-from models.Lenet_model import LeNet
-from models.nor_Lenet_model import nor_LeNet
 # from models.nor_convnet_model import nor_convnet
-from models.BNF_convnet_model import BNF_convnet
-
 # from models.vgg16 import VGGNet
 """DATASETS"""
-# from datasets import MNIST_dataset, CIFAR10_dataset
+
 from datasets.dataset_preprocessing import dataset_preprocessing
 """UTILS"""
 from utils.utils import generate_json_data_for_graph, json_to_file
 from utils.utils import compute_layerwise_C
-# from utils.visualizer import Visualizer
+
 """TRAIN AND VALIDATE"""
-import MNIST_train, MNIST_validate
-import CIFAR10_validate
-import CIFAR10_train
-# import CIFAR10_train_minibatch_SGD as CIFAR10_train
+import validate_model
+import train_model
+
 """OPTIMIZERS"""
 import torch.optim as optim
-# from CIFAR10_train_opacus import train
+
 """ OPACUS"""
-from optimizers.privacy_engine.opacus_engine import PrivacyEngine
+
 
 def get_optimizer(opt_name,model,lr):
     if opt_name == "SGD":
@@ -105,9 +95,7 @@ def main():
     parser.add_argument('--enable-batch-clipping', type=bool, default=False, metavar='IC',
                         help='Enable batch clipping mode')
     args = parser.parse_args()
-
     #Add setting path here
-    # settings_file = "settings"
     """
     Define sampling method here
     """
@@ -149,39 +137,35 @@ def main():
             # args.enable_individual_clipping = setting_data["is_individual_clipping"]
             # args.enable_batch_clipping = False
             # args.enable_DP = setting_data["enable_DP"]
-            args.enable_DP = True
+            args.enable_DP = True #TODO: Change here before upload to github
             # args.clip_per_layer = False #TODO: add to setting file
             # args.secure_rng = False #TODO: add to setting file
             args.shuffle_dataset = True
             # args.is_partition_train = False
             args.mode = setting_data["data_sampling"]
-            args.clipping = "layerwise"
+            args.clipping = "layerwise"#TODO: add to setting file
             # args.clipping = "all"
             args.C_decay = 0.9
             # args.dataset_name = "MNIST"
-            args.dataset_name = "CIFAR10"
-            # args.enable_DP = False #TODO: Change here before upload to github
+            args.dataset_name = "CIFAR10"#TODO: add to setting file
+
 
     if(logging == True):
         print("Clipping method: ", args.clipping)
 
     print("Mode: DGN (%s), IC (%s)" %  (args.enable_diminishing_gradient_norm, args.enable_individual_clipping))
-    # if (args.enable_diminishing_gradient_norm == True):
-    #     mode = "DGN"
+
     use_cuda = not args.no_cuda and torch.cuda.is_available()
 
     torch.manual_seed(args.seed)
 
     device = torch.device("cuda" if use_cuda else "cpu")
-    # print(args.batch_size)
+
     if(args.shuffle_dataset):
         train_kwargs = {'batch_size': args.batch_size,  'shuffle': True}
     else:
         train_kwargs = {'batch_size': args.batch_size,  'shuffle': False}
     test_kwargs = {'batch_size': args.test_batch_size, 'shuffle': False}
-
-    # train_loader, test_loader = MNIST_dataset.create_dataset(train_kwargs,test_kwargs)
-
 
     if use_cuda:
         cuda_kwargs = {'num_workers': 2,
@@ -189,10 +173,7 @@ def main():
                        }
         train_kwargs.update(cuda_kwargs)
         test_kwargs.update(cuda_kwargs)
-    # input(len(train_loader))
-    # input(len(test_kwargs))
-    # model = Net().to(device)
-    # model = densenet40_k12_cifar10().to(device)
+
     # model = AlexNet(num_classes=10).to(device)
     # model_name = "AlexNet"
     # model = SimpleDLA().to(device)
@@ -290,65 +271,37 @@ def main():
     for epoch in range(1, epochs + 1):
         print("epoch %s:" % epoch)
         if args.enable_DP:
-            train_accuracy.append(CIFAR10_train.DP_train(args, model, device, train_loader, optimizer))
+            train_accuracy.append(train_model.DP_train(args, model, device, train_loader, optimizer))
         else:
             print("SGD training")
-            train_acc, gradient_stats = CIFAR10_train.train(args, model, device, train_loader, optimizer,epoch)
+            train_acc, gradient_stats = train_model.train(args, model, device, train_loader, optimizer,epoch)
             train_accuracy.append(train_acc)
             if(save_grad):
                 grad_array.append(gradient_stats)
             # print("HERE")
             # print(gradient_stats)
-        test_accuracy.append(CIFAR10_validate.test(model, device, test_loader))
+        test_accuracy.append(validate_model.test(model, device, test_loader))
     if (save_grad):
         grad_out_file_path = out_file_path + "/grad"
         json_to_file(grad_out_file_path, args.load_setting, grad_array)
 
-        ### UPDATE LEARNING RATE after each batch
-        # if(args.enable_diminishing_gradient_norm):
-        #
-        #
-        # iterations_per_epoch = len(train_loader)
-        # # layer_names = []
-        # # # print(len(optimizer.param_groups))
-        # # # print(len(model.named_parameters()))
-        # # # input()
-        # # # for idxparam in model.parameters():
-        # # #     print(param)
-        # # # for param_group in optimizer.param_groups:
-        # # #     print(param_group['lr'])
-        # # # for param_group in optimizer.param_groups:
-        # # #
-        # # #     param_group["lr"] = np.sqrt(iterations_per_epoch)*param_group["param"].layer_max_grad_norm
-        # # parameters = []
-        # # for idx, (name, param) in enumerate(model.named_parameters()):
-        # #     layer_names.append(name)
-        # #     parameters+= [{'params': param,
-        # #                    'lr':     np.sqrt(iterations_per_epoch)*param.layer_max_grad_norm}]
-        # #     print(f'{idx}: lr = {np.sqrt(iterations_per_epoch)*param.layer_max_grad_norm:.6f}, {name}')
-        # # optimizer = optim.SGD(parameters)
-        # else:
-        #     args.lr = args.lr*pow(args.gamma,(epoch-1)*len(train_batches) + batch_idx)
-        #     for param_group in optimizer.param_groups:
-        #         param_group["lr"] = param_group["lr"] * args.gamma
-
-        """
-        DECREASE C VALUE
-        """
-        if(args.C_decay < 1 and args.C_decay > 0):
-            args.max_grad_norm = args.max_grad_norm * args.C_decay
-            # Recompute each layer C
-            args.each_layer_C = compute_layerwise_C(C_dataset_loader, model, 1, device,
-                                                    optimizer, args.max_grad_norm,False)
-        """
-        Update learning rate if test_accuracy does not increase
-        """
-        if (epoch > 2):
-            if(test_accuracy[-1] <= test_accuracy[-2]):
-                args.lr = args.lr * args.gamma
-                print(args.lr)
-                for param_group in optimizer.param_groups:
-                    param_group["lr"] = args.lr
+    """
+    DECREASE C VALUE
+    """
+    if(args.C_decay < 1 and args.C_decay > 0):
+        args.max_grad_norm = args.max_grad_norm * args.C_decay
+        # Recompute each layer C
+        args.each_layer_C = compute_layerwise_C(C_dataset_loader, model, 1, device,
+                                                optimizer, args.max_grad_norm,False)
+    """
+    Update learning rate if test_accuracy does not increase
+    """
+    if (epoch > 2):
+        if(test_accuracy[-1] <= test_accuracy[-2]):
+            args.lr = args.lr * args.gamma
+            print(args.lr)
+            for param_group in optimizer.param_groups:
+                param_group["lr"] = args.lr
     generate_json_data_for_graph(out_file_path, args.load_setting, train_accuracy,test_accuracy)
 
     if args.save_model:
