@@ -83,7 +83,9 @@ def shuffling_preprocessing(train_kwargs,test_kwargs):
     #     batches_length.append(len(trainset) % train_kwargs['batch_size'])
     # """ Split train dataset into batches"""
     # train_batches = torch.utils.data.random_split(trainset, batches_length)
-    trainset , C_dataset = torch.utils.data.random_split(trainset, [47000, 3000])
+    training_len = 9*len(trainset)//10
+
+    trainset , C_dataset = torch.utils.data.random_split(trainset, [training_len,len(trainset)-training_len])
     train_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)
     C_dataset_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)
     print('\nTraining Set:')
@@ -139,7 +141,9 @@ def subsampling_preprocessing(train_kwargs,test_kwargs):
     trainset = datasets.CIFAR10(
         root='../data', train=True, download=True, transform=transform_train)
     print("Finished normalizing dataset.")
-    trainset , C_dataset = torch.utils.data.random_split(trainset, [47000, 3000])
+    training_len = 9*len(trainset)//10
+
+    trainset , C_dataset = torch.utils.data.random_split(trainset, [training_len,len(trainset)-training_len])
 
     del train_kwargs['shuffle']
     sampler = torch.utils.data.RandomSampler(trainset, replacement=True, num_samples=len(trainset))
@@ -199,7 +203,9 @@ def data_preprocessing(train_kwargs,test_kwargs):
     trainset = datasets.CIFAR10(
         root='../data', train=True, download=True, transform=transform_train)
     print("Finished normalizing dataset.")
-    trainset , C_dataset = torch.utils.data.random_split(trainset, [47000, 3000])
+    training_len = 9*len(trainset)//10
+
+    trainset , C_dataset = torch.utils.data.random_split(trainset, [training_len,len(trainset)-training_len])
     train_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)
     C_dataset_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)
     print('\nTraining Set:')
