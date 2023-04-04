@@ -27,7 +27,8 @@ import train_model
 import torch.optim as optim
 
 """ OPACUS"""
-
+from opacus import PrivacyEngine
+from opacus.validators import ModuleValidator
 
 def get_optimizer(opt_name,model,lr):
     if opt_name == "SGD":
@@ -137,7 +138,7 @@ def main():
             # args.enable_individual_clipping = setting_data["is_individual_clipping"]
             # args.enable_batch_clipping = False
             # args.enable_DP = setting_data["enable_DP"]
-            args.enable_DP = True #TODO: Change here before upload to github
+            args.enable_DP = False #TODO: Change here before upload to github
             # args.clip_per_layer = False #TODO: add to setting file
             # args.secure_rng = False #TODO: add to setting file
             args.shuffle_dataset = True
@@ -147,7 +148,9 @@ def main():
             # args.clipping = "all"
             args.C_decay = 0.9
             # args.dataset_name = "MNIST"
-            args.dataset_name = "CIFAR10"#TODO: add to setting file
+            # args.dataset_name = "CIFAR10"#TODO: add to setting file
+            args.dataset_name = "Imagenet"#TODO: add to setting file
+            args.opacus_training = True
 
 
     if(logging == True):
@@ -179,8 +182,13 @@ def main():
     # model = SimpleDLA().to(device)
     # model = convnet(num_classes=10).to(device)
     # model_name = "convnet"
-    model = ResNet18().to(device)
+    model = ResNet18(num_classes=1000).to(device)
     model_name = "resnet18"
+    if(args.opacus_training):
+        # Fix incompatiple components such as BatchNorm2D layer
+        model = ModuleValidator.fix(model)
+        ModuleValidator.validate(model, strict=False)
+
     # model = SquareNet().to(device)
     # model_name = "squarenet"
     # model = LeNet().to(device)
@@ -235,7 +243,8 @@ def main():
     C_dataset_loader, train_loader, test_loader, dataset_size = dataset_preprocessing(args.dataset_name, train_kwargs,
                                                                      test_kwargs,mode
                                                                      )
-    if (args.clipping == "layerwise"):
+
+    if (args.enable_DP and args.clipping == "layerwise" and not args.opacus_training):
         at_epoch = 5
         dummy_model = copy.deepcopy(model)
         dummy_optimizer = get_optimizer(args.optimizer,dummy_model ,args.lr)
@@ -249,15 +258,19 @@ def main():
         # privacy_engine = None
         if (args.enable_diminishing_gradient_norm == True):
             out_file_path = out_file_path + "/DGN"
-        if (args.microbatch_size == 1):
-            print("Individual clipping")
-            out_file_path = out_file_path + "/IC"
-        elif(args.microbatch_size == args.batch_size):
-            print("Batch clipping")
-            out_file_path = out_file_path + "/BC"
+        if(args.opacus_training):
+            print("Opacus")
+            out_file_path = out_file_path + "/opacus"
         else:
-            print("Normal Mode")
-            out_file_path = out_file_path + "/NM"
+            if (args.microbatch_size == 1):
+                print("Individual clipping")
+                out_file_path = out_file_path + "/IC"
+            elif(args.microbatch_size == args.batch_size):
+                print("Batch clipping")
+                out_file_path = out_file_path + "/BC"
+            else:
+                print("Normal Mode")
+                out_file_path = out_file_path + "/NM"
     else:
         out_file_path = out_file_path + "/SGD"
 
@@ -271,7 +284,20 @@ def main():
     for epoch in range(1, epochs + 1):
         print("epoch %s:" % epoch)
         if args.enable_DP:
-            train_accuracy.append(train_model.DP_train(args, model, device, train_loader, optimizer))
+            if(args.opacus_training):
+                privacy_engine = PrivacyEngine()
+                clipping = "per_layer" if args.clipping=="layerwise" else "flat"
+                model, optimizer, train_loader = privacy_engine.make_private(
+                    module=model,
+                    optimizer=optimizer,
+                    data_loader=train_loader,
+                    noise_multiplier=args.noise_multiplier,
+                    clipping=clipping,
+                )
+                train_acc, gradient_stats = train_model.train(args, model, device, train_loader, optimizer,epoch)
+                train_accuracy.append(train_acc)
+            else:
+                train_accuracy.append(train_model.DP_train(args, model, device, train_loader, optimizer))
         else:
             print("SGD training")
             train_acc, gradient_stats = train_model.train(args, model, device, train_loader, optimizer,epoch)
@@ -288,7 +314,7 @@ def main():
     """
     DECREASE C VALUE
     """
-    if(args.C_decay < 1 and args.C_decay > 0):
+    if(args.C_decay < 1 and args.C_decay > 0 and not args.opacus_training):
         args.max_grad_norm = args.max_grad_norm * args.C_decay
         # Recompute each layer C
         args.each_layer_C = compute_layerwise_C(C_dataset_loader, model, 1, device,
