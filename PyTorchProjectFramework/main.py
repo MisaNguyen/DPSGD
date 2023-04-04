@@ -136,7 +136,7 @@ def main():
             args.noise_multiplier = setting_data["noise_multiplier"]
             args.max_grad_norm = setting_data["max_grad_norm"]
             args.optimizer = setting_data["optimizer"]
-            args.enable_diminishing_gradient_norm = setting_data["diminishing_gradient_norm"]
+            args.enable_diminishing_gradient_norm = True
             # args.enable_individual_clipping = setting_data["is_individual_clipping"]
             # args.enable_batch_clipping = False
             # args.enable_DP = setting_data["enable_DP"]
@@ -291,6 +291,9 @@ def main():
             else:
                 print("Normal Mode")
                 out_file_path = out_file_path + "/NM"
+        if(args.enable_diminishing_gradient_norm):
+            out_file_path = out_file_path + "/DGN"
+
     else:
         out_file_path = out_file_path + "/SGD"
 
@@ -326,7 +329,7 @@ def main():
     """
     DECREASE C VALUE
     """
-    if(args.C_decay < 1 and args.C_decay > 0 and not args.opacus_training):
+    if(args.enable_DP and args.enable_diminishing_gradient_norm and args.clipping == "layerwise" and not args.opacus_training):
         args.max_grad_norm = args.max_grad_norm * args.C_decay
         # Recompute each layer C
         args.each_layer_C = compute_layerwise_C(C_dataset_loader, model, 1, device,
