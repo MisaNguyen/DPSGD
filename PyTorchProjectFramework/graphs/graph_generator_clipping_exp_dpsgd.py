@@ -115,8 +115,8 @@ if __name__ == "__main__":
     # clipping_mode = "all"
     clipping_mode = "layerwise"
     draw_DPSGD_IC_case = False
-    draw_SGD_case = False
-    draw_DPSGD_BC_case = True
+    draw_SGD_case = True
+    draw_DPSGD_BC_case = False
     draw_mixing_case = False
     enable_mu = False
     draw_training_acc = False
@@ -124,7 +124,7 @@ if __name__ == "__main__":
               "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
     setting_index = 0
-    s_index =2
+    s_index =0
     models_index = 5
     model_name = models[models_index]
     settings_path, Cs, sigma, s_start = settings[setting_index]["settings_path"], \
@@ -173,7 +173,7 @@ if __name__ == "__main__":
     # Check whether the specified path exists or not
     isExist = os.path.exists(graph_path)
     if (mode != None):
-        base_path = "./" + data_folder + "/" + settings_path + "_" + mode
+        base_path = "./" + data_folder + "/" + settings_path + "_" + mode +"_BC"
     else:
         base_path = "./" + data_folder + "/" + settings_path + "/" + model_name
     # base_path = "./data/" + settings_path + "/" + model_name
@@ -276,7 +276,10 @@ if __name__ == "__main__":
             plt.subplot(1, number_of_subgraphs, 2)
         else:
             plt.subplot(1, number_of_subgraphs, 1)
-        plt.title('Test accuracy, lr = %s, C = %s, sigma = %d' % (str(lr).strip('0'),str(C).strip('0'),sigma))
+        if(draw_mixing_case or draw_DPSGD_IC_case or draw_DPSGD_BC_case):
+            plt.title('Test accuracy, lr = %s, C = %s, sigma = %d' % (str(lr).strip('0'),str(C).strip('0'),sigma))
+        else:
+            plt.title('Test accuracy, lr = %s' % (str(lr).strip('0')))
         if(draw_SGD_case):
             plt.plot(SGD_epoch_index, SGD_test_accuracy, label="SGD, s= %d" % (s), color=cmap_color)
             print("SGD test acc:", SGD_test_accuracy[-1])

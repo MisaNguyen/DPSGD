@@ -3,6 +3,7 @@ import torch
 import argparse
 import json
 import copy
+import numpy as np
 from models.resnet_model import ResNet18
 
 """MODELS"""
@@ -10,7 +11,8 @@ from models.resnet_model import ResNet18
 # from models.alexnet_model import AlexNet
 # from models.alexnet_simple import AlexNet
 # from models.simple_dla import SimpleDLA
-# from models.nor_convnet_model import nor_convnet
+from models.convnet_model import convnet
+from models.Lenet_model import LeNet
 # from models.vgg16 import VGGNet
 """DATASETS"""
 
@@ -138,7 +140,7 @@ def main():
             # args.enable_individual_clipping = setting_data["is_individual_clipping"]
             # args.enable_batch_clipping = False
             # args.enable_DP = setting_data["enable_DP"]
-            args.enable_DP = False #TODO: Change here before upload to github
+            args.enable_DP = True #TODO: Change here before upload to github
             # args.clip_per_layer = False #TODO: add to setting file
             # args.secure_rng = False #TODO: add to setting file
             args.shuffle_dataset = True
@@ -148,8 +150,8 @@ def main():
             # args.clipping = "all"
             args.C_decay = 0.9
             # args.dataset_name = "MNIST"
-            # args.dataset_name = "CIFAR10"#TODO: add to setting file
-            args.dataset_name = "Imagenet"#TODO: add to setting file
+            args.dataset_name = "CIFAR10"#TODO: add to setting file
+            # args.dataset_name = "Imagenet"#TODO: add to setting file
             args.opacus_training = True
 
 
@@ -180,10 +182,10 @@ def main():
     # model = AlexNet(num_classes=10).to(device)
     # model_name = "AlexNet"
     # model = SimpleDLA().to(device)
-    # model = convnet(num_classes=10).to(device)
-    # model_name = "convnet"
-    model = ResNet18(num_classes=1000).to(device)
-    model_name = "resnet18"
+    model = convnet(num_classes=10).to(device)
+    model_name = "convnet"
+    # model = ResNet18(num_classes=10).to(device)
+    # model_name = "resnet18"
     if(args.opacus_training):
         # Fix incompatiple components such as BatchNorm2D layer
         model = ModuleValidator.fix(model)
@@ -255,10 +257,28 @@ def main():
     # DP settings:
     print(args.microbatch_size)
     if args.enable_DP:
-        # privacy_engine = None
-        if (args.enable_diminishing_gradient_norm == True):
-            out_file_path = out_file_path + "/DGN"
         if(args.opacus_training):
+            privacy_engine = PrivacyEngine()
+            # clipping = "per_layer" if args.clipping=="layerwise" else "flat"
+            if (args.clipping=="layerwise"):
+                clipping = "per_layer"
+                n_layers = len(
+                    [(n, p) for n, p in model.named_parameters() if p.requires_grad]
+                )
+                max_grad_norm = [
+                                    args.max_grad_norm / np.sqrt(n_layers)
+                                ] * n_layers
+            else:
+                clipping = "flat"
+                max_grad_norm = args.max_grad_norm
+            model, optimizer, train_loader = privacy_engine.make_private(
+                module=model,
+                optimizer=optimizer,
+                data_loader=train_loader,
+                noise_multiplier=args.noise_multiplier,
+                max_grad_norm=max_grad_norm,
+                clipping=clipping,
+            )
             print("Opacus")
             out_file_path = out_file_path + "/opacus"
         else:
@@ -285,15 +305,7 @@ def main():
         print("epoch %s:" % epoch)
         if args.enable_DP:
             if(args.opacus_training):
-                privacy_engine = PrivacyEngine()
-                clipping = "per_layer" if args.clipping=="layerwise" else "flat"
-                model, optimizer, train_loader = privacy_engine.make_private(
-                    module=model,
-                    optimizer=optimizer,
-                    data_loader=train_loader,
-                    noise_multiplier=args.noise_multiplier,
-                    clipping=clipping,
-                )
+
                 train_acc, gradient_stats = train_model.train(args, model, device, train_loader, optimizer,epoch)
                 train_accuracy.append(train_acc)
             else:
