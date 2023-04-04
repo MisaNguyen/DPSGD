@@ -1,4 +1,4 @@
-from datasets import MNIST_dataset, CIFAR10_dataset
+from datasets import MNIST_dataset, CIFAR10_dataset, Imagenet_dataset
 
 def dataset_preprocessing(dataset_name, train_kwargs, test_kwargs, mode):
     if(dataset_name == "MNIST"):
@@ -7,6 +7,9 @@ def dataset_preprocessing(dataset_name, train_kwargs, test_kwargs, mode):
     elif(dataset_name == "CIFAR10"):
         dataset = CIFAR10_dataset
         print("Processing Cifar10 dataset")
+    elif(dataset_name == "Imagenet"):
+        dataset = Imagenet_dataset
+        print("Processing Imagenet dataset")
     else:
         raise Exception("Invalid dataset name, try: MNIST, CIFAR10")
     if (mode == "shuffling"):

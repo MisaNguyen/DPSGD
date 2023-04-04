@@ -562,7 +562,7 @@ def DP_train(args, model, device, train_loader,optimizer):
 
             # Gradient Descent step
 
-            # optimizer_clone.step()
+            optimizer_clone.step()
 
         # Copy sum of grad to the model gradient
         for net1, net2 in zip(model.named_parameters(), model_clone.named_parameters()): # (layer_name, value) for each layer

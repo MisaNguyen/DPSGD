@@ -120,7 +120,8 @@ if __name__ == "__main__":
     draw_mixing_case = False
     enable_mu = False
     draw_training_acc = False
-    models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet", "resnet18", "squarenet"]
+    models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet",
+              "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
     setting_index = 0
     s_index =2
@@ -143,7 +144,7 @@ if __name__ == "__main__":
     # settings = ["setting_" + str(i) for i in range(26,31)]
 
     s_index_min = 1 # min = 1
-    s_index_max = 6 # max = 6
+    s_index_max = 5 # max = 6
     # settings = ["setting_" + str(i) for i in range(26,29)]
     # settings.append("setting_30")
     settings = ["setting_" + str(5*s_index+i) for i in range(s_index_min,s_index_max)]
@@ -205,13 +206,15 @@ if __name__ == "__main__":
 
             bc_data_path  = base_path + '_BC/' + model_name + '/' + experiment \
                             + '/' + clipping_mode + '/BC/' + setting +".json"
+
             print("bc_data_path:",bc_data_path)
-            with open(bc_data_path, "r") as data_file:
-                data = json.load(data_file)
-                BC_DPSGD_train_accuracy = data["train_accuracy"]
-                BC_DPSGD_test_accuracy = data["test_accuracy"]
-                DPSGD_BC_epochs = len(BC_DPSGD_train_accuracy)
-                DPSGD_BC_epoch_index = [i for i in range(1, DPSGD_BC_epochs+1)]
+            if (os.path.exists(bc_data_path)):
+                with open(bc_data_path, "r") as data_file:
+                    data = json.load(data_file)
+                    BC_DPSGD_train_accuracy = data["train_accuracy"]
+                    BC_DPSGD_test_accuracy = data["test_accuracy"]
+                    DPSGD_BC_epochs = len(BC_DPSGD_train_accuracy)
+                    DPSGD_BC_epoch_index = [i for i in range(1, DPSGD_BC_epochs+1)]
 
 
         if(draw_DPSGD_IC_case):
