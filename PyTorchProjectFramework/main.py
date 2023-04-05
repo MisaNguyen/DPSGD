@@ -136,7 +136,7 @@ def main():
             args.noise_multiplier = setting_data["noise_multiplier"]
             args.max_grad_norm = setting_data["max_grad_norm"]
             args.optimizer = setting_data["optimizer"]
-            args.enable_diminishing_gradient_norm = True
+            args.enable_diminishing_gradient_norm = False
             # args.enable_individual_clipping = setting_data["is_individual_clipping"]
             # args.enable_batch_clipping = False
             # args.enable_DP = setting_data["enable_DP"]
@@ -146,8 +146,8 @@ def main():
             args.shuffle_dataset = True
             # args.is_partition_train = False
             args.mode = setting_data["data_sampling"]
-            args.clipping = "layerwise"#TODO: add to setting file
-            # args.clipping = "all"
+            # args.clipping = "layerwise"#TODO: add to setting file
+            args.clipping = "all"
             args.C_decay = 0.9
             # args.dataset_name = "MNIST"
             args.dataset_name = "CIFAR10"#TODO: add to setting file
