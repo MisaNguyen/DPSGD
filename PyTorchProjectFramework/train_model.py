@@ -464,7 +464,7 @@ def DP_train(args, model, device, train_loader,optimizer):
                         # print(param.sum_grad)
 
             elif (args.clipping == "all"):
-                print("Clipping method: all")
+                # print("Clipping method: all")
                 """
                 Clip entire gradients with args.max_grad_norm
                 """
@@ -484,7 +484,7 @@ def DP_train(args, model, device, train_loader,optimizer):
                 for i in range(len(each_layer_norm)):
                     flat_grad_norm += pow(each_layer_norm[i],2)
                 flat_grad_norm = np.sqrt(flat_grad_norm)
-                print("Current norm = ", flat_grad_norm)
+                # print("Current norm = ", flat_grad_norm)
                 # input()
                 ### sqrt(a^2+b^2) = A sqrt(c^2+d^2) = B, sqrt( a^2+b^2 + c^2+d^2) = sqrt(A^2 + B^2)
                 ### sqrt(a^2+b^2) = X > C
@@ -499,12 +499,14 @@ def DP_train(args, model, device, train_loader,optimizer):
                 """
                 Accumulate gradients
                 """
-                if not hasattr(param, "sum_grad"):
-                    param.sum_grad = param.grad
-                    # print(param.sum_grad)
-                else:
-                    param.sum_grad = param.sum_grad.add(param.grad)
-                    # print(param.sum_grad)
+                for param in model_clone.parameters():
+                    param.grad = param.grad / flat_grad_norm * args.max_grad_norm
+                    if not hasattr(param, "sum_grad"):
+                        param.sum_grad = param.grad
+                        # print(param.sum_grad)
+                    else:
+                        param.sum_grad = param.sum_grad.add(param.grad)
+                        # print(param.sum_grad)
 
                 """ ======="""
                 # flat_grad = []
@@ -600,8 +602,12 @@ def DP_train(args, model, device, train_loader,optimizer):
             # dist = torch.distributions.normal.Normal(torch.tensor(0.0),
             #                                          torch.tensor((2 * args.noise_multiplier *  args.max_grad_norm)))
             """--------------LAYERWISE NOISE-----------------"""
-            dist = torch.distributions.normal.Normal(torch.tensor(0.0),
+            if(args.clipping=="layerwise"):
+                dist = torch.distributions.normal.Normal(torch.tensor(0.0),
                                                      torch.tensor((2 * args.each_layer_C[layer_idx] *  args.max_grad_norm)))
+            elif(args.clipping=="all"):
+                dist = torch.distributions.normal.Normal(torch.tensor(0.0),
+                torch.tensor((2 * args.max_grad_norm *  args.max_grad_norm)))
             noise = dist.rsample(param.grad.shape).to(device=device)
 
             # param.grad = param.grad + noise / args.batch_size
