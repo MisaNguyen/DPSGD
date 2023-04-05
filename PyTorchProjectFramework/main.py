@@ -152,7 +152,7 @@ def main():
             # args.dataset_name = "MNIST"
             args.dataset_name = "CIFAR10"#TODO: add to setting file
             # args.dataset_name = "Imagenet"#TODO: add to setting file
-            args.opacus_training = True
+            args.opacus_training = False
 
 
     if(logging == True):
