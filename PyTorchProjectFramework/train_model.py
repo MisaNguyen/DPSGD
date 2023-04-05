@@ -438,21 +438,21 @@ def DP_train(args, model, device, train_loader,optimizer):
                     """
                     Clip each layer gradients with args.max_grad_norm
                     """
-                    if(args.enable_diminishing_gradient_norm == True):
-                        # args.max_grad_norm = torch.linalg.norm(param.grad).to("cpu")
-                        # print(args.max_grad_norm)
-                        if not hasattr(param, "prev_max_grad_norm"): #round 1
-                            torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
-                        else: #round 2 onward
-                            torch.nn.utils.clip_grad_norm_(param.grad, max_norm=param.prev_max_grad_norm) # in-place computation
-                        if not hasattr(param, "layer_max_grad_norm"):
-                            param.layer_max_grad_norm  = torch.linalg.norm(param.grad)
-                        else:
-                            param.layer_max_grad_norm = max(param.layer_max_grad_norm, torch.linalg.norm(param.grad)) # get new max_grad_norm
+                    # if(args.enable_diminishing_gradient_norm == True):
+                    #     # args.max_grad_norm = torch.linalg.norm(param.grad).to("cpu")
+                    #     # print(args.max_grad_norm)
+                    #     if not hasattr(param, "prev_max_grad_norm"): #round 1
+                    #         torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
+                    #     else: #round 2 onward
+                    #         torch.nn.utils.clip_grad_norm_(param.grad, max_norm=param.prev_max_grad_norm) # in-place computation
+                    #     if not hasattr(param, "layer_max_grad_norm"):
+                    #         param.layer_max_grad_norm  = torch.linalg.norm(param.grad)
+                    #     else:
+                    #         param.layer_max_grad_norm = max(param.layer_max_grad_norm, torch.linalg.norm(param.grad)) # get new max_grad_norm
                         # print(param.layer_max_grad_norm)
-                    else:
+                    # else:
                         # torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.max_grad_norm) # in-place computation
-                        torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.each_layer_C[layer_idx]) # in-place computation, layerwise clipping
+                    torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.each_layer_C[layer_idx]) # in-place computation, layerwise clipping
                     """
                     Accumulate gradients
                     """
