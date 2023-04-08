@@ -113,18 +113,21 @@ if __name__ == "__main__":
     mode = "shuffling"
     # mode = "subsampling"
     # clipping_mode = "all"
+    DGN = False
+    print("DGN:", DGN)
+    # DGN = None
     clipping_mode = "layerwise"
     draw_DPSGD_IC_case = False
-    draw_SGD_case = True
-    draw_DPSGD_BC_case = False
+    draw_SGD_case = False
+    draw_DPSGD_BC_case = True
     draw_mixing_case = False
     enable_mu = False
     draw_training_acc = False
     models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet",
               "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
-    setting_index = 0
-    s_index =0
+    setting_index = 3 # 0,3,6
+    s_index =2
     models_index = 5
     model_name = models[models_index]
     settings_path, Cs, sigma, s_start = settings[setting_index]["settings_path"], \
@@ -144,7 +147,7 @@ if __name__ == "__main__":
     # settings = ["setting_" + str(i) for i in range(26,31)]
 
     s_index_min = 1 # min = 1
-    s_index_max = 5 # max = 6
+    s_index_max = 6 # max = 6
     # settings = ["setting_" + str(i) for i in range(26,29)]
     # settings.append("setting_30")
     settings = ["setting_" + str(5*s_index+i) for i in range(s_index_min,s_index_max)]
@@ -173,7 +176,7 @@ if __name__ == "__main__":
     # Check whether the specified path exists or not
     isExist = os.path.exists(graph_path)
     if (mode != None):
-        base_path = "./" + data_folder + "/" + settings_path + "_" + mode +"_BC"
+        base_path = "./" + data_folder + "/" + settings_path + "_" + mode
     else:
         base_path = "./" + data_folder + "/" + settings_path + "/" + model_name
     # base_path = "./data/" + settings_path + "/" + model_name
@@ -203,10 +206,14 @@ if __name__ == "__main__":
         if(draw_DPSGD_BC_case):
             experiment = "SGD"
             # bc_data_path  = "./data/" + settings_path + '/' + experiment + '/' + setting +".json"
-
-            bc_data_path  = base_path + '_BC/' + model_name + '/' + experiment \
-                            + '/' + clipping_mode + '/BC/' + setting +".json"
-
+            if(DGN):
+                bc_data_path  = base_path + '_BC/' + model_name + '/' + experiment \
+                                + '/' + clipping_mode + '/BC/DGN/' + setting +".json"
+            else:
+                bc_data_path  = base_path + '_BC/' + model_name + '/' + experiment \
+                                + '/' + clipping_mode + '/BC/' + setting +".json"
+            # bc_data_path  = base_path + '_BC/' + model_name + '/' + experiment \
+            #                  + '/BC/' + setting +".json"
             print("bc_data_path:",bc_data_path)
             if (os.path.exists(bc_data_path)):
                 with open(bc_data_path, "r") as data_file:
@@ -215,6 +222,8 @@ if __name__ == "__main__":
                     BC_DPSGD_test_accuracy = data["test_accuracy"]
                     DPSGD_BC_epochs = len(BC_DPSGD_train_accuracy)
                     DPSGD_BC_epoch_index = [i for i in range(1, DPSGD_BC_epochs+1)]
+            else:
+                continue
 
 
         if(draw_DPSGD_IC_case):
@@ -282,16 +291,16 @@ if __name__ == "__main__":
             plt.title('Test accuracy, lr = %s' % (str(lr).strip('0')))
         if(draw_SGD_case):
             plt.plot(SGD_epoch_index, SGD_test_accuracy, label="SGD, s= %d" % (s), color=cmap_color)
-            print("SGD test acc:", SGD_test_accuracy[-1])
+            print("SGD test acc:", SGD_test_accuracy[-5:-1])
         if(draw_DPSGD_BC_case):
             plt.plot(DPSGD_BC_epoch_index, BC_DPSGD_test_accuracy, "o-", label="BC,sm= %d" % (s), color=cmap_color)
-            print("BC test acc:", BC_DPSGD_test_accuracy[-1])
+            print("BC test acc:", BC_DPSGD_test_accuracy[-5:-1])
         if(draw_DPSGD_IC_case):
             plt.plot(DPSGD_IC_epoch_index, IC_DPSGD_test_accuracy, "x-",label="IC, sm= %d" % (s), color=cmap_color)
-            print("IC test acc:", IC_DPSGD_test_accuracy[-1])
+            print("IC test acc:", IC_DPSGD_test_accuracy[-5:-1])
         if(draw_mixing_case):
             plt.plot(DPSGD_Mixing_epoch_index, Mixing_DPSGD_test_accuracy, "x-",label="MC, sm= %d" % (s), color=cmap_color)
-            print("Mixing test acc:", Mixing_DPSGD_test_accuracy[-1])
+            print("Mixing test acc:", Mixing_DPSGD_test_accuracy[-5:-1])
         plt.legend()
         if(enable_mu):
             if(draw_DPSGD_BC_case or draw_DPSGD_IC_case or draw_mixing_case):
