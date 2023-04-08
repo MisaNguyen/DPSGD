@@ -14,6 +14,7 @@ PytorchProjectFramework/graphs/graph/*
 PytorchProjectFramework/graphs/data/*
 PytorchProjectFramework/graphs/data_sum/*
 PytorchProjectFramework/graphs/data_sum_old/*
+PytorchProjectFramework/graphs/data_sum_FINAL/*
 PytorchProjectFramework/graphs/data_sum_concluded/*
 PytorchProjectFramework/graphs/data_avg/*
 PytorchProjectFramework/graphs/data_client/*
@@ -24,3 +25,4 @@ PytorchProjectFramework/graphs/old_data_3/*
 PytorchProjectFramework/graphs/data_marten_algo/*
 
 PytorchProjectFramework/*.tar
+PytorchProjectFramework/cifar10

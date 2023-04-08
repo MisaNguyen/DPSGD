@@ -107,7 +107,7 @@ def main():
     # mode = "subsampling"
     mode = "shuffling"
     # mode = None
-    settings_file = "settings_clipping_exp_cifar10_dpsgd"
+    settings_file = "settings_clipping_exp_cifar10_dpsgd_opacus"
     logging = True
     print("Running setting: %s.json" % settings_file)
     if (mode != None):
@@ -134,6 +134,7 @@ def main():
             args.log_interval = setting_data["log_interval"]
             args.save_model = setting_data["save_model"]
             args.noise_multiplier = setting_data["noise_multiplier"]
+            print("sigma=",args.noise_multiplier)
             args.max_grad_norm = setting_data["max_grad_norm"]
             args.optimizer = setting_data["optimizer"]
             args.enable_diminishing_gradient_norm = False
@@ -182,10 +183,10 @@ def main():
     # model = AlexNet(num_classes=10).to(device)
     # model_name = "AlexNet"
     # model = SimpleDLA().to(device)
-    model = convnet(num_classes=10).to(device)
-    model_name = "convnet"
-    # model = ResNet18(num_classes=10).to(device)
-    # model_name = "resnet18"
+    # model = convnet(num_classes=10).to(device)
+    # model_name = "convnet"
+    model = ResNet18(num_classes=10).to(device)
+    model_name = "resnet18"
     if(args.opacus_training):
         # Fix incompatiple components such as BatchNorm2D layer
         model = ModuleValidator.fix(model)
