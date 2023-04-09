@@ -11,13 +11,15 @@ settings = ["settings_clipping_exp_cifar10_dpsgd",
             "settings_clipping_exp_cifar10_dpsgd_large_C_sigma_8",
             "settings_clipping_exp_cifar10_dpsgd_opacus",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_4",
-            "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_8",]
+            "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_8",
+            "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_p5",
+            "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_1p5",]
 
 # data_processing = "subsampling"
 data_processing = "shuffling"
 
 is_batch_clipping = True
-is_individual_clipping = Falseopa
+is_individual_clipping = False
 for setting_file in settings:
 # setting_file = settings[0]
     print(setting_file)
