@@ -23,10 +23,19 @@ settings = {
         "MAX_PHYSICAL_BATCH_SIZE": 64,
         "gamma": 0.9,
         "clipping": "flat"
+    },
+    "setting_2": {
+        "MAX_GRAD_NORM": 1.2,
+        "noise_multiplier": 0.5,
+        "EPOCHS": 20,
+        "LR": 0.025,
+        "BATCH_SIZE": 64,
+        "MAX_PHYSICAL_BATCH_SIZE": 64,
+        "gamma": 0.9,
+        "clipping": "flat"
     }
-
 }
-setting_name = "setting_1"
+setting_name = "setting_2"
 setting_data = settings[setting_name]
 MAX_GRAD_NORM = setting_data["MAX_GRAD_NORM"]
 # EPSILON = setting_data["EPSILON"]
