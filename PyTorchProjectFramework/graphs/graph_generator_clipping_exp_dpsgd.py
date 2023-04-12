@@ -112,11 +112,11 @@ if __name__ == "__main__":
     data_folder = "data_sum"
     mode = "shuffling"
     # mode = "subsampling"
-    # clipping_mode = "all"
-    DGN = False
+    clipping_mode = "layerwise"
+    DGN = True
     print("DGN:", DGN)
     # DGN = None
-    clipping_mode = "layerwise"
+    # clipping_mode = ""
     draw_DPSGD_IC_case = False
     draw_SGD_case = False
     draw_DPSGD_BC_case = True
@@ -126,8 +126,8 @@ if __name__ == "__main__":
     models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet",
               "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
-    setting_index = 3 # 0,3,6
-    s_index =2
+    setting_index = 6 # 0,3,6
+    s_index =3
     models_index = 5
     model_name = models[models_index]
     settings_path, Cs, sigma, s_start = settings[setting_index]["settings_path"], \
@@ -194,7 +194,7 @@ if __name__ == "__main__":
         if(draw_SGD_case):
             experiment = "SGD"
             # sgd_data_path  = base_path + '/' + experiment + '/' + setting +".json"
-            sgd_data_path = base_path + '/' + model_name + '/' + experiment + '/SGD/' + setting +".json"
+            sgd_data_path = base_path + '_BC/' + model_name + '/' + experiment + '/SGD/' + setting +".json"
             print(sgd_data_path)
             with open(sgd_data_path, "r") as data_file:
                 data = json.load(data_file)
@@ -223,6 +223,7 @@ if __name__ == "__main__":
                     DPSGD_BC_epochs = len(BC_DPSGD_train_accuracy)
                     DPSGD_BC_epoch_index = [i for i in range(1, DPSGD_BC_epochs+1)]
             else:
+                s = s*2
                 continue
 
 

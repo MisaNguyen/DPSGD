@@ -87,7 +87,7 @@ def shuffling_preprocessing(train_kwargs,test_kwargs):
 
     trainset , C_dataset = torch.utils.data.random_split(trainset, [training_len,len(trainset)-training_len])
     train_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)
-    C_dataset_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)
+    C_dataset_loader = torch.utils.data.DataLoader(C_dataset, **train_kwargs)
     print('\nTraining Set:')
     for images, labels in train_loader:
         print('Image batch dimensions:', images.size())
@@ -148,7 +148,7 @@ def subsampling_preprocessing(train_kwargs,test_kwargs):
     del train_kwargs['shuffle']
     sampler = torch.utils.data.RandomSampler(trainset, replacement=True, num_samples=len(trainset))
     train_loader = torch.utils.data.DataLoader(trainset, sampler=sampler, **train_kwargs)
-    C_dataset_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)
+    C_dataset_loader = torch.utils.data.DataLoader(C_dataset, **train_kwargs)
     print('\nTraining Set:')
     for images, labels in train_loader:
         print('Image batch dimensions:', images.size())
