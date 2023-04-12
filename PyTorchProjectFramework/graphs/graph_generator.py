@@ -1,5 +1,5 @@
 import matplotlib.pyplot  as plt
-import numpy
+import numpy as np
 
 import os
 import json
@@ -10,11 +10,26 @@ if __name__ == "__main__":
     # settings = ["setting_1","setting_2","setting_3"]
     # settings = ["setting_1","setting_2","setting_3","setting_4"]
     # settings = ["setting_5","setting_6","setting_7","setting_8"]
-    settings = ["setting_16"]
+
+    # settings = ["setting_2","setting_4","setting_6","setting_8"]
+    # sigma = 0.5
+    settings = ["setting_3","setting_5","setting_7","setting_9"]
+    sigma = 1.5
+    s_arr = [64,128,256,512]
+    lr = 0.025
+    C = 1.2
+    count = 0
+    model = "resnet18"
+    experiment = "CIFAR10"
+    graph_path = "./graph/" + experiment
+    base_path = "./data_sum_flaw/opacus/"
+    fig, ax = plt.subplots(1, 2)
+    fig.suptitle("Opacus Performance, lr = %s, C = %s, $\sigma$ = %s" % (lr,C,sigma))
     for setting in settings:
-        experiment = "SGD"
-        graph_path = "./graph/" + experiment
-        data_path  = "./data/" + experiment + '/' + setting +".json"
+        s = s_arr[count]
+        count= count+1
+        
+        data_path  = base_path + setting +".json"
         # Check whether the specified path exists or not
         isExist = os.path.exists(graph_path)
 
@@ -25,52 +40,77 @@ if __name__ == "__main__":
 
         with open(data_path, "r") as data_file:
             data = json.load(data_file)
-            SGD_train_accuracy = data["train_accuracy"]
-            SGD_test_accuracy = data["test_accuracy"]
-            SGD_epochs = len(SGD_train_accuracy)
+            eps_delta = data["eps_delta"]
+            eps = [eps_delta[i][0] for i in range(len(eps_delta))]
+            delta = data["eps_delta"][0][1]
+            # print("ABDS",len(eps))
+
+            SGD_test_accuracy = data["test_acc"]
+            SGD_epochs = len(SGD_test_accuracy)
+            x = int(len(eps)/SGD_epochs)
+            # print("X",x)
+            eps = eps[0::x]
 
     # loading DPSGD data
     #     print("Testing")
         # setting = "setting_1"
-        experiment = "DPSGD"
-    # setting_file_name = "settings_main_theorem(test)"
-    # settings = ["setting_1","setting_2","setting_3"]
-        setting = "setting_14"
-    # for setting in settings:
-        graph_path = "./graph/" + experiment
-        data_path  = "./data/" + experiment + '/' + setting +".json"
-        # Check whether the specified path exists or not
-        isExist = os.path.exists(graph_path)
+    #     experiment = "DPSGD"
+    # # setting_file_name = "settings_main_theorem(test)"
+    # # settings = ["setting_1","setting_2","setting_3"]
+    #     setting = "setting_14"
+    # # for setting in settings:
+    #     graph_path = "./graph/" + experiment
+    #     data_path  = "./data/" + experiment + '/' + setting +".json"
+    #     # Check whether the specified path exists or not
+    #     isExist = os.path.exists(graph_path)
 
-        if not isExist:
-            # Create a new directory because it does not exist
-            os.makedirs(graph_path)
-            print("The new directory is created: %s" % graph_path)
-
-        with open(data_path, "r") as data_file:
-            data = json.load(data_file)
-            DPSGD_train_accuracy = data["train_accuracy"]
-            DPSGD_test_accuracy = data["test_accuracy"]
-            DPSGD_epochs = len(DPSGD_train_accuracy)
-
-        print("Plotting graphs for setting : %s" % setting)
-        DPSGD_epoch_index = [i for i in range(1, DPSGD_epochs+1)]
+        # if not isExist:
+        #     # Create a new directory because it does not exist
+        #     os.makedirs(graph_path)
+        #     print("The new directory is created: %s" % graph_path)
+        #
+        # with open(data_path, "r") as data_file:
+        #     data = json.load(data_file)
+        #     DPSGD_train_accuracy = data["train_accuracy"]
+        #     DPSGD_test_accuracy = data["test_accuracy"]
+        #     DPSGD_epochs = len(DPSGD_train_accuracy)
+        #
+        # print("Plotting graphs for setting : %s" % setting)
+        # DPSGD_epoch_index = [i for i in range(1, DPSGD_epochs+1)]
         SGD_epoch_index = [i for i in range(1, SGD_epochs+1)]
         # T_index = [N_c/s * i for i in range(1, epochs+1)]
         # index = epoch_index
         # print(eps_dpsgd)
         # input()
-        plt.plot(DPSGD_epoch_index, DPSGD_train_accuracy, label="DPSGD_train_accuracy %s" % setting)
-        plt.plot(DPSGD_epoch_index, DPSGD_test_accuracy, label="DPSGD_train_accuracy %s" % setting)
-        plt.plot(SGD_epoch_index, SGD_train_accuracy, label="SGD_train_accuracy %s" % setting)
-        plt.plot(SGD_epoch_index, SGD_test_accuracy, label="SGD_train_accuracy %s" % setting)
+        # plt.plot(DPSGD_epoch_index, DPSGD_train_accuracy, label="DPSGD_train_accuracy %s" % setting)
+        # plt.plot(DPSGD_epoch_index, DPSGD_test_accuracy, label="DPSGD_train_accuracy %s" % setting)
+
+
+        # plt.subplot(1, 2, 1)
+        # print(len(eps))
+        # print(SGD_epochs)
+        ax[0].plot(SGD_epoch_index, eps, label="s= %s" % (s))
+        ax[0].xaxis.set_ticks(np.arange(min(SGD_epoch_index), max(SGD_epoch_index)+1,5.0))
+        ax[0].set_xlabel('epoch')
+        ax[0].set_ylabel('eps')
+        ax[0].set_title("Privacy budget, $\delta$ = %s" % delta)
+        # plt.subplot(1, 2, 2)
+        ax[1].plot(SGD_epoch_index, SGD_test_accuracy, label="s= %s" % s)
+        ax[1].xaxis.set_ticks(np.arange(min(SGD_epoch_index), max(SGD_epoch_index)+1, 5.0))
+        # ax.set_xticks(1)
         # plt.plot(epoch_index, sigma, label="sigma")
-        plt.title('Train and test accuracy')
-        plt.xlabel('epoch')
-        plt.ylabel('accuracy')
-        plt.legend()
-        plt.savefig(graph_path + '/' + setting +".png")
-        plt.show()
+        ax[1].set_title("Testing accuracy")
+        ax[1].set_xlabel('epoch')
+        ax[1].set_ylabel('accuracy')
+        print("s=",s)
+        print("eps_last", eps[-1])
+        print("acc_last", SGD_test_accuracy[-1])
+    plt.legend()
+
+    fig_name = graph_path + '/' + model +".png"
+    print("saving data to:", fig_name)
+    plt.savefig(fig_name)
+    plt.show()
     # plt.clf()
     # plt.plot(index, sigma, label="sigma")
     # plt.title('sigma over T ("delta = %f, s = %f" )' % (delta,s))

@@ -608,6 +608,7 @@ def DP_train(args, model, device, train_loader,optimizer):
             elif(args.clipping=="all"):
                 dist = torch.distributions.normal.Normal(torch.tensor(0.0),
                 torch.tensor((2 * args.max_grad_norm *  args.max_grad_norm)))
+            # print(param.grad.shape)
             noise = dist.rsample(param.grad.shape).to(device=device)
 
             # param.grad = param.grad + noise / args.batch_size

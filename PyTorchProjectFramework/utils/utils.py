@@ -120,18 +120,23 @@ def compute_layerwise_C(C_dataset_loader, model, epochs, device, optimizer, C_st
             loss.backward()
             if (update_mode):
                 optimizer.step()
-    each_layer_C = []
+    each_layer_norm = []
+    max_norm = 0
     for name, param in model.named_parameters():
         if param.requires_grad:
             # layer_name = "layer_" + str(name)
             current_layer_norm = param.grad.data.norm(2).clone().detach()
 
-            if not each_layer_C:
-                each_layer_C.append(C_start)
-            else:
-                C_ratio = current_layer_norm / prev_layer_norm
-
-                each_layer_C.append(each_layer_C[-1]*float(C_ratio))
-            prev_layer_norm = current_layer_norm
+            # if not each_layer_C:
+            #     each_layer_C.append(C_start * current_layer_norm)
+            #     max_norm = current_layer_norm
+            # else:
+            # C_ratio = current_layer_norm / prev_layer_norm
+            max_norm = max(max_norm,current_layer_norm)
+            each_layer_norm.append(current_layer_norm) # ||a_{h,i}||
+            # prev_layer_norm = current_layer_norm
+    # input(C_start)
+    # input(max_norm)
+    each_layer_C = [C_start*(item/max_norm).cpu().numpy() for item in each_layer_norm]
     return each_layer_C
 
