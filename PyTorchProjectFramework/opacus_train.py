@@ -5,7 +5,7 @@ import argparse
 from opacus.utils.batch_memory_manager import BatchMemoryManager
 from utils.utils import  json_to_file
 from tqdm import tqdm
-
+from models.convnet_model import convnet
 import torch
 import torchvision
 import torchvision.transforms as transforms
@@ -289,7 +289,10 @@ def main():
     # MODEL DEFINITION
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("device=",device)
-    model = models.resnet18(num_classes=10)
+    # model = models.resnet18(num_classes=10)
+    # model_name ="resnet18"
+    model = convnet(num_classes=10)
+    model_name ="convnet"
     model = model.to(device)
     # errors = ModuleValidator.validate(model, strict=False)
     model = ModuleValidator.fix(model)
@@ -348,7 +351,7 @@ def main():
         "sigma" : NOISE_MULIPLIER,
         "sigma_prime": new_NOISE_MULIPLIER
     }
-    out_file_path = "graphs/data_sum_flaw/opacus"
+    out_file_path = "graphs/data_sum_flaw/opacus_" + model_name
     json_to_file(out_file_path, setting_name, out_json)
 
 if __name__ == '__main__':
