@@ -21,7 +21,7 @@ if __name__ == "__main__":
     lr = 0.025
     C = 1.2
     count = 0
-    model = "resnet18"
+    model = "LeNet"
     experiment = "MNIST"
     graph_path = "./graph/" + experiment
     base_path = "./data_sum/opacus_"+ model +"/"
@@ -43,11 +43,11 @@ if __name__ == "__main__":
         with open(data_path, "r") as data_file:
             data = json.load(data_file)
             eps_delta = data["eps_delta"]
-            # eps = [eps_delta[i][0] for i in range(len(eps_delta))]
+            eps_arr = [eps_delta[i][0] for i in range(len(eps_delta))]
 
-            # delta = data["eps_delta"][0][1]
-            eps =data["eps_delta"][0]
-            delta =data["eps_delta"][1]
+            delta = data["eps_delta"][0][1]
+            # eps =data["eps_delta"][0]
+            # delta =data["eps_delta"][1]
             sigma_bar = data["sigma_prime"]
             sigma = data["sigma"]
             # print("ABDS",len(eps))
@@ -112,10 +112,10 @@ if __name__ == "__main__":
         print("s=",s)
         # print("eps_last", eps[-1])
         print("acc_last", SGD_test_accuracy[-1])
-    print(round(eps,2))
+    # print(round(eps,2))
     print(delta)
     fig.suptitle("Opacus Performance, lr = %s, C = %s, $\\bar{\sigma}$ = %s, ($\epsilon,\delta$) =(%s,%s)"
-                 % (lr,C,round(sigma_bar,4),round(eps,2),delta))
+                 % (lr,C,round(sigma_bar,4),round(eps_arr[-1],2),delta))
     ax.legend()
 
     fig_name = graph_path + '/' + model +"_" + str(sigma)+  ".png"

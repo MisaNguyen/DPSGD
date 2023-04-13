@@ -324,7 +324,7 @@ def main():
     test_accuracy = []
     eps_delta_arr = []
 
-    # train_loader , test_loader = CIFAR10_dataset(BATCH_SIZE)
+    # train_loader , test_loader, DELTA = CIFAR10_dataset(BATCH_SIZE)
     train_loader , test_loader, DELTA = MNIST_dataset(BATCH_SIZE)
     # MODEL DEFINITION
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -353,12 +353,12 @@ def main():
     #     target_delta=DELTA,
     #     max_grad_norm=MAX_GRAD_NORM,
     # )
-    # num_grad_layers = 0
-    num_grad_layers = 62 #resnet18
-    # for layer_idx, (name, param) in enumerate(model.named_parameters()):
-    #     if param.requires_grad:
-    #         num_grad_layers = num_grad_layers + 1
-    # print("num_grad_layers=",num_grad_layers)
+    num_grad_layers = 0
+    # num_grad_layers = 62 #resnet18
+    for layer_idx, (name, param) in enumerate(model.named_parameters()):
+        if param.requires_grad:
+            num_grad_layers = num_grad_layers + 1
+    print("num_grad_layers=",num_grad_layers)
     new_NOISE_MULIPLIER = NOISE_MULIPLIER / np.power(num_grad_layers,1/4)
     # print("new_NOISE_MULIPLIER=",new_NOISE_MULIPLIER)
     model, optimizer, train_loader = privacy_engine.make_private(

@@ -86,10 +86,10 @@ if __name__ == "__main__":
     models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet",
               "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
-    setting_index = 3
-    index =4
+    setting_index = 0
+    index =1
     models_index = 5
-    min_range = 1 # min = 0
+    min_range = 0 # min = 0
     max_range = 6 # max = 6
     model_name = models[models_index]
     settings_path, Cs, sigma, s_start = settings[setting_index]["settings_path"], \
