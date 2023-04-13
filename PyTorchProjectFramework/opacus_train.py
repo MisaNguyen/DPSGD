@@ -6,10 +6,11 @@ from opacus.utils.batch_memory_manager import BatchMemoryManager
 from utils.utils import  json_to_file
 from tqdm import tqdm
 from models.convnet_model import convnet
+from models.Lenet_model import LeNet
 import torch
 import torchvision
 import torchvision.transforms as transforms
-from torchvision.datasets import CIFAR10
+from torchvision.datasets import CIFAR10, MNIST
 from torchvision import models
 
 from opacus.validators import ModuleValidator
@@ -100,9 +101,76 @@ def test(model, test_loader, device):
         f"Acc: {top1_avg * 100:.6f} "
     )
     return np.mean(top1_acc)
+def MNIST_dataset(BATCH_SIZE):
+    # These values, specific to the CIFAR10 dataset, are assumed to be known.
+    # If necessary, they can be computed with modest privacy budgets.
+    # MNIST_MEAN = 0.1307
+    # MNIST_STD_DEV = 0.3081
+
+
+    transform = transforms.Compose([
+        transforms.RandomCrop(32, padding=4),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        transforms.Normalize((0.1307,), (0.3081,))
+    ])
+
+    "DATA preprocessing"
+    DATA_ROOT = '../data'
+
+    train_dataset = MNIST(
+        root=DATA_ROOT, train=True, download=True, transform=transform)
+
+    train_loader = torch.utils.data.DataLoader(
+        train_dataset,
+        batch_size=BATCH_SIZE,
+    )
+
+    test_dataset = MNIST(
+        root=DATA_ROOT, train=False, download=True, transform=transform)
+
+    test_loader = torch.utils.data.DataLoader(
+        test_dataset,
+        batch_size=BATCH_SIZE,
+        shuffle=False,
+    )
+    DELTA = 1/len(train_dataset)
+    return train_loader ,test_loader, DELTA
 
 
 
+def CIFAR10_dataset(BATCH_SIZE):
+    # These values, specific to the CIFAR10 dataset, are assumed to be known.
+    # If necessary, they can be computed with modest privacy budgets.
+    CIFAR10_MEAN = (0.4914, 0.4822, 0.4465)
+    CIFAR10_STD_DEV = (0.2023, 0.1994, 0.2010)
+
+    transform = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize(CIFAR10_MEAN, CIFAR10_STD_DEV),
+    ])
+
+    "DATA preprocessing"
+    DATA_ROOT = '../data'
+
+    train_dataset = CIFAR10(
+        root=DATA_ROOT, train=True, download=True, transform=transform)
+
+    train_loader = torch.utils.data.DataLoader(
+        train_dataset,
+        batch_size=BATCH_SIZE,
+    )
+
+    test_dataset = CIFAR10(
+        root=DATA_ROOT, train=False, download=True, transform=transform)
+
+    test_loader = torch.utils.data.DataLoader(
+        test_dataset,
+        batch_size=BATCH_SIZE,
+        shuffle=False,
+    )
+    DELTA = 1/len(train_dataset)
+    return train_loader ,test_loader, DELTA
 
 
 def main():
@@ -256,43 +324,17 @@ def main():
     test_accuracy = []
     eps_delta_arr = []
 
-    # These values, specific to the CIFAR10 dataset, are assumed to be known.
-    # If necessary, they can be computed with modest privacy budgets.
-    CIFAR10_MEAN = (0.4914, 0.4822, 0.4465)
-    CIFAR10_STD_DEV = (0.2023, 0.1994, 0.2010)
-
-    transform = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize(CIFAR10_MEAN, CIFAR10_STD_DEV),
-    ])
-
-    "DATA preprocessing"
-    DATA_ROOT = '../cifar10'
-
-    train_dataset = CIFAR10(
-        root=DATA_ROOT, train=True, download=True, transform=transform)
-
-    train_loader = torch.utils.data.DataLoader(
-        train_dataset,
-        batch_size=BATCH_SIZE,
-    )
-
-    test_dataset = CIFAR10(
-        root=DATA_ROOT, train=False, download=True, transform=transform)
-
-    test_loader = torch.utils.data.DataLoader(
-        test_dataset,
-        batch_size=BATCH_SIZE,
-        shuffle=False,
-    )
-
+    # train_loader , test_loader = CIFAR10_dataset(BATCH_SIZE)
+    train_loader , test_loader, DELTA = MNIST_dataset(BATCH_SIZE)
     # MODEL DEFINITION
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("device=",device)
     # model = models.resnet18(num_classes=10)
     # model_name ="resnet18"
-    model = convnet(num_classes=10)
-    model_name ="convnet"
+    # model = convnet(num_classes=10)
+    # model_name ="convnet"
+    model = LeNet()
+    model_name ="LeNet"
     model = model.to(device)
     # errors = ModuleValidator.validate(model, strict=False)
     model = ModuleValidator.fix(model)
@@ -300,7 +342,7 @@ def main():
 
     """APPLYING DP"""
     privacy_engine = PrivacyEngine()
-    criterion = nn.CrossEntropyLoss()
+    # criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=LR)
     # model, optimizer, train_loader = privacy_engine.make_private_with_epsilon(
     #     module=model,
@@ -328,7 +370,7 @@ def main():
         clipping=clipping,
     )
 
-    DELTA = 1/len(train_dataset)
+
     print("delta= ", DELTA)
     print(f"Using sigma={new_NOISE_MULIPLIER} and C={MAX_GRAD_NORM}")
     for epoch in tqdm(range(EPOCHS), desc="Epoch", unit="epoch"):
