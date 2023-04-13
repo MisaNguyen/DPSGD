@@ -179,7 +179,7 @@ def main():
         "setting_11": {
             "MAX_GRAD_NORM": 1.0,
             "noise_multiplier": 2.0,
-            "EPOCHS": 20,
+            "EPOCHS": 50,
             "LR": 0.025,
             "BATCH_SIZE": 64,
             "MAX_PHYSICAL_BATCH_SIZE": 64,
@@ -189,7 +189,7 @@ def main():
         "setting_12": {
             "MAX_GRAD_NORM": 1.0,
             "noise_multiplier": 4.0,
-            "EPOCHS": 20,
+            "EPOCHS": 50,
             "LR": 0.025,
             "BATCH_SIZE": 64,
             "MAX_PHYSICAL_BATCH_SIZE": 64,
@@ -199,7 +199,7 @@ def main():
         "setting_13": {
             "MAX_GRAD_NORM": 1.0,
             "noise_multiplier": 8.0,
-            "EPOCHS": 20,
+            "EPOCHS": 50,
             "LR": 0.025,
             "BATCH_SIZE": 64,
             "MAX_PHYSICAL_BATCH_SIZE": 64,
@@ -209,7 +209,7 @@ def main():
         "setting_21": {
             "MAX_GRAD_NORM": 1.0,
             "noise_multiplier": 2.0,
-            "EPOCHS": 20,
+            "EPOCHS": 50,
             "LR": 0.025,
             "BATCH_SIZE": 128,
             "MAX_PHYSICAL_BATCH_SIZE": 64,
@@ -219,7 +219,7 @@ def main():
         "setting_22": {
             "MAX_GRAD_NORM": 1.0,
             "noise_multiplier": 4.0,
-            "EPOCHS": 20,
+            "EPOCHS": 50,
             "LR": 0.025,
             "BATCH_SIZE": 128,
             "MAX_PHYSICAL_BATCH_SIZE": 64,
@@ -229,7 +229,7 @@ def main():
         "setting_23": {
             "MAX_GRAD_NORM": 1.0,
             "noise_multiplier": 8.0,
-            "EPOCHS": 20,
+            "EPOCHS": 50,
             "LR": 0.025,
             "BATCH_SIZE": 128,
             "MAX_PHYSICAL_BATCH_SIZE": 64,
@@ -239,7 +239,7 @@ def main():
         "setting_31": {
             "MAX_GRAD_NORM": 1.0,
             "noise_multiplier": 2.0,
-            "EPOCHS": 20,
+            "EPOCHS": 50,
             "LR": 0.025,
             "BATCH_SIZE": 256,
             "MAX_PHYSICAL_BATCH_SIZE": 64,
@@ -249,7 +249,7 @@ def main():
         "setting_32": {
             "MAX_GRAD_NORM": 1.0,
             "noise_multiplier": 4.0,
-            "EPOCHS": 20,
+            "EPOCHS": 50,
             "LR": 0.025,
             "BATCH_SIZE": 256,
             "MAX_PHYSICAL_BATCH_SIZE": 64,
@@ -259,7 +259,7 @@ def main():
         "setting_33": {
             "MAX_GRAD_NORM": 1.0,
             "noise_multiplier": 8.0,
-            "EPOCHS": 20,
+            "EPOCHS": 50,
             "LR": 0.025,
             "BATCH_SIZE": 256,
             "MAX_PHYSICAL_BATCH_SIZE": 64,
@@ -269,7 +269,7 @@ def main():
         "setting_41": {
             "MAX_GRAD_NORM": 1.0,
             "noise_multiplier": 2.0,
-            "EPOCHS": 20,
+            "EPOCHS": 50,
             "LR": 0.025,
             "BATCH_SIZE": 512,
             "MAX_PHYSICAL_BATCH_SIZE": 64,
@@ -279,7 +279,7 @@ def main():
         "setting_42": {
             "MAX_GRAD_NORM": 1.0,
             "noise_multiplier": 4.0,
-            "EPOCHS": 20,
+            "EPOCHS": 50,
             "LR": 0.025,
             "BATCH_SIZE": 512,
             "MAX_PHYSICAL_BATCH_SIZE": 64,
@@ -289,7 +289,7 @@ def main():
         "setting_43": {
             "MAX_GRAD_NORM": 1.0,
             "noise_multiplier": 8.0,
-            "EPOCHS": 20,
+            "EPOCHS": 50,
             "LR": 0.025,
             "BATCH_SIZE": 512,
             "MAX_PHYSICAL_BATCH_SIZE": 64,
@@ -389,11 +389,11 @@ def main():
                     param_group["lr"] = LR
     out_json = {
         "test_acc" : test_accuracy,
-        "eps_delta": eps_delta,
+        "eps_delta": eps_delta_arr,
         "sigma" : NOISE_MULIPLIER,
         "sigma_prime": new_NOISE_MULIPLIER
     }
-    out_file_path = "graphs/data_sum_flaw/opacus_" + model_name
+    out_file_path = "graphs/data_sum/opacus_" + model_name
     json_to_file(out_file_path, setting_name, out_json)
 
 if __name__ == '__main__':
