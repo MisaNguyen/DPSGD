@@ -1,5 +1,6 @@
 import matplotlib.pyplot  as plt
 import numpy as np
+from decimal import Decimal
 
 import os
 import json
@@ -13,16 +14,16 @@ if __name__ == "__main__":
 
     # settings = ["setting_2","setting_4","setting_6","setting_8"]
     # sigma = 0.5
-    settings = ["setting_11","setting_21","setting_31","setting_41"]
-    # settings = ["setting_12","setting_22","setting_32","setting_42"]
+    # settings = ["setting_11","setting_21","setting_31","setting_41"]
+    settings = ["setting_12","setting_22","setting_32","setting_42"]
     # settings = ["setting_13","setting_23","setting_33","setting_43"]
     # sigma = 1.5
     s_arr = [64,128,256,512]
     lr = 0.025
     C = 1.2
     count = 0
-    model = "LeNet"
-    experiment = "MNIST"
+    model = "convnet"
+    experiment = "CIFAR10"
     graph_path = "./graph/" + experiment
     base_path = "./data_sum/opacus_"+ model +"/"
 
@@ -114,8 +115,8 @@ if __name__ == "__main__":
         print("acc_last", SGD_test_accuracy[-1])
     # print(round(eps,2))
     print(delta)
-    fig.suptitle("Opacus Performance, lr = %s, C = %s, $\\bar{\sigma}$ = %s, ($\epsilon,\delta$) =(%s,%s)"
-                 % (lr,C,round(sigma_bar,4),round(eps_arr[-1],2),delta))
+    fig.suptitle("Opacus Performance, lr = %s, C = %s, $\\bar{\sigma}$ = %s, ($\epsilon,\delta$) =(%s,%.2e)"
+                 % (lr,C,round(sigma_bar,4),round(eps_arr[-1],2),Decimal(delta)))
     ax.legend()
 
     fig_name = graph_path + '/' + model +"_" + str(sigma)+  ".png"
