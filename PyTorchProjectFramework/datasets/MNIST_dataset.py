@@ -287,14 +287,18 @@ def shuffling_preprocessing(train_kwargs,test_kwargs):
     #     batches_length.append(len(trainset) % train_kwargs['batch_size'])
     # """ Split train dataset into batches"""
     # train_batches = torch.utils.data.random_split(trainset, batches_length)
-
+    training_len = 9*len(trainset)//10
+    # input("HERE")
+    trainset , C_dataset = torch.utils.data.random_split(trainset, [training_len,len(trainset)-training_len])
     train_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)
+    C_dataset_loader = torch.utils.data.DataLoader(C_dataset, **train_kwargs)
     print('\nTraining Set:')
     for images, labels in train_loader:
         print('Image batch dimensions:', images.size())
         print('Image label dimensions:', labels.size())
         print(labels[:10])
         break
+    # input()
     test_loader = torch.utils.data.DataLoader(testset, **test_kwargs)
     # Checking the dataset
     print('\nTesting Set:')
@@ -305,7 +309,7 @@ def shuffling_preprocessing(train_kwargs,test_kwargs):
         break
     # return train_loader, test_loader
     dataset_size = len(trainset)
-    return train_loader, test_loader, dataset_size
+    return C_dataset_loader,train_loader, test_loader, dataset_size
     # return train_batches, test_loader, dataset_size
 
 def subsampling_preprocessing(train_kwargs,test_kwargs):
@@ -343,9 +347,14 @@ def subsampling_preprocessing(train_kwargs,test_kwargs):
         root='../data', train=True, download=True, transform=transform_train)
     print("Finished normalizing dataset.")
     print(train_kwargs)
+    training_len = 9*len(trainset)//10
+
+    trainset , C_dataset = torch.utils.data.random_split(trainset, [training_len,len(trainset)-training_len])
     del train_kwargs['shuffle']
+
     sampler = torch.utils.data.RandomSampler(trainset, replacement=True, num_samples=len(trainset))
     train_loader = torch.utils.data.DataLoader(trainset, sampler=sampler, **train_kwargs)
+    C_dataset_loader = torch.utils.data.DataLoader(C_dataset, **train_kwargs)
     print('\nTraining Set:')
     for images, labels in train_loader:
         print('Image batch dimensions:', images.size())
@@ -362,7 +371,7 @@ def subsampling_preprocessing(train_kwargs,test_kwargs):
         break
     # return train_loader, test_loader
     dataset_size = len(trainset)
-    return train_loader, test_loader, dataset_size
+    return C_dataset_loader,train_loader, test_loader, dataset_size
 
 if __name__ == "__main__":
     train_kwargs = {'batch_size': 16}

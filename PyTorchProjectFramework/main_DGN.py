@@ -107,7 +107,7 @@ def main():
     # mode = "subsampling"
     mode = "shuffling"
     # mode = None
-    settings_file = "settings_clipping_exp_cifar10_dpsgd_sigma_8"
+    settings_file = "settings_clipping_exp_cifar10_dpsgd_sigma_4"
     logging = True
     print("Running setting: %s.json" % settings_file)
     if (mode != None):
@@ -137,7 +137,7 @@ def main():
             print("sigma=",args.noise_multiplier)
             args.max_grad_norm = setting_data["max_grad_norm"]
             args.optimizer = setting_data["optimizer"]
-            args.enable_diminishing_gradient_norm = True
+            args.enable_diminishing_gradient_norm = False
             # args.enable_individual_clipping = setting_data["is_individual_clipping"]
             # args.enable_batch_clipping = False
             # args.enable_DP = setting_data["enable_DP"]
@@ -150,8 +150,8 @@ def main():
             args.clipping = "layerwise"#TODO: add to setting file
             # args.clipping = "all"
             args.C_decay = 0.9
-            # args.dataset_name = "MNIST"
-            args.dataset_name = "CIFAR10"#TODO: add to setting file
+            args.dataset_name = "MNIST"
+            # args.dataset_name = "CIFAR10"#TODO: add to setting file
             # args.dataset_name = "Imagenet"#TODO: add to setting file
             args.opacus_training = False
     if(logging == True):
@@ -183,10 +183,10 @@ def main():
     # model = SimpleDLA().to(device)
     # model = convnet(num_classes=10).to(device)
     # model_name = "convnet"
-    model = ResNet18(num_classes=10).to(device)
-    model_name = "resnet18"
-    # model = LeNet().to(device)
-    # model_name = "LeNet"
+    # model = ResNet18(num_classes=10).to(device)
+    # model_name = "resnet18"
+    model = LeNet().to(device)
+    model_name = "LeNet"
     if(args.opacus_training):
         # Fix incompatiple components such as BatchNorm2D layer
         model = ModuleValidator.fix(model)
@@ -322,6 +322,10 @@ def main():
             # print("HERE")
             # print(gradient_stats)
         test_accuracy.append(validate_model.test(model, device, test_loader))
+        if (save_grad):
+            grad_out_file_path = out_file_path + "/grad"
+            json_to_file(grad_out_file_path, args.load_setting, grad_array)
+
         """
         DECREASE C VALUE
         """
@@ -340,9 +344,6 @@ def main():
                 print(args.lr)
                 for param_group in optimizer.param_groups:
                     param_group["lr"] = args.lr
-    if (save_grad):
-        grad_out_file_path = out_file_path + "/grad"
-        json_to_file(grad_out_file_path, args.load_setting, grad_array)
     generate_json_data_for_graph(out_file_path, args.load_setting, train_accuracy,test_accuracy)
 
     if args.save_model:

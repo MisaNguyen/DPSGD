@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import torch
 
 
@@ -11,37 +9,9 @@ import sys
 from datasets.data_sampler import get_data_loaders
 from torch.utils.data import Dataset
 
-def get_mean_and_std(dataset):
-    '''Compute the mean and std value of dataset.'''
-    dataloader = torch.utils.data.DataLoader(dataset, batch_size=1, shuffle=True, num_workers=2)
-    mean = torch.zeros(3)
-    std = torch.zeros(3)
-    # print('==> Computing mean and std..')
-    for inputs, targets in dataloader:
-        for i in range(3):
-            mean[i] += inputs[:,i,:,:].mean()
-            std[i] += inputs[:,i,:,:].std()
-    mean.div_(len(dataset))
-    std.div_(len(dataset))
-    return mean, std
-
-class MyDataset(Dataset):
-    def __init__(self, subset, transform=None):
-        self.subset = subset
-        self.transform = transform
-
-    def __getitem__(self, index):
-        x, y = self.subset[index]
-        if self.transform:
-            x = self.transform(x)
-        return x, y
-
-    def __len__(self):
-        return len(self.subset)
-
 def shuffling_preprocessing(train_kwargs,test_kwargs):
     """-------------------- NORMALIZING-------------------"""
-
+    data_path = "F:\Download\imagenet"
     toTensor = [
         transforms.ToTensor(),
     ]
@@ -51,11 +21,11 @@ def shuffling_preprocessing(train_kwargs,test_kwargs):
     ]
 
     train_normalize = [
-        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         #transforms.Normalize(test_mean, test_std),
     ]
     test_normalize = [
-        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         #transforms.Normalize(test_mean, test_std),
     ]
     transform_test = transforms.Compose(
@@ -66,12 +36,19 @@ def shuffling_preprocessing(train_kwargs,test_kwargs):
         augmentations + toTensor
         + train_normalize
     )
-    testset = datasets.CIFAR10(
-        root='../data', train=False, download=True, transform=transform_test)
+    traindir = os.path.join(data_path, 'train')
+    valdir = os.path.join(data_path, 'val')
+    # trainset = datasets.ImageNet(
+    #     root=data_path,split='train',   transform=transform_train)
+    # testset = datasets.ImageNet(
+    #     root=data_path,split='val',   transform=transform_test)
+    trainset = datasets.ImageFolder(
+        root=traindir,   transform=transform_train)
+    testset = datasets.ImageFolder(
+        root=valdir,   transform=transform_test)
     # testset = MyDataset(testset,transform=transform_test)
 
-    trainset = datasets.CIFAR10(
-        root='../data', train=True, download=True, transform=transform_train)
+
     print("Finished normalizing dataset.")
 
 
@@ -87,7 +64,7 @@ def shuffling_preprocessing(train_kwargs,test_kwargs):
 
     trainset , C_dataset = torch.utils.data.random_split(trainset, [training_len,len(trainset)-training_len])
     train_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)
-    C_dataset_loader = torch.utils.data.DataLoader(C_dataset, **train_kwargs)
+    C_dataset_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)
     print('\nTraining Set:')
     for images, labels in train_loader:
         print('Image batch dimensions:', images.size())
@@ -109,7 +86,7 @@ def shuffling_preprocessing(train_kwargs,test_kwargs):
 
 def subsampling_preprocessing(train_kwargs,test_kwargs):
     """-------------------- NORMALIZING-------------------"""
-
+    data_path = "F:\Download\imagenet"
     toTensor = [
         transforms.ToTensor(),
     ]
@@ -119,11 +96,11 @@ def subsampling_preprocessing(train_kwargs,test_kwargs):
     ]
 
     train_normalize = [
-        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         #transforms.Normalize(test_mean, test_std),
     ]
     test_normalize = [
-        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         #transforms.Normalize(test_mean, test_std),
     ]
     transform_test = transforms.Compose(
@@ -134,21 +111,24 @@ def subsampling_preprocessing(train_kwargs,test_kwargs):
         augmentations + toTensor
         + train_normalize
     )
-    testset = datasets.CIFAR10(
-        root='../data', train=False, download=True, transform=transform_test)
+
+    traindir = os.path.join(data_path, 'train')
+    valdir = os.path.join(data_path, 'val')
+    trainset = datasets.ImageFolder(
+        root=traindir,   transform=transform_train)
+    testset = datasets.ImageFolder(
+        root=valdir,   transform=transform_test)
     # testset = MyDataset(testset,transform=transform_test)
 
-    trainset = datasets.CIFAR10(
-        root='../data', train=True, download=True, transform=transform_train)
+
     print("Finished normalizing dataset.")
     training_len = 9*len(trainset)//10
-
     trainset , C_dataset = torch.utils.data.random_split(trainset, [training_len,len(trainset)-training_len])
 
     del train_kwargs['shuffle']
     sampler = torch.utils.data.RandomSampler(trainset, replacement=True, num_samples=len(trainset))
     train_loader = torch.utils.data.DataLoader(trainset, sampler=sampler, **train_kwargs)
-    C_dataset_loader = torch.utils.data.DataLoader(C_dataset, **train_kwargs)
+    C_dataset_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)
     print('\nTraining Set:')
     for images, labels in train_loader:
         print('Image batch dimensions:', images.size())
@@ -171,7 +151,7 @@ def subsampling_preprocessing(train_kwargs,test_kwargs):
 
 def data_preprocessing(train_kwargs,test_kwargs):
     """-------------------- NORMALIZING-------------------"""
-
+    data_path = "F:\Download\imagenet"
     toTensor = [
         transforms.ToTensor(),
     ]
@@ -181,11 +161,11 @@ def data_preprocessing(train_kwargs,test_kwargs):
     ]
 
     train_normalize = [
-        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         #transforms.Normalize(test_mean, test_std),
     ]
     test_normalize = [
-        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         #transforms.Normalize(test_mean, test_std),
     ]
     transform_test = transforms.Compose(
@@ -196,15 +176,17 @@ def data_preprocessing(train_kwargs,test_kwargs):
         augmentations + toTensor
         + train_normalize
     )
-    testset = datasets.CIFAR10(
-        root='../data', train=False, download=True, transform=transform_test)
+
     # testset = MyDataset(testset,transform=transform_test)
 
-    trainset = datasets.CIFAR10(
-        root='../data', train=True, download=True, transform=transform_train)
+    traindir = os.path.join(data_path, 'train')
+    valdir = os.path.join(data_path, 'val')
+    trainset = datasets.ImageFolder(
+        root=traindir,   transform=transform_train)
+    testset = datasets.ImageFolder(
+        root=valdir,   transform=transform_test)
     print("Finished normalizing dataset.")
     training_len = 9*len(trainset)//10
-
     trainset , C_dataset = torch.utils.data.random_split(trainset, [training_len,len(trainset)-training_len])
     train_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)
     C_dataset_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)

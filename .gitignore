@@ -1,7 +1,8 @@
 data/*
 cifar10/*
-
 results/*
+
+PytorchProjectFramework/archive/*
 
 PytorchProjectFramework/accountant_graph/*
 PytorchProjectFramework/accountants/graphs/data/*
@@ -11,11 +12,18 @@ PytorchProjectFramework/accountants/graphs/graph/*
 
 PytorchProjectFramework/graphs/graph/*
 PytorchProjectFramework/graphs/data/*
+PytorchProjectFramework/graphs/data_sum/*
+PytorchProjectFramework/graphs/data_sum_flaw/*
+PytorchProjectFramework/graphs/data_sum_old/*
+PytorchProjectFramework/graphs/data_sum_FINAL/*
+PytorchProjectFramework/graphs/data_sum_concluded/*
 PytorchProjectFramework/graphs/data_avg/*
 PytorchProjectFramework/graphs/data_client/*
 PytorchProjectFramework/graphs/data_mixing/*
 PytorchProjectFramework/graphs/old_data/*
 PytorchProjectFramework/graphs/old_data_2/*
 PytorchProjectFramework/graphs/old_data_3/*
+PytorchProjectFramework/graphs/data_marten_algo/*
 
 PytorchProjectFramework/*.tar
+PytorchProjectFramework/cifar10
