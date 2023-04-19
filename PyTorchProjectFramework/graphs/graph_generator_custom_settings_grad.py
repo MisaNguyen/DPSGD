@@ -1,10 +1,14 @@
 import matplotlib.pyplot  as plt
 import matplotlib
-import numpy
+import numpy as np
 
 import os
 import json
+font = {'family' : 'normal',
+        'weight' : 'bold',
+        'size'   : 22}
 
+matplotlib.rc('font', **font)
 def get_data_from_settings(setting_path,setting_name,model_name,experiment,IC,BC):
     data_path  = "./data_sum_old/" + setting_path + '/'  + model_name + '/' + experiment + '/SGD/' + setting_name +".json" #SGD
     if(BC):
@@ -60,24 +64,33 @@ def plt_draw(epoch_index, train_accuracy,test_accuracy,epoch_grad,label,sigma,s)
     per_layer_grad= list(epoch_grad.values())[1:]
     number_of_layers = len(layer_names)
 
-    plt.suptitle("Resnet18 gradient graph, epoch =" + str(epoch_num))
-    plt.subplot2grid((3,2), (0,0))
+    plt.suptitle("Resnet18 performance")
+    # plt.subplot2grid((3,2), (0,0))
+    plt.subplot2grid((2,1), (0,0))
     # print(epoch_index)
     # print(train_accuracy)
     plt.title("Training accuracy")
+    plt.xticks(np.arange(0, len(epoch_index), step=5))
     if (sigma!= None):
         plt.plot(epoch_index, train_accuracy, label=label % (sigma,s))
     else:
         plt.plot(epoch_index, train_accuracy, label=label)
-    plt.subplot2grid((3,2), (0,1))
+
+    # plt.subplot2grid((3,2), (0,1))
+    plt.subplot2grid((2,1), (1,0))
     plt.title("Testing accuracy")
     if (sigma!= None):
         plt.plot(epoch_index, test_accuracy, label=label % (sigma,s))
     else:
         plt.plot(epoch_index, test_accuracy, label=label)
-
+    plt.xlabel("Epoch")
+    plt.xticks(np.arange(0, len(epoch_index), step=5))
+    plt.show()
     """-------------------"""
-    plt.subplot2grid((3,2), (1,0), colspan=2)
+    plt.suptitle("Resnet18 gradient graph, epoch =" + str(epoch_num))
+    # plt.subplot2grid((3,2), (1,0), colspan=2)
+    plt.subplot2grid((2,1), (0,0))
+
     per_layer_grad_norm = [per_layer_grad[i]["norm"] for i in range(number_of_layers-4)]
     plt.boxplot(per_layer_grad_norm)
     plt.xticks([i for i in range(1, number_of_layers+1)], layer_names)
@@ -87,15 +100,18 @@ def plt_draw(epoch_index, train_accuracy,test_accuracy,epoch_grad,label,sigma,s)
     ax.get_xaxis().set_visible(False)
     # plt.setp(ax.get_xticklabels(), rotation=30, horizontalalignment='right')
     """-------------------"""
-    plt.subplot2grid((3,2), (2,0), colspan=2)
+    # plt.subplot2grid((3,2), (2,0), colspan=2)
+    plt.subplot2grid((2,1), (1,0))
     per_layer_grad_norm_avg = [per_layer_grad[i]["norm_avg"] for i in range(number_of_layers-4)]
     # input(per_layer_grad_norm)
     plt.boxplot(per_layer_grad_norm_avg)
-    plt.xticks([i for i in range(1, number_of_layers+1)], layer_names)
+    plt.xticks(np.arange(0, number_of_layers-1, step=3))
+    # plt.xticks([i for i in range(1, number_of_layers+1)], layer_names)
     plt.title("Gradient Avg Norm")
     """-------------------"""
     ax = plt.gca()
-    plt.setp(ax.get_xticklabels(), rotation=30, horizontalalignment='right')
+    ax.set_xlabel("Layer Number")
+    # plt.setp(ax.get_xticklabels(), rotation=30, horizontalalignment='right')
 
 if __name__ == "__main__":
     # loading SGD data

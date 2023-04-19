@@ -359,7 +359,7 @@ def main():
         if param.requires_grad:
             num_grad_layers = num_grad_layers + 1
     print("num_grad_layers=",num_grad_layers)
-    new_NOISE_MULIPLIER = NOISE_MULIPLIER / np.power(num_grad_layers,1/4)
+    new_NOISE_MULIPLIER = NOISE_MULIPLIER / np.power(num_grad_layers,1/2)
     # print("new_NOISE_MULIPLIER=",new_NOISE_MULIPLIER)
     model, optimizer, train_loader = privacy_engine.make_private(
         module=model,
