@@ -5,7 +5,7 @@ import json
 import copy
 import numpy as np
 from models.resnet_model import ResNet18
-
+from models.plainnet import PlainNet18
 """MODELS"""
 # from models.densenet_model import densenet40_k12_cifar10
 # from models.alexnet_model import AlexNet
@@ -137,11 +137,11 @@ def main():
             print("sigma=",args.noise_multiplier)
             args.max_grad_norm = setting_data["max_grad_norm"]
             args.optimizer = setting_data["optimizer"]
-            args.enable_diminishing_gradient_norm = True
+            args.enable_diminishing_gradient_norm = False
             # args.enable_individual_clipping = setting_data["is_individual_clipping"]
             # args.enable_batch_clipping = False
             # args.enable_DP = setting_data["enable_DP"]
-            args.enable_DP = True #TODO: Change here before upload to github
+            args.enable_DP = False #TODO: Change here before upload to github
             # args.clip_per_layer = False #TODO: add to setting file
             # args.secure_rng = False #TODO: add to setting file
             args.shuffle_dataset = True
@@ -154,6 +154,7 @@ def main():
             args.dataset_name = "CIFAR10"#TODO: add to setting file
             # args.dataset_name = "Imagenet"#TODO: add to setting file
             args.opacus_training = False
+            args.save_gradient = False
     if(logging == True):
         print("Clipping method: ", args.clipping)
 
@@ -183,8 +184,10 @@ def main():
     # model = SimpleDLA().to(device)
     # model = convnet(num_classes=10).to(device)
     # model_name = "convnet"
-    model = ResNet18(num_classes=10).to(device)
-    model_name = "resnet18"
+    # model = ResNet18(num_classes=10).to(device)
+    # model_name = "resnet18"
+    model = PlainNet18(num_classes=10).to(device)
+    model_name = "plainnet18"
     # model = LeNet().to(device)
     # model_name = "LeNet"
     if(args.opacus_training):
@@ -308,7 +311,6 @@ def main():
         print("epoch %s:" % epoch)
         if args.enable_DP:
             if(args.opacus_training):
-
                 train_acc, gradient_stats = train_model.train(args, model, device, train_loader, optimizer,epoch)
                 train_accuracy.append(train_acc)
             else:

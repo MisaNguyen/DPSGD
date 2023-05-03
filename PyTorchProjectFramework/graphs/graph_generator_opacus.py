@@ -15,15 +15,15 @@ if __name__ == "__main__":
     # settings = ["setting_2","setting_4","setting_6","setting_8"]
     # sigma = 0.5
     # settings = ["setting_11","setting_21","setting_31","setting_41"]
-    settings = ["setting_12","setting_22","setting_32","setting_42"]
-    # settings = ["setting_13","setting_23","setting_33","setting_43"]
+    # settings = ["setting_12","setting_22","setting_32","setting_42"]
+    settings = ["setting_13","setting_23","setting_33","setting_43"]
     # sigma = 1.5
     s_arr = [64,128,256,512]
     lr = 0.025
     C = 1.2
     count = 0
-    model = "convnet"
-    experiment = "CIFAR10"
+    model = "LeNet"
+    experiment = "MNIST"
     graph_path = "./graph/" + experiment
     base_path = "./data_sum/opacus_"+ model +"/"
 

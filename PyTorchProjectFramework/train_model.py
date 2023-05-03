@@ -697,21 +697,22 @@ def train(args, model, device, train_loader,
         loss.backward()
         optimizer.step()
         # count=0
-        for layer_idx, (name, param) in enumerate(model.named_parameters()):
-            if param.requires_grad:
-                # count = count + 1
-                # layer_number = "layer_" + str(count)
-                layer_name = "layer_" + str(name)
-                # print(layer_name)
-                if (layer_name in gradient_stats):
-                    gradient_stats[layer_name]["norm"].append(float(param.grad.data.norm(2)))
-                    gradient_stats[layer_name]["norm_avg"].append(float(param.grad.data.norm(2)/ param.grad.shape[0]))
-                else:
-                    gradient_stats[layer_name] = {}
-                    gradient_stats[layer_name]["shape"] = param.grad.shape
-                    # print(type(param.grad.shape))
-                    gradient_stats[layer_name]["norm"] = [float(param.grad.data.norm(2))]
-                    gradient_stats[layer_name]["norm_avg"] = [float(param.grad.data.norm(2)/ param.grad.shape[0])]
+        if(args.save_gradient):
+            for layer_idx, (name, param) in enumerate(model.named_parameters()):
+                if param.requires_grad:
+                    # count = count + 1
+                    # layer_number = "layer_" + str(count)
+                    layer_name = "layer_" + str(name)
+                    # print(layer_name)
+                    if (layer_name in gradient_stats):
+                        gradient_stats[layer_name]["norm"].append(float(param.grad.data.norm(2)))
+                        gradient_stats[layer_name]["norm_avg"].append(float(param.grad.data.norm(2)/ param.grad.shape[0]))
+                    else:
+                        gradient_stats[layer_name] = {}
+                        gradient_stats[layer_name]["shape"] = param.grad.shape
+                        # print(type(param.grad.shape))
+                        gradient_stats[layer_name]["norm"] = [float(param.grad.data.norm(2))]
+                        gradient_stats[layer_name]["norm_avg"] = [float(param.grad.data.norm(2)/ param.grad.shape[0])]
             # print("layer_name:", layer_name)
             # print("norm", param.grad.data.norm(2))
             # print("avg_norm:", float(param.grad.data.norm(2)/ param.grad.shape[0]))

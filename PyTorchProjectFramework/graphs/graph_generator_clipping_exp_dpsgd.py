@@ -109,17 +109,17 @@ if __name__ == "__main__":
     ]
     # mode = None
     cmap = get_cmap(30)
-    data_folder = "data_sum"
+    data_folder = "data_sum_no_noise"
     mode = "shuffling"
     # mode = "subsampling"
     clipping_mode = "layerwise"
-    DGN = True
+    DGN = False
     print("DGN:", DGN)
     # DGN = None
     # clipping_mode = ""
-    draw_DPSGD_IC_case = False
+    draw_DPSGD_IC_case = True
     draw_SGD_case = False
-    draw_DPSGD_BC_case = True
+    draw_DPSGD_BC_case = False
     draw_mixing_case = False
     enable_mu = False
     draw_training_acc = False
@@ -127,8 +127,8 @@ if __name__ == "__main__":
               "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
     setting_index = 6 # 0,3,6
-    s_index =3
-    models_index = 5
+    s_index =5
+    models_index = 1
     model_name = models[models_index]
     settings_path, Cs, sigma, s_start = settings[setting_index]["settings_path"], \
                                         settings[setting_index]["Cs"], \
@@ -229,13 +229,22 @@ if __name__ == "__main__":
 
         if(draw_DPSGD_IC_case):
             experiment = "SGD"
-            ic_data_path = base_path + '_IC/' + model_name + '/' + experiment + '/IC/' + setting +".json"
-            with open(ic_data_path, "r") as data_file:
-                data = json.load(data_file)
-                IC_DPSGD_train_accuracy = data["train_accuracy"]
-                IC_DPSGD_test_accuracy = data["test_accuracy"]
-                DPSGD_IC_epochs = len(IC_DPSGD_train_accuracy)
-                DPSGD_IC_epoch_index = [i for i in range(1, DPSGD_IC_epochs+1)]
+            # ic_data_path = base_path + '_IC/' + model_name + '/' + experiment + '/IC/' + setting +".json"
+            if(DGN):
+                ic_data_path  = base_path + '_IC/' + model_name + '/' + experiment \
+                                + '/' + clipping_mode + '/IC/DGN/' + setting +".json"
+            else:
+                ic_data_path  = base_path + '_IC/' + model_name + '/' + experiment \
+                                + '/' + clipping_mode + '/IC/' + setting +".json"
+            print(ic_data_path)
+            if (os.path.exists(ic_data_path)):
+                print("here")
+                with open(ic_data_path, "r") as data_file:
+                    data = json.load(data_file)
+                    IC_DPSGD_train_accuracy = data["train_accuracy"]
+                    IC_DPSGD_test_accuracy = data["test_accuracy"]
+                    DPSGD_IC_epochs = len(IC_DPSGD_train_accuracy)
+                    DPSGD_IC_epoch_index = [i for i in range(1, DPSGD_IC_epochs+1)]
 
         if(draw_mixing_case):
             experiment = "SGD"

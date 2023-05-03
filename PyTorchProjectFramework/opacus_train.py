@@ -357,6 +357,7 @@ def main():
     # num_grad_layers = 62 #resnet18
     for layer_idx, (name, param) in enumerate(model.named_parameters()):
         if param.requires_grad:
+            # print(name)
             num_grad_layers = num_grad_layers + 1
     print("num_grad_layers=",num_grad_layers)
     new_NOISE_MULIPLIER = NOISE_MULIPLIER / np.power(num_grad_layers,1/2)

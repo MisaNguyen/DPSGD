@@ -42,6 +42,7 @@ def test(model, device, test_loader):
             top1_acc.append(acc1)
             # compute loss
             loss = nn.CrossEntropyLoss()(output, target)
+
             losses.append(loss.item())
     # test_loss /= len(test_loader.dataset)
     #

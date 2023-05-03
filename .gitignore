@@ -17,6 +17,7 @@ PytorchProjectFramework/graphs/data_sum_flaw/*
 PytorchProjectFramework/graphs/data_sum_old/*
 PytorchProjectFramework/graphs/data_sum_FINAL/*
 PytorchProjectFramework/graphs/data_sum_concluded/*
+PytorchProjectFramework/graphs/data_sum_no_noise/*
 PytorchProjectFramework/graphs/data_avg/*
 PytorchProjectFramework/graphs/data_client/*
 PytorchProjectFramework/graphs/data_mixing/*
