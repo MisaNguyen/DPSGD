@@ -4,7 +4,7 @@ import argparse
 import json
 import copy
 import numpy as np
-
+import os
 """MODELS"""
 # from models.densenet_model import densenet40_k12_cifar10
 # from models.alexnet_model import AlexNet
@@ -60,6 +60,39 @@ def get_optimizer(opt_name,model,lr):
         # print(args.optimizer)
         raise NotImplementedError("Optimizer not recognized. Please check spelling")
     return optimizer
+def get_number_of_layer(model, model_name):
+    number_of_layer = load_number_of_layer(model_name)
+    if (number_of_layer == None):
+        number_of_layer = 0
+        for layer_idx, (name, param) in enumerate(model.named_parameters()):
+            if param.requires_grad:
+                number_of_layer = number_of_layer + 1
+        save_number_of_layer(model_name, number_of_layer)
+    return number_of_layer
+
+def load_number_of_layer(model_name):
+    isExist = os.path.exists("num_layers.json")
+    if (isExist):
+        with open("num_layers.json","r") as json_file:
+            json_data = json.load(json_file)
+            if model_name in json_data:
+                number_of_layer = json_data[model_name]
+            else:
+                return None
+    else:
+        return None
+    return number_of_layer
+
+
+def save_number_of_layer(model_name, number_of_layer):
+    f = open("num_layers.json")
+    json_data = json.load(f)
+    f.close()
+    with open("num_layers.json","w") as json_file:
+        json_data[model_name] = number_of_layer
+        json.dump(json_data, json_file,indent=2)
+    print(json_data)
+
 def main():
     # Training settings
     parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
@@ -153,11 +186,12 @@ def main():
             args.clipping = "layerwise"#TODO: add to setting file
             # args.clipping = "all"
             args.C_decay = 0.9
-            args.dataset_name = "MNIST"
-            # args.dataset_name = "CIFAR10"#TODO: add to setting file
+            # args.dataset_name = "MNIST"
+            args.dataset_name = "CIFAR10"#TODO: add to setting file
             # args.dataset_name = "Imagenet"#TODO: add to setting file
             args.opacus_training = False
             args.save_gradient = False
+            args.constant_c_i = True
     if(logging == True):
         print("Clipping method: ", args.clipping)
 
@@ -187,15 +221,18 @@ def main():
     # model = SimpleDLA().to(device)
     # model = convnet(num_classes=10).to(device)
     # model_name = "convnet"
-    # model = ResNet18(num_classes=10).to(device)
-    # model_name = "resnet18"
+    model = ResNet18(num_classes=10).to(device)
+    model_name = "resnet18"
     # model = PlainNet18(num_classes=10).to(device)
     # model_name = "plainnet18"
     # model = LeNet().to(device)
     # model_name = "LeNet"
 
-    model = SquareNet().to(device)
-    model_name = "squarenet"
+    # model = SquareNet().to(device)
+    # model_name = "squarenet"
+    # number_of_layer = get_number_of_layer(model, model_name)
+    # print(number_of_layer)
+    # input("HERE")
     if(args.opacus_training):
         # Fix incompatiple components such as BatchNorm2D layer
         model = ModuleValidator.fix(model)
@@ -254,12 +291,16 @@ def main():
                                                                      )
 
     if (args.enable_DP and args.clipping == "layerwise" and not args.opacus_training):
-        at_epoch = 5
-        dummy_model = copy.deepcopy(model)
-        dummy_optimizer = get_optimizer(args.optimizer,dummy_model ,args.lr)
+        if (args.constant_c_i):
+            number_of_layer = get_number_of_layer(model,model_name)
+            args.each_layer_C = [args.max_grad_norm]*number_of_layer
+        else:
+            at_epoch = 5
+            dummy_model = copy.deepcopy(model)
+            dummy_optimizer = get_optimizer(args.optimizer,dummy_model ,args.lr)
 
-        args.each_layer_C = compute_layerwise_C(C_dataset_loader, dummy_model, at_epoch, device,
-                                                dummy_optimizer, args.max_grad_norm,True)
+            args.each_layer_C = compute_layerwise_C(C_dataset_loader, dummy_model, at_epoch, device,
+                                                    dummy_optimizer, args.max_grad_norm,True)
         print(args.each_layer_C)
     # DP settings:
     print(args.microbatch_size)
@@ -334,7 +375,11 @@ def main():
         if(args.enable_DP and args.enable_diminishing_gradient_norm and args.clipping == "layerwise" and not args.opacus_training):
             args.max_grad_norm = args.max_grad_norm * args.C_decay
             # Recompute each layer C
-            args.each_layer_C = compute_layerwise_C(C_dataset_loader, model, 1, device,
+            if (args.constant_c_i):
+                number_of_layer = get_number_of_layer(mode,model_name)
+                args.each_layer_C = [args.max_grad_norm]*number_of_layer
+            else:
+                args.each_layer_C = compute_layerwise_C(C_dataset_loader, model, 1, device,
                                                     optimizer, args.max_grad_norm,False)
             print("each_layer_C", args.each_layer_C)
         """

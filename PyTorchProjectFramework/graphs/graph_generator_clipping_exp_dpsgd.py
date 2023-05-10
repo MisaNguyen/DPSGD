@@ -109,10 +109,11 @@ if __name__ == "__main__":
     ]
     # mode = None
     cmap = get_cmap(30)
-    data_folder = "data_sum_no_noise"
-    mode = "shuffling"
-    # mode = "subsampling"
+    data_folder = "data_neurips"
+    # mode = "shuffling"
+    mode = "subsampling"
     clipping_mode = "layerwise"
+    # clipping_mode = "all"
     DGN = False
     print("DGN:", DGN)
     # DGN = None
@@ -127,7 +128,7 @@ if __name__ == "__main__":
               "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
     setting_index = 6 # 0,3,6
-    s_index =5
+    s_index =3
     models_index = 1
     model_name = models[models_index]
     settings_path, Cs, sigma, s_start = settings[setting_index]["settings_path"], \
