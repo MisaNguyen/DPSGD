@@ -14,12 +14,15 @@ settings = ["settings_clipping_exp_cifar10_dpsgd",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_8",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_p5",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_1p5",]
+settings = ["settings_sigma_dpsgd"]
+base_sigma = 2
+C = 0.005
+data_processing = "subsampling"
+# data_processing = "shuffling"
 
-# data_processing = "subsampling"
-data_processing = "shuffling"
-
-is_batch_clipping = True
-is_individual_clipping = False
+is_batch_clipping = False
+is_individual_clipping = True
+count = 0
 for setting_file in settings:
 # setting_file = settings[0]
     print(setting_file)
@@ -33,11 +36,14 @@ for setting_file in settings:
             data[k]['microbatch_size'] = data[k]['batch_size']
         elif(is_individual_clipping):
             data[k]['microbatch_size'] = 1
-        data[k]['log_interval'] = 100
+        data[k]['max_grad_norm'] = C
+        data[k]['noise_multiplier'] = count * base_sigma
         # data[k]['learning_rate'] = 0.025
         data[k]['data_sampling'] = data_processing
         print("Key: " + k)
         print("Value: " + str(v))
+        count = count + 1
+
     """Output files"""
     if(is_batch_clipping):
         output_file = setting_file + "_" + data_processing +"_BC.json"

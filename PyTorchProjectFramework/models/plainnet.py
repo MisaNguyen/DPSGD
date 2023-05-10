@@ -33,7 +33,8 @@ class plainnet(nn.Module):
         super(plainnet, self).__init__()
         self.in_planes = 64
         self.flatten = nn.Flatten()
-        self.fc1 = nn.Linear(3*32*32, 64, bias=False)
+        self.fc1 = nn.Linear(32*32, 64, bias=False)
+        # self.fc1 = nn.Linear(3*32*32, 64, bias=False)
         # self.conv1 = nn.Conv2d(3, 64, kernel_size=3,
         #                        stride=1, padding=1, bias=False)
         # self.bn1 = nn.BatchNorm2d(64)

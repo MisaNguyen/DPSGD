@@ -4,8 +4,7 @@ import argparse
 import json
 import copy
 import numpy as np
-from models.resnet_model import ResNet18
-from models.plainnet import PlainNet18
+
 """MODELS"""
 # from models.densenet_model import densenet40_k12_cifar10
 # from models.alexnet_model import AlexNet
@@ -13,6 +12,9 @@ from models.plainnet import PlainNet18
 # from models.simple_dla import SimpleDLA
 from models.convnet_model import convnet
 from models.Lenet_model import LeNet
+from models.resnet_model import ResNet18
+from models.plainnet import PlainNet18
+from models.square_model import SquareNet
 # from models.vgg16 import VGGNet
 """DATASETS"""
 
@@ -102,14 +104,14 @@ def main():
     """
     Define sampling method here
     """
-    enable_individual_clipping = False
-    enable_batch_clipping = True
-    # mode = "subsampling"
-    mode = "shuffling"
+    enable_individual_clipping = True
+    enable_batch_clipping = False
+    mode = "subsampling"
+    # mode = "shuffling"
     # mode = None
-    settings_file = "settings_clipping_exp_cifar10_dpsgd_sigma_8"
+    settings_file = "settings_sigma_dpsgd"
     logging = True
-    print("Running setting: %s.json" % settings_file)
+
     if (mode != None):
         settings_file = settings_file + "_" + mode
     # if(args.enable_DP):
@@ -117,6 +119,7 @@ def main():
         settings_file = settings_file + "_IC"
     elif(enable_batch_clipping):
         settings_file = settings_file + "_BC"
+    print("Running setting: %s.json" % settings_file)
     if(args.load_setting != ""):
         with open(settings_file +".json", "r") as json_file:
             json_data = json.load(json_file)
@@ -141,7 +144,7 @@ def main():
             # args.enable_individual_clipping = setting_data["is_individual_clipping"]
             # args.enable_batch_clipping = False
             # args.enable_DP = setting_data["enable_DP"]
-            args.enable_DP = False #TODO: Change here before upload to github
+            args.enable_DP = True #TODO: Change here before upload to github
             # args.clip_per_layer = False #TODO: add to setting file
             # args.secure_rng = False #TODO: add to setting file
             args.shuffle_dataset = True
@@ -150,8 +153,8 @@ def main():
             args.clipping = "layerwise"#TODO: add to setting file
             # args.clipping = "all"
             args.C_decay = 0.9
-            # args.dataset_name = "MNIST"
-            args.dataset_name = "CIFAR10"#TODO: add to setting file
+            args.dataset_name = "MNIST"
+            # args.dataset_name = "CIFAR10"#TODO: add to setting file
             # args.dataset_name = "Imagenet"#TODO: add to setting file
             args.opacus_training = False
             args.save_gradient = False
@@ -186,17 +189,18 @@ def main():
     # model_name = "convnet"
     # model = ResNet18(num_classes=10).to(device)
     # model_name = "resnet18"
-    model = PlainNet18(num_classes=10).to(device)
-    model_name = "plainnet18"
+    # model = PlainNet18(num_classes=10).to(device)
+    # model_name = "plainnet18"
     # model = LeNet().to(device)
     # model_name = "LeNet"
+
+    model = SquareNet().to(device)
+    model_name = "squarenet"
     if(args.opacus_training):
         # Fix incompatiple components such as BatchNorm2D layer
         model = ModuleValidator.fix(model)
         ModuleValidator.validate(model, strict=False)
 
-    # model = SquareNet().to(device)
-    # model_name = "squarenet"
 
     # model = nor_LeNet().to(device)
     # model_name = "nor_LeNet"
@@ -237,9 +241,9 @@ def main():
     train_accuracy = []
     test_accuracy = []
     if(args.enable_DP == True):
-        out_file_path = "./graphs/data_sum/" + settings_file +  "/" + model_name + "/" + args.optimizer + "/" + str(args.clipping)
+        out_file_path = "./graphs/data_neurips/" + settings_file +  "/" + model_name + "/" + args.optimizer + "/" + str(args.clipping)
     else:
-        out_file_path = "./graphs/data_sum/" + settings_file +  "/" + model_name + "/" + args.optimizer
+        out_file_path = "./graphs/data_neurips/" + settings_file +  "/" + model_name + "/" + args.optimizer
     # Get training and testing data loaders
     # train_batches, test_loader, dataset_size = dataset_preprocessing(args.dataset_name, train_kwargs,
     #                                                                  test_kwargs,
