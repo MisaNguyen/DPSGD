@@ -279,6 +279,8 @@ def main():
     test_accuracy = []
     if(args.enable_DP == True):
         out_file_path = "./graphs/data_neurips/" + settings_file +  "/" + model_name + "/" + args.optimizer + "/" + str(args.clipping)
+        if (args.clipping == "layerwise" and args.constant_c_i == True):
+            out_file_path = out_file_path + "/constant_c_i"
     else:
         out_file_path = "./graphs/data_neurips/" + settings_file +  "/" + model_name + "/" + args.optimizer
     # Get training and testing data loaders

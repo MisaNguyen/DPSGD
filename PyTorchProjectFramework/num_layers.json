@@ -1,4 +1,5 @@
 {
   "squarenet": 12,
-  "convnet": 10
+  "convnet": 10,
+  "resnet18": 62
 }
