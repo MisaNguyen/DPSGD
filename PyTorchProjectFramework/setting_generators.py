@@ -14,9 +14,9 @@ settings = ["settings_clipping_exp_cifar10_dpsgd",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_8",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_p5",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_1p5",]
-settings = ["settings_sigma_dpsgd"]
-base_sigma = 2
-C = 0.005
+settings = ["settings_sigma_dpsgd_large_C"]
+base_sigma = 0.05
+C = 1.2
 data_processing = "subsampling"
 # data_processing = "shuffling"
 
@@ -31,7 +31,7 @@ for setting_file in settings:
     f.close()
     """Update elements"""
     for (k, v) in data.items():
-        # data[k]['batch_size'] = data[k]['batch_size'] *4
+        data[k]['batch_size'] = 64
         if(is_batch_clipping):
             data[k]['microbatch_size'] = data[k]['batch_size']
         elif(is_individual_clipping):

@@ -142,7 +142,7 @@ def main():
     mode = "subsampling"
     # mode = "shuffling"
     # mode = None
-    settings_file = "settings_sigma_dpsgd"
+    settings_file = "settings_sigma_dpsgd_large_C"
     logging = True
 
     if (mode != None):
@@ -183,8 +183,8 @@ def main():
             args.shuffle_dataset = True
             # args.is_partition_train = False
             args.mode = setting_data["data_sampling"]
-            args.clipping = "layerwise"#TODO: add to setting file
-            # args.clipping = "all"
+            # args.clipping = "layerwise"#TODO: add to setting file
+            args.clipping = "all"
             args.C_decay = 0.9
             # args.dataset_name = "MNIST"
             args.dataset_name = "CIFAR10"#TODO: add to setting file

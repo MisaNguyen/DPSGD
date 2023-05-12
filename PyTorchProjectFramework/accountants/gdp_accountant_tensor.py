@@ -28,7 +28,7 @@ def compute_mu_uniform(epoch, noise_multi, n, batch_size):
     """Compute mu from uniform subsampling."""
 
     t = epoch * n / batch_size
-    c = batch_size * np.sqrt(t) / n
+    c = batch_size * np.sqrt(t) / n # c = sqrt((E*batch_size)/n)
     return np.sqrt(2) * c * np.sqrt(
         np.exp(noise_multi**(-2)) * stats.norm.cdf(1.5 / noise_multi) +
         3 * stats.norm.cdf(-0.5 / noise_multi) - 2)
