@@ -137,8 +137,8 @@ def main():
     """
     Define sampling method here
     """
-    enable_individual_clipping = True
-    enable_batch_clipping = False
+    enable_individual_clipping = False
+    enable_batch_clipping = True
     mode = "subsampling"
     # mode = "shuffling"
     # mode = None
@@ -192,6 +192,7 @@ def main():
             args.opacus_training = False
             args.save_gradient = False
             args.constant_c_i = True
+            args.classicalSGD = True
     if(logging == True):
         print("Clipping method: ", args.clipping)
 
@@ -219,10 +220,10 @@ def main():
     # model = AlexNet(num_classes=10).to(device)
     # model_name = "AlexNet"
     # model = SimpleDLA().to(device)
-    # model = convnet(num_classes=10).to(device)
-    # model_name = "convnet"
-    model = ResNet18(num_classes=10).to(device)
-    model_name = "resnet18"
+    model = convnet(num_classes=10).to(device)
+    model_name = "convnet"
+    # model = ResNet18(num_classes=10).to(device)
+    # model_name = "resnet18"
     # model = PlainNet18(num_classes=10).to(device)
     # model_name = "plainnet18"
     # model = LeNet().to(device)
@@ -338,6 +339,8 @@ def main():
             elif(args.microbatch_size == args.batch_size):
                 print("Batch clipping")
                 out_file_path = out_file_path + "/BC"
+                if(args.classicalSGD):
+                    out_file_path = out_file_path + "/classical"
             else:
                 print("Normal Mode")
                 out_file_path = out_file_path + "/NM"
@@ -358,9 +361,14 @@ def main():
         print("epoch %s:" % epoch)
         if args.enable_DP:
             if(args.opacus_training):
+                print("Opacus training")
                 train_acc, gradient_stats = train_model.train(args, model, device, train_loader, optimizer,epoch)
                 train_accuracy.append(train_acc)
+            elif(args.classicalSGD and enable_batch_clipping):
+                print("Classical training")
+                train_accuracy.append(train_model.DP_train_classical(args, model, device, train_loader, optimizer))
             else:
+                print("Minibatch training")
                 train_accuracy.append(train_model.DP_train(args, model, device, train_loader, optimizer))
         else:
             print("SGD training")

@@ -20,8 +20,8 @@ C = 1.2
 data_processing = "subsampling"
 # data_processing = "shuffling"
 
-is_batch_clipping = False
-is_individual_clipping = True
+is_batch_clipping = True
+is_individual_clipping = False
 count = 0
 for setting_file in settings:
 # setting_file = settings[0]
