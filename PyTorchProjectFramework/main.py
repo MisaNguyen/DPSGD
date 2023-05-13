@@ -142,7 +142,7 @@ def main():
     mode = "subsampling"
     # mode = "shuffling"
     # mode = None
-    settings_file = "settings_sigma_dpsgd_large_C"
+    settings_file = "settings_sigma_dpsgd_C_20"
     logging = True
 
     if (mode != None):
@@ -351,8 +351,9 @@ def main():
         out_file_path = out_file_path + "/SGD"
 
     # epochs = math.ceil(args.iterations* args.batch_size / dataset_size)
-    epochs = 50 #TODO: remove to calculated based on iterations
+    epochs = 20 #TODO: remove to calculated based on iterations
     print("Total epochs: %f" % epochs)
+    print("Saving data to: %s" % out_file_path)
     print("Saving data to: %s" % out_file_path)
     save_grad = False
     grad_array = []

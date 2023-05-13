@@ -225,6 +225,7 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
             loss.backward()
             # Gradient Descent step
             optimizer_clone.step()
+            #####
         # Computing aH
         for param1, param2 in zip(model.parameters(), model_clone.parameters()):
             param1.grad = torch.sub(param2.data,param1.data).div(args.lr) #aH = (W_m - W_0)/eta
@@ -312,13 +313,12 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
         acc1 = accuracy(preds, labels)
         top1_acc.append(acc1)
         if batch_idx % (args.log_interval*len(train_loader)) == 0:
-
-            train_loss += loss.item()
-            prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
-
-            total += batch_target.size(0)
-
-            train_correct += np.sum(prediction[1].cpu().numpy() == batch_target.cpu().numpy())
+            # train_loss += loss.item()
+            # prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
+            #
+            # total += batch_target.size(0)
+            #
+            # train_correct += np.sum(prediction[1].cpu().numpy() == batch_target.cpu().numpy())
             print(
                 f"Loss: {np.mean(losses):.6f} "
                 f"Acc@1: {np.mean(top1_acc):.6f} "
@@ -482,30 +482,24 @@ def DP_train(args, model, device, train_loader,optimizer):
         """
         # batch = train_batches[indice]
         # input(len(batch))
-        data_loader = torch.utils.data.DataLoader(batch, batch_size=args.microbatch_size) # Load each data
-        for data, target in data_loader:
-            data, target = data.to(device), target.to(device)
-            output = model(data)
-            preds = np.argmax(output.detach().cpu().numpy(), axis=1)
-            labels = target.detach().cpu().numpy()
-            acc1 = accuracy(preds, labels)
-            top1_acc.append(acc1)
-            # scheduler.step()
-            # input("HERE")
-            if batch_idx % (args.log_interval*len(train_loader)) == 0:
+        batch_data, batch_target = batch_data.to(device), batch_target.to(device)
+        output = model(batch_data)
+        preds = np.argmax(output.detach().cpu().numpy(), axis=1)
+        labels = batch_target.detach().cpu().numpy()
+        acc1 = accuracy(preds, labels)
+        top1_acc.append(acc1)
+        if batch_idx % (args.log_interval*len(train_loader)) == 0:
 
-                train_loss += loss.item()
-                prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
-
-                total += target.size(0)
-
-                train_correct += np.sum(prediction[1].cpu().numpy() == target.cpu().numpy())
-                print(
-                    f"Loss: {np.mean(losses):.6f} "
-                    f"Acc@1: {np.mean(top1_acc):.6f} "
-                )
-            if args.dry_run:
-                break
+            # train_loss += loss.item()
+            # prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
+            #
+            # total += batch_target.size(0)
+            #
+            # train_correct += np.sum(prediction[1].cpu().numpy() == batch_target.cpu().numpy())
+            print(
+                f"Loss: {np.mean(losses):.6f} "
+                f"Acc@1: {np.mean(top1_acc):.6f} "
+            )
     return np.mean(top1_acc)
 
 
