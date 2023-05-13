@@ -15,8 +15,8 @@ settings = ["settings_clipping_exp_cifar10_dpsgd",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_p5",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_1p5",]
 settings = ["settings_sigma_dpsgd_C_20"]
-base_sigma = 0.005
-C = 20
+base_sigma = 0
+C = 1000
 data_processing = "subsampling"
 # data_processing = "shuffling"
 
