@@ -21,7 +21,7 @@ from models.square_model import SquareNet
 from datasets.dataset_preprocessing import dataset_preprocessing
 """UTILS"""
 from utils.utils import generate_json_data_for_graph, json_to_file
-from utils.utils import compute_layerwise_C
+from utils.utils import compute_layerwise_C, compute_layerwise_C_average_norm
 
 """TRAIN AND VALIDATE"""
 import validate_model
@@ -173,7 +173,7 @@ def main():
             print("sigma=",args.noise_multiplier)
             args.max_grad_norm = setting_data["max_grad_norm"]
             args.optimizer = setting_data["optimizer"]
-            args.enable_diminishing_gradient_norm = True
+            args.enable_diminishing_gradient_norm = False
             # args.enable_individual_clipping = setting_data["is_individual_clipping"]
             # args.enable_batch_clipping = False
             # args.enable_DP = setting_data["enable_DP"]
@@ -193,6 +193,7 @@ def main():
             args.save_gradient = False
             args.constant_c_i = False
             args.classicalSGD = False
+            args.ci_as_average_norm = True
     if(logging == True):
         print("Clipping method: ", args.clipping)
 
@@ -301,8 +302,11 @@ def main():
             at_epoch = 5
             dummy_model = copy.deepcopy(model)
             dummy_optimizer = get_optimizer(args.optimizer,dummy_model ,args.lr)
-
-            args.each_layer_C = compute_layerwise_C(C_dataset_loader, dummy_model, at_epoch, device,
+            if(args.ci_as_average_norm):
+                args.each_layer_C = compute_layerwise_C_average_norm(C_dataset_loader, dummy_model, at_epoch, device,
+                                                                     dummy_optimizer, args.max_grad_norm,True)
+            else:
+                args.each_layer_C = compute_layerwise_C(C_dataset_loader, dummy_model, at_epoch, device,
                                                     dummy_optimizer, args.max_grad_norm,True)
         print(args.each_layer_C)
     # DP settings:
@@ -336,11 +340,14 @@ def main():
             if (args.microbatch_size == 1):
                 print("Individual clipping")
                 out_file_path = out_file_path + "/IC"
+                if(args.ci_as_average_norm):
+                    out_file_path = out_file_path + "/AN"
             elif(args.microbatch_size == args.batch_size):
                 print("Batch clipping")
                 out_file_path = out_file_path + "/BC"
                 if(args.classicalSGD):
                     out_file_path = out_file_path + "/classical"
+
             else:
                 print("Normal Mode")
                 out_file_path = out_file_path + "/NM"
@@ -383,15 +390,18 @@ def main():
         """
         DECREASE C VALUE
         """
-        if(args.enable_DP and args.enable_diminishing_gradient_norm and args.clipping == "layerwise" and not args.opacus_training):
-            args.max_grad_norm = args.max_grad_norm * args.C_decay
-            # Recompute each layer C
-            if (args.constant_c_i):
-                number_of_layer = get_number_of_layer(mode,model_name)
-                args.each_layer_C = [args.max_grad_norm]*number_of_layer
-            else:
-                args.each_layer_C = compute_layerwise_C(C_dataset_loader, model, 1, device,
-                                                    optimizer, args.max_grad_norm,False)
+        if not args.ci_as_average_norm:
+            # args.each_layer_C = compute_layerwise_C_average_norm(C_dataset_loader, dummy_model, at_epoch, device,
+            #                                                      dummy_optimizer, args.max_grad_norm,True))
+            if(args.enable_DP and args.enable_diminishing_gradient_norm and args.clipping == "layerwise" and not args.opacus_training):
+                args.max_grad_norm = args.max_grad_norm * args.C_decay
+                # Recompute each layer C
+                if (args.constant_c_i):
+                    number_of_layer = get_number_of_layer(mode,model_name)
+                    args.each_layer_C = [args.max_grad_norm]*number_of_layer
+                else:
+                    args.each_layer_C = compute_layerwise_C(C_dataset_loader, model, 1, device,
+                                                        optimizer, args.max_grad_norm,False)
             print("each_layer_C", args.each_layer_C)
         """
         Update learning rate if test_accuracy does not increase

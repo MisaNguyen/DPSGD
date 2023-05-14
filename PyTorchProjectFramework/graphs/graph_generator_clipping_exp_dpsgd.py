@@ -114,7 +114,7 @@ if __name__ == "__main__":
     mode = "subsampling"
     clipping_mode = "layerwise"
     # clipping_mode = "all"
-    DGN = False
+    DGN = True
     print("DGN:", DGN)
     # DGN = None
     # clipping_mode = ""
@@ -127,7 +127,7 @@ if __name__ == "__main__":
     models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet",
               "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
-    setting_index = 0 # 0,3,6
+    setting_index = 2 # 0,3,6
     s_index =5
     models_index = 1
     model_name = models[models_index]
@@ -147,8 +147,8 @@ if __name__ == "__main__":
     # settings = ["setting_" + str(i) for i in range(21,26)]
     # settings = ["setting_" + str(i) for i in range(26,31)]
 
-    s_index_min = 1 # min = 1
-    s_index_max = 2 # max = 6
+    s_index_min = 5# min = 1
+    s_index_max = 6# max = 6
     # settings = ["setting_" + str(i) for i in range(26,29)]
     # settings.append("setting_30")
     settings = ["setting_" + str(5*s_index+i) for i in range(s_index_min,s_index_max)]
@@ -223,9 +223,9 @@ if __name__ == "__main__":
                     BC_DPSGD_test_accuracy = data["test_accuracy"]
                     DPSGD_BC_epochs = len(BC_DPSGD_train_accuracy)
                     DPSGD_BC_epoch_index = [i for i in range(1, DPSGD_BC_epochs+1)]
-        else:
-            s = s*2
-            continue
+        # else:
+        #     s = s*2
+        #     continue
 
 
         if(draw_DPSGD_IC_case):
@@ -237,7 +237,7 @@ if __name__ == "__main__":
             else:
                 ic_data_path  = base_path + '_IC/' + model_name + '/' + experiment \
                                 + '/' + clipping_mode + '/IC/' + setting +".json"
-            print(ic_data_path)
+            # print(ic_data_path)
             if (os.path.exists(ic_data_path)):
                 print("here")
                 with open(ic_data_path, "r") as data_file:
@@ -246,6 +246,8 @@ if __name__ == "__main__":
                     IC_DPSGD_test_accuracy = data["test_accuracy"]
                     DPSGD_IC_epochs = len(IC_DPSGD_train_accuracy)
                     DPSGD_IC_epoch_index = [i for i in range(1, DPSGD_IC_epochs+1)]
+            else:
+                print(ic_data_path + " not exist")
 
         if(draw_mixing_case):
             experiment = "SGD"

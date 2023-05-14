@@ -2,6 +2,7 @@ import torch
 import json
 import os
 import torch.nn as nn
+import numpy as np
 # ref: https://github.com/pytorch/opacus/blob/5c83d59fc169e93667946204f7a6859827a38ace/opacus/optimizers/optimizer.py#L87
 def _generate_noise(
         std: float,
@@ -140,3 +141,39 @@ def compute_layerwise_C(C_dataset_loader, model, epochs, device, optimizer, C_st
     each_layer_C = [C_start*(item/max_norm).cpu().numpy() for item in each_layer_norm]
     return each_layer_C
 
+def compute_layerwise_C_average_norm(C_dataset_loader, model, epochs, device, optimizer, C_start, update_mode=False):
+    print("Generating layerwise C values")
+    for epoch in range(epochs):
+        # print("epoch:",epoch)
+        for sample_idx, (data,target) in enumerate(C_dataset_loader):
+            # print("sample_idx",sample_idx)
+            optimizer.zero_grad()
+            data, target = data.to(device), target.to(device)
+
+            # compute output
+            output = model(data)
+            loss = nn.CrossEntropyLoss()(output, target)
+
+            # compute gradient and do SGD step
+            loss.backward()
+            if (update_mode):
+                optimizer.step()
+    each_layer_norm = []
+    # max_norm = 0
+    for name, param in model.named_parameters():
+        if param.requires_grad:
+            # layer_name = "layer_" + str(name)
+            current_layer_norm = param.grad.data.norm(2).clone().detach()
+
+            # if not each_layer_C:
+            #     each_layer_C.append(C_start * current_layer_norm)
+            #     max_norm = current_layer_norm
+            # else:
+            # C_ratio = current_layer_norm / prev_layer_norm
+            # max_norm = max(max_norm,current_layer_norm)
+            each_layer_norm.append(np.average(current_layer_norm.cpu().numpy())) # ||a_{h,i}||
+            # prev_layer_norm = current_layer_norm
+    # input(C_start)
+    # input(max_norm)
+    each_layer_C = each_layer_norm
+    return each_layer_C

@@ -10,7 +10,7 @@ font = {'family' : 'normal',
 
 matplotlib.rc('font', **font)
 def get_data_from_settings(setting_path,setting_name,model_name,experiment,IC,BC):
-    data_path  = "./data_neurips/" + setting_path + '/'  + model_name + '/' + experiment + '/SGD/' + setting_name +".json" #SGD
+    data_path  = "./data_neurips_old/" + setting_path + '/'  + model_name + '/' + experiment + '/SGD/' + setting_name +".json" #SGD
     if(BC):
         data_path  = "./data_neurips/" + setting_path + '/'  + model_name + '/' + experiment + '/BC/' + setting_name +".json"
     if(IC):
@@ -23,7 +23,7 @@ def get_data_from_settings(setting_path,setting_name,model_name,experiment,IC,BC
     return DPSGD_train_accuracy, DPSGD_test_accuracy, DPSGD_epochs
 
 def get_grad_from_settings(setting_path,setting_name,model_name,experiment,IC,BC,epoch):
-    data_path  = "./data_neurips/" + setting_path + '/'  + model_name + '/' + experiment + '/SGD/grad/' + setting_name +".json" #SGD
+    data_path  = "./data_neurips_old/" + setting_path + '/'  + model_name + '/' + experiment + '/SGD/grad/' + setting_name +".json" #SGD
     if(BC):
         data_path  = "./data_neurips/" + setting_path + '/'  + model_name + '/' + experiment + '/BC/grad/' + setting_name +".json"
     if(IC):
@@ -169,7 +169,7 @@ if __name__ == "__main__":
         model_name,experiment,
         False,False)
     plt.title("convnet gradient norm graph")
-    plt.xticks(np.arange(0, epochs+1, step=1))
+    plt.xticks(np.arange(0, epochs+5, step=5))
     plt.ylabel("Gradient norm")
     plt.xlabel("Epoch")
     epoch_index = [i for i in range(1, epochs)]
