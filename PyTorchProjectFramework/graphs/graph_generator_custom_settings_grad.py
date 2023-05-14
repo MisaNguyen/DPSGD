@@ -10,11 +10,11 @@ font = {'family' : 'normal',
 
 matplotlib.rc('font', **font)
 def get_data_from_settings(setting_path,setting_name,model_name,experiment,IC,BC):
-    data_path  = "./data_sum_old/" + setting_path + '/'  + model_name + '/' + experiment + '/SGD/' + setting_name +".json" #SGD
+    data_path  = "./data_neurips/" + setting_path + '/'  + model_name + '/' + experiment + '/SGD/' + setting_name +".json" #SGD
     if(BC):
-        data_path  = "./data_sum_old/" + setting_path + '/'  + model_name + '/' + experiment + '/BC/' + setting_name +".json"
+        data_path  = "./data_neurips/" + setting_path + '/'  + model_name + '/' + experiment + '/BC/' + setting_name +".json"
     if(IC):
-        data_path  = "./data_sum_old/" + setting_path + '/'  + model_name + '/' + experiment + '/IC/' + setting_name +".json"
+        data_path  = "./data_neurips/" + setting_path + '/'  + model_name + '/' + experiment + '/IC/' + setting_name +".json"
     with open(data_path, "r") as data_file:
         data = json.load(data_file)
         DPSGD_train_accuracy = data["train_accuracy"]
@@ -23,11 +23,11 @@ def get_data_from_settings(setting_path,setting_name,model_name,experiment,IC,BC
     return DPSGD_train_accuracy, DPSGD_test_accuracy, DPSGD_epochs
 
 def get_grad_from_settings(setting_path,setting_name,model_name,experiment,IC,BC,epoch):
-    data_path  = "./data_sum_old/" + setting_path + '/'  + model_name + '/' + experiment + '/SGD/grad/' + setting_name +"_relu.json" #SGD
+    data_path  = "./data_neurips/" + setting_path + '/'  + model_name + '/' + experiment + '/SGD/grad/' + setting_name +".json" #SGD
     if(BC):
-        data_path  = "./data_sum_old/" + setting_path + '/'  + model_name + '/' + experiment + '/BC/grad/' + setting_name +".json"
+        data_path  = "./data_neurips/" + setting_path + '/'  + model_name + '/' + experiment + '/BC/grad/' + setting_name +".json"
     if(IC):
-        data_path  = "./data_sum_old/" + setting_path + '/'  + model_name + '/' + experiment + '/IC/grad/' + setting_name +".json"
+        data_path  = "./data_neurips/" + setting_path + '/'  + model_name + '/' + experiment + '/IC/grad/' + setting_name +".json"
     # epoch_grad = []
     with open(data_path, "r") as data_file:
         # braceCount = 0
@@ -45,7 +45,7 @@ def get_grad_from_settings(setting_path,setting_name,model_name,experiment,IC,BC
         # DPSGD_train_accuracy = data["train_accuracy"]
         # DPSGD_test_accuracy = data["test_accuracy"]
         # DPSGD_epochs = len(DPSGD_train_accuracy)
-    return data[epoch]
+    return data[epoch-1]
 def setup_plot(x_axis_label , y_axis_label,lr , C ):
     plt.subplot(1, 2, 1)
     plt.title('Train accuracy, lr = %f, C = %f' % (lr,C))
@@ -53,6 +53,26 @@ def setup_plot(x_axis_label , y_axis_label,lr , C ):
     plt.title('Test accuracy, lr = %f, C = %f' % (lr,C))
     plt.xlabel(x_axis_label)
     plt.ylabel(y_axis_label)
+
+def get_perlayer_at_epoch(epoch_grad):
+    epoch_num = epoch_grad["epoch"]
+    layer_names = list(epoch_grad.keys())[1:]
+    per_layer_grad= list(epoch_grad.values())[1:]
+    number_of_layers = len(layer_names)
+
+    # plt.title("Resnet18 gradient graph, epoch =" + str(epoch_num))
+    # plt.subplot2grid((3,2), (1,0), colspan=2)
+    # plt.subplot2grid((2,1), (0,0))
+    per_layer_grad_norm = [i for i in range(number_of_layers)]
+    per_layer_grad_norm = [per_layer_grad[i]["norm"] for i in range(number_of_layers)]
+    # print(len(per_layer_grad_norm))
+    # input(per_layer_grad_norm)
+    # print(layer_names)
+    # plt.plot(layer_names,per_layer_grad_norm,'-r')
+    # plt.xticks([i for i in range(1, number_of_layers+1)], layer_names)
+    # plt.title("Gradient Norm")
+    return per_layer_grad_norm
+    # return np.average(per_layer_grad_norm)
 def plt_draw(epoch_index, train_accuracy,test_accuracy,epoch_grad,label,sigma,s):
     # ax1 = plt.subplot2grid((3, 3), (0, 0), colspan=3)
     # ax2 = plt.subplot2grid((3, 3), (1, 0), colspan=2)
@@ -91,7 +111,7 @@ def plt_draw(epoch_index, train_accuracy,test_accuracy,epoch_grad,label,sigma,s)
     # plt.subplot2grid((3,2), (1,0), colspan=2)
     plt.subplot2grid((2,1), (0,0))
 
-    per_layer_grad_norm = [per_layer_grad[i]["norm"] for i in range(number_of_layers-4)]
+    per_layer_grad_norm = [per_layer_grad[i]["norm"] for i in range(number_of_layers-1)]
     plt.boxplot(per_layer_grad_norm)
     plt.xticks([i for i in range(1, number_of_layers+1)], layer_names)
     plt.title("Gradient Norm")
@@ -102,7 +122,7 @@ def plt_draw(epoch_index, train_accuracy,test_accuracy,epoch_grad,label,sigma,s)
     """-------------------"""
     # plt.subplot2grid((3,2), (2,0), colspan=2)
     plt.subplot2grid((2,1), (1,0))
-    per_layer_grad_norm_avg = [per_layer_grad[i]["norm_avg"] for i in range(number_of_layers-4)]
+    per_layer_grad_norm_avg = [per_layer_grad[i]["norm_avg"] for i in range(number_of_layers-1)]
     # input(per_layer_grad_norm)
     plt.boxplot(per_layer_grad_norm_avg)
     plt.xticks(np.arange(0, number_of_layers-1, step=3))
@@ -136,9 +156,9 @@ if __name__ == "__main__":
     draw_IC_case = False
     draw_BC_case = False
     label = "BC sigma = %f, s = %f" if draw_BC_case else "IC sigma = %f, s = %f"
-    setup_plot('epoch' , 'accuracy',lr ,C)
+    # setup_plot('epoch' , 'accuracy',lr ,C)
     """SGD DATA 512"""
-    model_name = "resnet18"
+    model_name = "convnet"
     setting_path = "settings_clipping_exp_cifar10_dpsgd_shuffling"
     s = 512
     setting_name = "setting_2"
@@ -148,11 +168,31 @@ if __name__ == "__main__":
         setting_path,setting_name,
         model_name,experiment,
         False,False)
-    epoch_index = [i for i in range(1, epochs+1)]
-    epoch = 5
-    epoch_grad = get_grad_from_settings(setting_path,setting_name,model_name,experiment,False,False,epoch)
-
-    plt_draw(epoch_index, train_accuracy,test_accuracy,epoch_grad,"SGD s = 256",None,None)
+    plt.title("convnet gradient norm graph")
+    plt.xticks(np.arange(0, epochs+1, step=1))
+    plt.ylabel("Gradient norm")
+    plt.xlabel("Epoch")
+    epoch_index = [i for i in range(1, epochs)]
+    per_layer_grad_norm_array = []
+    for epoch in epoch_index:
+    # epoch = 2
+        epoch_grad  = get_grad_from_settings(setting_path,setting_name,model_name,experiment,False,False,epoch)
+        epoch_num = epoch_grad["epoch"]
+        layer_names = list(epoch_grad.keys())[1:]
+        per_layer_grad= list(epoch_grad.values())[1:]
+        number_of_layers = len(layer_names)
+        per_layer_grad_norm = [np.average(per_layer_grad[i]["norm"]) for i in range(number_of_layers)]
+        for layer_idx, layer in enumerate(layer_names):
+            if layer_idx >= len(per_layer_grad_norm_array):
+                per_layer_grad_norm_array.append([per_layer_grad_norm[layer_idx]])
+            else:
+                per_layer_grad_norm_array[layer_idx].append(per_layer_grad_norm[layer_idx])
+    for layer_idx, layer in enumerate(layer_names):
+        if layer_idx % 2 == 0 :
+            plt.plot(epoch_index,per_layer_grad_norm_array[layer_idx],'o-',label= "%s" % (layer[6:]))
+        else:
+            plt.plot(epoch_index,per_layer_grad_norm_array[layer_idx],'x--',label= "%s" % (layer[6:]))
+    # plt_draw(epoch_index, train_accuracy,test_accuracy,epoch_grad,"SGD s = 256",None,None)
 
     # """SGD DATA 512"""
     # model_name = "squarenet"

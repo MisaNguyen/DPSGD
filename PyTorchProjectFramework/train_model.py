@@ -175,6 +175,28 @@ def params(optimizer: Optimizer) -> List[nn.Parameter]:
 
 def accuracy(preds, labels):
     return (preds == labels).mean()
+
+def calculate_full_gradient_norm(model):
+    ### sqrt(a^2+b^2) = A sqrt(c^2+d^2) = B, sqrt( a^2+b^2 + c^2+d^2) = sqrt(A^2 + B^2)
+    ### sqrt(a^2+b^2) = X > C
+    ### sqrt(a^2+b^2)/X*C = C
+    ### sqrt(a^2 C^2/X^2 + b^2 C^2/X^2) = C
+    flat_grad = []
+    for param in model.parameters():
+        if isinstance(param.grad, torch.Tensor):
+            layer_grad = param.grad # sample grad
+        elif isinstance(param.grad, list):
+            layer_grad = torch.cat(param.grad, dim=0) # batch grad
+        flat_grad.append(layer_grad)
+
+    each_layer_norm = [flat_grad[i].flatten().norm(2,dim=-1) for i in range(len(flat_grad))] # Get each layer norm
+    #print("each_layer_norm", each_layer_norm)
+    flat_grad_norm = 0
+    for i in range(len(each_layer_norm)):
+        flat_grad_norm += pow(each_layer_norm[i],2)
+        # print("flat_grad_norm",flat_grad_norm)
+    flat_grad_norm = np.sqrt(flat_grad_norm)
+    return flat_grad_norm
 """
 END OPACUS code
 """
@@ -246,25 +268,7 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
             """
             Compute flat list of gradient tensors and its norm
             """
-            flat_grad = []
-            for param in model.parameters():
-                if isinstance(param.grad, torch.Tensor):
-                    layer_grad = param.grad.cpu() # sample grad
-                elif isinstance(param.grad, list):
-                    layer_grad = torch.cat(param.grad, dim=0).cpu() # batch grad
-                flat_grad.append(layer_grad)
-
-            each_layer_norm = [flat_grad[i].flatten().norm(2,dim=-1) for i in range(len(flat_grad))] # Get each layer norm
-            flat_grad_norm = 0
-            for i in range(len(each_layer_norm)):
-                flat_grad_norm += pow(each_layer_norm[i],2)
-            flat_grad_norm = np.sqrt(flat_grad_norm)
-            # print("Current norm = ", flat_grad_norm)
-            # input()
-            ### sqrt(a^2+b^2) = A sqrt(c^2+d^2) = B, sqrt( a^2+b^2 + c^2+d^2) = sqrt(A^2 + B^2)
-            ### sqrt(a^2+b^2) = X > C
-            ### sqrt(a^2+b^2)/X*C = C
-            ### sqrt(a^2 C^2/X^2 + b^2 C^2/X^2) = C
+            flat_grad_norm = calculate_full_gradient_norm(model)
             """
             Clip all gradients
             """
@@ -402,25 +406,8 @@ def DP_train(args, model, device, train_loader,optimizer):
                 """
                 Compute flat list of gradient tensors and its norm 
                 """
-                flat_grad = []
-                for param in model_clone.parameters():
-                    if isinstance(param.grad, torch.Tensor):
-                        layer_grad = param.grad.cpu() # sample grad
-                    elif isinstance(param.grad, list):
-                        layer_grad = torch.cat(param.grad, dim=0).cpu() # batch grad
-                    flat_grad.append(layer_grad)
-
-                each_layer_norm = [flat_grad[i].flatten().norm(2,dim=-1) for i in range(len(flat_grad))] # Get each layer norm
-                flat_grad_norm = 0
-                for i in range(len(each_layer_norm)):
-                    flat_grad_norm += pow(each_layer_norm[i],2)
-                flat_grad_norm = np.sqrt(flat_grad_norm)
-                # print("Current norm = ", flat_grad_norm)
-                # input()
-                ### sqrt(a^2+b^2) = A sqrt(c^2+d^2) = B, sqrt( a^2+b^2 + c^2+d^2) = sqrt(A^2 + B^2)
-                ### sqrt(a^2+b^2) = X > C
-                ### sqrt(a^2+b^2)/X*C = C
-                ### sqrt(a^2 C^2/X^2 + b^2 C^2/X^2) = C
+                flat_grad_norm = calculate_full_gradient_norm(model_clone)
+                print("Current norm = ", flat_grad_norm)
                 """
                 Clip all gradients
                 """
@@ -559,19 +546,6 @@ def train(args, model, device, train_loader,
                  ...
               "Layer_n": {}}
             """
-
-        # if np.isnan(loss.cpu().detach().numpy()):
-        #     print("NaN loss")
-        #     print(batch_idx)
-        #     print(data)
-        #     print(target)
-        #     # imshow(torchvision.utils.make_grid(sample_x.cpu()))
-        #     print(output)
-        #     print("previous loss", previous_loss)
-        #     print("previous output", previous_output)
-        #     # input()
-        #     for param in model.parameters():
-        #         print(param.grad)
 
         if batch_idx % (args.log_interval*len(train_loader)) == 0:
 

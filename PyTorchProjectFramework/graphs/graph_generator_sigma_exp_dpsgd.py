@@ -24,88 +24,12 @@ if __name__ == "__main__":
     settings = [
         {
             # Setting 0
-            "settings_path": "settings_clipping_exp_cifar10_dpsgd",
-            "Cs": [0.1,0.05,0.01,0.005,0.5,1.0],
-            "sigma": 2,
-            "s_start": 64
-        },
-        {
-            # Setting 1
-            "settings_path": "settings_clipping_exp_cifar10_dpsgd_new",
-            "Cs": [1.0,1.5,2,2.5,3,3.5],
-            "sigma": 2,
-            "s_start": 256
-        },
-        {
-            # Setting 2
-            "settings_path": "settings_clipping_exp_cifar10_dpsgd_large_C",
-            "Cs": [6.0,7.0,8.0,9.0,10.0,20.0],
-            "sigma": 2,
-            "s_start": 64
-        },
-        {
-            # Setting 3
-            "settings_path": "settings_clipping_exp_cifar10_dpsgd_sigma_4",
-            "Cs": [0.1,0.05,0.01,0.005,0.5,1.0],
-            "sigma": 4,
-            "s_start": 64
-        },
-        {
-            # Setting 4
-            "settings_path": "settings_clipping_exp_cifar10_dpsgd_new_sigma_4",
-            "Cs": [1.0,1.5,2,2.5,3,3.5],
-            "sigma": 4,
-            "s_start": 256
-        },
-        {
-            # Setting 5
-            "settings_path": "settings_clipping_exp_cifar10_dpsgd_large_C_sigma_4",
-            "Cs": [6.0,7.0,8.0,9.0,10.0,20.0],
-            "sigma": 4,
-            "s_start": 64
-        },
-        {
-            # Setting 6
-            "settings_path": "settings_clipping_exp_cifar10_dpsgd_sigma_8",
-            "Cs": [0.1,0.05,0.01,0.005,0.5,1.0],
-            "sigma": 8,
-            "s_start": 64
-        },
-        {
-            # Setting 7
-            "settings_path": "settings_clipping_exp_cifar10_dpsgd_new_sigma_8",
-            "Cs": [1.0,1.5,2,2.5,3,3.5],
-            "sigma": 8,
-            "s_start": 256
-        },
-        {
-            # Setting 8
-            "settings_path": "settings_clipping_exp_cifar10_dpsgd_large_C_sigma_8",
-            "Cs": [6.0,7.0,8.0,9.0,10.0,20.0],
-            "sigma": 8,
-            "s_start": 64
+            "settings_path": "settings_sigma_dpsgd",
+            "C": 1.2,
+            "sigmas": [0.05*i for i in range(1,31)],
+            "s": 64
         }
-        # {
-        #     # Setting 9
-        #     "settings_path": "settings_clipping_exp_cifar10_dpsgd_shuffling_IC",
-        #     "Cs": [0.1,0.05,0.01,0.005,0.5,1.0],
-        #     "sigma": 8,
-        #     "s_start": 64
-        # },
-        # {
-        #     # Setting 10
-        #     "settings_path": "settings_clipping_exp_cifar10_dpsgd_new_shuffling_IC",
-        #     "Cs": [1.0,1.5,2,2.5,3,3.5],
-        #     "sigma": 8,
-        #     "s_start": 256
-        # },
-        # {
-        #     # Setting 11
-        #     "settings_path": "settings_clipping_exp_cifar10_dpsgd_large_C_shuffling_IC",
-        #     "Cs": [6.0,7.0,8.0,9.0,10.0,20.0],
-        #     "sigma": 8,
-        #     "s_start": 64
-        # },
+
     ]
     # mode = None
     cmap = get_cmap(30)
@@ -124,6 +48,7 @@ if __name__ == "__main__":
     draw_mixing_case = False
     enable_mu = False
     draw_training_acc = False
+    constant_ci = True
     models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet",
               "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
@@ -131,10 +56,10 @@ if __name__ == "__main__":
     s_index =5
     models_index = 1
     model_name = models[models_index]
-    settings_path, Cs, sigma, s_start = settings[setting_index]["settings_path"], \
-                                        settings[setting_index]["Cs"], \
-                                        settings[setting_index]["sigma"], \
-                                        settings[setting_index]["s_start"]
+    settings_path, C, sigmas, s = settings[setting_index]["settings_path"], \
+                                        settings[setting_index]["C"], \
+                                        settings[setting_index]["sigmas"], \
+                                        settings[setting_index]["s"]
     # Partition setting
     partition = False
 
@@ -157,8 +82,8 @@ if __name__ == "__main__":
     # Cs = [0.1,0.05,0.01,0.005,0.5,1.0] #old
     # Cs = [1.0,1.5,2,2.5,3,3.5]
     # Cs = [6.0,7.0,8.0,9.0,10.0,20.0]
-    C = Cs[s_index]
-    s = s_start * pow(2, s_index_min-1)
+    # C = Cs[s_index]
+    # s = s_start * pow(2, s_index_min-1)
 
     # settings = ["setting_0_c1_s2","setting_0_noclip"]
     # settings = ["setting_1","setting_2","setting_3","setting_4"]
@@ -186,6 +111,7 @@ if __name__ == "__main__":
         os.makedirs(graph_path)
         print("The new directory is created: %s" % graph_path)
     for setting_idx, setting in enumerate(settings):
+        sigma = sigmas[setting_idx]
         # if (setting == "setting_30"):
         #     s=512
         print("Setting:", setting_idx)
@@ -223,20 +149,22 @@ if __name__ == "__main__":
                     BC_DPSGD_test_accuracy = data["test_accuracy"]
                     DPSGD_BC_epochs = len(BC_DPSGD_train_accuracy)
                     DPSGD_BC_epoch_index = [i for i in range(1, DPSGD_BC_epochs+1)]
-        else:
-            s = s*2
-            continue
+        # else:
+        #     s = s*2
+        #     continue
 
 
         if(draw_DPSGD_IC_case):
             experiment = "SGD"
             # ic_data_path = base_path + '_IC/' + model_name + '/' + experiment + '/IC/' + setting +".json"
+            ic_data_path  = base_path + '_IC/' + model_name + '/' + experiment \
+                            + '/' + clipping_mode
+            if(constant_ci):
+                ic_data_path  = ic_data_path + "/constant_c_i"
             if(DGN):
-                ic_data_path  = base_path + '_IC/' + model_name + '/' + experiment \
-                                + '/' + clipping_mode + '/IC/DGN/' + setting +".json"
+                ic_data_path  = ic_data_path + '/IC/DGN/' + setting +".json"
             else:
-                ic_data_path  = base_path + '_IC/' + model_name + '/' + experiment \
-                                + '/' + clipping_mode + '/IC/' + setting +".json"
+                ic_data_path  = ic_data_path + '/IC/' + setting +".json"
             print(ic_data_path)
             if (os.path.exists(ic_data_path)):
                 print("here")
@@ -310,9 +238,27 @@ if __name__ == "__main__":
             plt.plot(DPSGD_BC_epoch_index, BC_DPSGD_test_accuracy, "o-", label="BC,batchsize= %d" % (s), color=cmap_color)
             print("BC test acc:", BC_DPSGD_test_accuracy[-5:-1])
         if(draw_DPSGD_IC_case):
+            print("HERE")
             plt.plot(DPSGD_IC_epoch_index, IC_DPSGD_test_accuracy, "x-",label="IC, batchsize= %d, %s" % (s,clipping_mode), color=cmap_color)
             print("IC test acc:", IC_DPSGD_test_accuracy[-5:-1])
-
+            clipping_mode = "all"
+            if(DGN):
+                ic_data_path  = base_path + '_IC/' + model_name + '/' + experiment \
+                                + '/' + clipping_mode + '/IC/DGN/' + setting +".json"
+            else:
+                ic_data_path  = base_path + '_IC/' + model_name + '/' + experiment \
+                                + '/' + clipping_mode + '/IC/' + setting +".json"
+            print(ic_data_path)
+            if (os.path.exists(ic_data_path)):
+                print("here")
+                with open(ic_data_path, "r") as data_file:
+                    data = json.load(data_file)
+                    IC_DPSGD_train_accuracy = data["train_accuracy"]
+                    IC_DPSGD_test_accuracy = data["test_accuracy"]
+                    DPSGD_IC_epochs = len(IC_DPSGD_train_accuracy)
+                    DPSGD_IC_epoch_index = [i for i in range(1, DPSGD_IC_epochs+1)]
+            cmap_color = cmap(4*setting_idx+1)
+            plt.plot(DPSGD_IC_epoch_index, IC_DPSGD_test_accuracy, "o-",label="IC, batchsize= %d, %s" % (s,clipping_mode), color=cmap_color)
 
         if(draw_mixing_case):
             plt.plot(DPSGD_Mixing_epoch_index, Mixing_DPSGD_test_accuracy, "x-",label="MC, batchsize= %d" % (s), color=cmap_color)

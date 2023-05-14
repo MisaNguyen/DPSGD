@@ -355,7 +355,7 @@ def main():
     print("Total epochs: %f" % epochs)
     print("Saving data to: %s" % out_file_path)
     print("Saving data to: %s" % out_file_path)
-    save_grad = False
+
     grad_array = []
     """TRAINING LOOP"""
     for epoch in range(1, epochs + 1):
@@ -375,7 +375,7 @@ def main():
             print("SGD training")
             train_acc, gradient_stats = train_model.train(args, model, device, train_loader, optimizer,epoch)
             train_accuracy.append(train_acc)
-            if(save_grad):
+            if(args.save_gradient):
                 grad_array.append(gradient_stats)
             # print("HERE")
             # print(gradient_stats)
@@ -402,7 +402,7 @@ def main():
                 print(args.lr)
                 for param_group in optimizer.param_groups:
                     param_group["lr"] = args.lr
-    if (save_grad):
+    if (args.save_gradient):
         grad_out_file_path = out_file_path + "/grad"
         json_to_file(grad_out_file_path, args.load_setting, grad_array)
     generate_json_data_for_graph(out_file_path, args.load_setting, train_accuracy,test_accuracy)
