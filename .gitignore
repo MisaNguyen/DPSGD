@@ -14,6 +14,7 @@ PytorchProjectFramework/graphs/graph/*
 PytorchProjectFramework/graphs/data/*
 PytorchProjectFramework/graphs/data_sum/*
 PytorchProjectFramework/graphs/data_neurips/*
+PytorchProjectFramework/graphs/data_neurips_old/*
 PytorchProjectFramework/graphs/data_sum_flaw/*
 PytorchProjectFramework/graphs/data_sum_old/*
 PytorchProjectFramework/graphs/data_sum_FINAL/*

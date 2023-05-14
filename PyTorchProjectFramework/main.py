@@ -137,12 +137,12 @@ def main():
     """
     Define sampling method here
     """
-    enable_individual_clipping = False
-    enable_batch_clipping = True
+    enable_individual_clipping = True
+    enable_batch_clipping = False
     mode = "subsampling"
     # mode = "shuffling"
     # mode = None
-    settings_file = "settings_sigma_dpsgd_C_20"
+    settings_file = "settings_sigma_dpsgd_large_C"
     logging = True
 
     if (mode != None):
@@ -173,7 +173,7 @@ def main():
             print("sigma=",args.noise_multiplier)
             args.max_grad_norm = setting_data["max_grad_norm"]
             args.optimizer = setting_data["optimizer"]
-            args.enable_diminishing_gradient_norm = False
+            args.enable_diminishing_gradient_norm = True
             # args.enable_individual_clipping = setting_data["is_individual_clipping"]
             # args.enable_batch_clipping = False
             # args.enable_DP = setting_data["enable_DP"]
@@ -183,16 +183,16 @@ def main():
             args.shuffle_dataset = True
             # args.is_partition_train = False
             args.mode = setting_data["data_sampling"]
-            # args.clipping = "layerwise"#TODO: add to setting file
-            args.clipping = "all"
+            args.clipping = "layerwise"#TODO: add to setting file
+            # args.clipping = "all"
             args.C_decay = 0.9
             # args.dataset_name = "MNIST"
             args.dataset_name = "CIFAR10"#TODO: add to setting file
             # args.dataset_name = "Imagenet"#TODO: add to setting file
             args.opacus_training = False
             args.save_gradient = False
-            args.constant_c_i = True
-            args.classicalSGD = True
+            args.constant_c_i = False
+            args.classicalSGD = False
     if(logging == True):
         print("Clipping method: ", args.clipping)
 
@@ -351,7 +351,7 @@ def main():
         out_file_path = out_file_path + "/SGD"
 
     # epochs = math.ceil(args.iterations* args.batch_size / dataset_size)
-    epochs = 20 #TODO: remove to calculated based on iterations
+    epochs = 50 #TODO: remove to calculated based on iterations
     print("Total epochs: %f" % epochs)
     print("Saving data to: %s" % out_file_path)
     print("Saving data to: %s" % out_file_path)
