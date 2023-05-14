@@ -1,9 +1,9 @@
 import matplotlib.pyplot  as plt
-import numpy
+import numpy as np
 
 import os
 import json
-
+from scipy.interpolate import make_interp_spline
 def get_data_from_settings(setting_info):
     """
     setting_info = {
@@ -30,6 +30,10 @@ def get_data_from_settings(setting_info):
             data_path  = base_path + '_' + setting_info["clipping_method"]+'/' + setting_info["model_name"] + '/' + \
                             setting_info["Optimizer"] + '/' + setting_info["clipping_mode"] + '/' + setting_info["clipping_method"] \
                             + '/DGN/' + setting_info["setting_index"] +".json"
+        elif(setting_info["AN"]):
+            data_path  = base_path + '_' + setting_info["clipping_method"]+'/' + setting_info["model_name"] + '/' + \
+                         setting_info["Optimizer"] + '/' + setting_info["clipping_mode"] + '/' + setting_info["clipping_method"] \
+                         + '/AN/' + setting_info["setting_index"] +".json"
         else:
             data_path  = base_path + '_' + setting_info["clipping_method"]+'/' + setting_info["model_name"] + '/' + \
                             setting_info["Optimizer"] + '/' + setting_info["clipping_mode"] + '/' + setting_info["clipping_method"] \
@@ -97,6 +101,7 @@ if __name__ == "__main__":
         "clipping_method": "IC",
         "clipping_mode": "layerwise",
         "DGN": True,
+        "AN": False,
         "Optimizer": "SGD",
     }
     train_accuracy, test_accuracy, epochs = get_data_from_settings(setting_info)
@@ -115,6 +120,7 @@ if __name__ == "__main__":
         "clipping_method": "IC",
         "clipping_mode": "all",
         "DGN": False,
+        "AN": False,
         "Optimizer": "SGD",
     }
     train_accuracy, test_accuracy, epochs = get_data_from_settings(setting_info)
@@ -131,11 +137,34 @@ if __name__ == "__main__":
         "clipping_method": None,
         "clipping_mode": "all",
         "DGN": False,
+        "AN": False,
         "Optimizer": "SGD",
     }
     train_accuracy, test_accuracy, epochs = get_data_from_settings(setting_info)
     epoch_index = [i for i in range(1, epochs+1)]
     label = "Baseline"
+    plt.plot(epoch_index, test_accuracy,label=label)
+    plt.xlabel("epoch")
+    plt.ylabel("Testing accuracy")
+    plt.title("Layerwise versus Full gradient clipping")
+    """Line 3"""
+    setting_info = {
+        "data_folder": "data_neurips",
+        "setting_path_base": "settings_sigma_dpsgd_large_C",
+        "setting_index": "setting_30",
+        "model_name": "convnet",
+        "sampling_mode": "subsampling",
+        "clipping_method": "IC",
+        "clipping_mode": "layerwise",
+        "DGN": False,
+        "AN": True,
+        "Optimizer": "SGD",
+    }
+    train_accuracy, test_accuracy, epochs = get_data_from_settings(setting_info)
+    epoch_index = np.array([i for i in range(1, epochs+1)])
+    label = "IC, Zhang el at"
+    # X_Y_Spline  = make_interp_spline(epoch_index, np.array(test_accuracy))
+    # X_ = np.linspace(epoch_index.min(), epoch_index.max(), 500)
     plt.plot(epoch_index, test_accuracy,label=label)
     plt.xlabel("epoch")
     plt.ylabel("Testing accuracy")
@@ -287,7 +316,15 @@ if __name__ == "__main__":
     plt.legend()
     fig = plt.gcf()
     fig.set_size_inches((22, 11), forward=False)
-    # plt.savefig(graph_path + file_name +".png")
+    graph_path = "./graph/sigma_custom_compare"
+    file_name ="/LayerwiseVSFull"
+    # Check whether the specified path exists or not
+    isExist = os.path.exists(graph_path)
+    if not isExist:
+        # Create a new directory because it does not exist
+        os.makedirs(graph_path)
+        print("The new directory is created: %s" % graph_path)
+    plt.savefig(graph_path + file_name +".png")
     plt.show()
     # plt.clf()
     # plt.plot(index, sigma, label="sigma")
