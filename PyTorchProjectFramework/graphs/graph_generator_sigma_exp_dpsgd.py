@@ -60,6 +60,13 @@ if __name__ == "__main__":
             "C": 0.005,
             "sigmas": [2*pow(2,i) for i in range(0,31)],
             "s": 64
+        },
+        {
+            # Setting 3
+            "settings_path": "settings_sigma_dpsgd_small_C",
+            "C": 0.0005,
+            "sigmas": [2*pow(2,i) for i in range(0,31)],
+            "s": 64
         }
         # {
         #     # Setting 0
@@ -88,11 +95,11 @@ if __name__ == "__main__":
     enable_mu = False
     draw_training_acc = False
     constant_ci = False
-    draw_AN = True #Zhang setting
+    draw_AN = False #Zhang setting
     models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet",
               "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
-    setting_index = 3 # 0,3,6
+    setting_index = 4 # 0,3,6
     s_index =0
     models_index = 5
     model_name = models[models_index]
