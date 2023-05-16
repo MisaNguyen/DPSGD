@@ -345,6 +345,8 @@ def main():
             elif(args.microbatch_size == args.batch_size):
                 print("Batch clipping")
                 out_file_path = out_file_path + "/BC"
+                if(args.ci_as_average_norm):
+                    out_file_path = out_file_path + "/AN"
                 if(args.classicalSGD):
                     out_file_path = out_file_path + "/classical"
 

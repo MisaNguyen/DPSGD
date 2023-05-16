@@ -40,6 +40,13 @@ if __name__ == "__main__":
             "sigmas": [2*i for i in range(1,31)],
             "s": 64
         },
+        {
+            # Setting 1
+            "settings_path": "settings_sigma_dpsgd_large_sigma",
+            "C": 0.005,
+            "sigmas": [64*i for i in range(1,31)],
+            "s": 64
+        }
         # {
         #     # Setting 0
         #     "settings_path": "settings_sigma_dpsgd",
@@ -60,17 +67,18 @@ if __name__ == "__main__":
     print("DGN:", DGN)
     # DGN = None
     # clipping_mode = ""
-    draw_DPSGD_IC_case = True
+    draw_DPSGD_IC_case = False
     draw_SGD_case = False
     draw_DPSGD_BC_case = True
     draw_mixing_case = False
     enable_mu = False
     draw_training_acc = False
     constant_ci = False
+    draw_AN = True #Zhang setting
     models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet",
               "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
-    setting_index = 0 # 0,3,6
+    setting_index = 1 # 0,3,6
     s_index =0
     models_index = 5
     model_name = models[models_index]
@@ -92,7 +100,7 @@ if __name__ == "__main__":
 
     s_index_min = 1 # min = 1
     s_index_max = 6 # max = 6
-    settings = ["setting_" + str(i) for i in range(1,31)]
+    settings = ["setting_" + str(i) for i in range(1,21)]
     # settings.append("setting_30")
     # settings = ["setting_" + str(5*s_index+i) for i in range(s_index_min,s_index_max)]
     # settings = ["setting_0" ]
@@ -132,9 +140,11 @@ if __name__ == "__main__":
     sgd_testing_acc = []
     IC_testing_acc=[]
     BC_testing_acc=[]
+    AN_BC_testing_acc=[]
     sgd_sigma_arr = []
     IC_sigma_arr = []
     BC_sigma_arr = []
+    AN_BC_sigma_arr = []
     for setting_idx, setting in enumerate(settings):
 
         # if (setting == "setting_30"):
@@ -157,13 +167,28 @@ if __name__ == "__main__":
 
         if(draw_DPSGD_BC_case):
             experiment = "SGD"
+            bc_data_path = base_path + '_BC/' + model_name + '/' + experiment \
+                           + '/' + clipping_mode
             # bc_data_path  = "./data/" + settings_path + '/' + experiment + '/' + setting +".json"
+            # if(constant_ci):
+            #     ic_data_path  = bc_data_path + "/constant_c_i"
+
+
             if(DGN):
-                bc_data_path  = base_path + '_BC/' + model_name + '/' + experiment \
-                                + '/' + clipping_mode + '/BC/DGN/' + setting +".json"
+                bc_data_path  = bc_data_path + '/BC/DGN/'
             else:
-                bc_data_path  = base_path + '_BC/' + model_name + '/' + experiment \
-                                + '/' + clipping_mode + '/BC/' + setting +".json"
+                bc_data_path  = bc_data_path + '/BC/'
+            if (draw_AN):
+                AN_bc_data_path = bc_data_path + 'AN/'
+                # print("DEBUG",AN_bc_data_path)
+                AN_bc_data_path  = AN_bc_data_path + setting +".json"
+                AN_BC_DPSGD_train_accuracy,AN_BC_DPSGD_test_accuracy = get_data(AN_bc_data_path)
+
+                if(AN_BC_DPSGD_test_accuracy!= None):
+                    AN_BC_testing_acc.append(max(AN_BC_DPSGD_test_accuracy[-5:-1]))
+                    AN_BC_sigma_arr.append(sigmas[setting_idx])
+                    epochs = len(AN_BC_DPSGD_test_accuracy)
+            bc_data_path  = bc_data_path + setting +".json"
             # bc_data_path  = base_path + '_BC/' + model_name + '/' + experiment \
             #                  + '/BC/' + setting +".json"
             print("bc_data_path:",bc_data_path)
@@ -218,37 +243,49 @@ if __name__ == "__main__":
     #     plt.title('Train accuracy, lr = %f' % lr)
     #
     if(draw_SGD_case):
+        count = count +1
+        cmap_color = cmap(4*count)
         plt.plot(sgd_sigma_arr, sgd_testing_acc, label="SGD", color=cmap_color)
         # mu = [0 for E in SGD_epoch_index]
         print("SGD training acc:", SGD_train_accuracy[-1])
     if(draw_DPSGD_BC_case):
         count = count +1
         cmap_color = cmap(4*count)
-        label = "BC, %s" % ( clipping_mode)
-        if (DGN):
-            label = label + ", diminishing C"
-        plt.plot(BC_sigma_arr, BC_testing_acc, "o-", label=label, color=cmap_color)
+        # label = "BC, %s" % ( clipping_mode)
+        label = "our"
+        # if (DGN):
+        #     label = label + ", diminishing C"
+        plt.plot(BC_sigma_arr, BC_testing_acc, "o-", label=label, color='black',linewidth=3)
         plt.subplot(1,number_of_subgraphs,number_of_subgraphs)
         # mu = [np.sqrt(E)/sigma for E in DPSGD_BC_epoch_index]
         # mu_index = DPSGD_BC_epoch_index
-        print("BC training acc:", BC_DPSGD_train_accuracy[-1])
-
+        # print("BC training acc:", BC_DPSGD_train_accuracy[-1])
+    if(draw_AN):
+        count = count +1
+        cmap_color = cmap(4*count)
+        # label = "BC, %s" % ( clipping_mode)
+        label = "Zhang el. at"
+        # if (DGN):
+        #     label = label + ", diminishing C"
+        plt.plot(AN_BC_sigma_arr, AN_BC_testing_acc, "o-", label=label, color='blue',linewidth=3)
+        plt.subplot(1,number_of_subgraphs,number_of_subgraphs)
     if(draw_DPSGD_IC_case):
         print(IC_testing_acc)
         count = count +1
         cmap_color = cmap(4*count)
-        label = "IC, %s" % ( clipping_mode)
-        if (DGN):
-            label = label + ", diminishing C"
-        plt.plot(IC_sigma_arr, IC_testing_acc, "x--", label=label , color=cmap_color)
+        # label = "IC, %s" % ( clipping_mode)
+        label = "IC"
+        # if (DGN):
+        #     label = label + ", diminishing C"
+        plt.plot(IC_sigma_arr, IC_testing_acc, "x--", label=label , color='red',linewidth=3)
         plt.subplot(1,number_of_subgraphs,number_of_subgraphs)
         # mu = [np.sqrt(E)/sigma for E in DPSGD_IC_epoch_index]
         # mu_index = DPSGD_IC_epoch_index
-        print("IC training acc:", IC_DPSGD_train_accuracy[-1])
+        # print("IC training acc:", IC_DPSGD_train_accuracy[-1])
         # experiment = "SGD"
     plt.xlabel("$\sigma$")
-    plt.ylabel("Testing Accuracy")
-    plt.title("%s, $\eta =$ %s, m = %s, C = %s, E =%s" % (model_name, lr,s,C,epochs))
+    plt.ylabel("accuracy")
+    plt.title(" $\eta =$ %s, m = %s, C = %s, E =%s" % ( lr,s,C,epochs))
     plt.legend()
         # ic_data_path = base_path + '_IC/' + model_name + '/' + experiment + '/IC/' + setting +".json"
         #

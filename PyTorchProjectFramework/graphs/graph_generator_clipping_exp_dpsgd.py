@@ -114,7 +114,7 @@ if __name__ == "__main__":
     mode = "subsampling"
     clipping_mode = "layerwise"
     # clipping_mode = "all"
-    DGN = False
+    DGN = True
     print("DGN:", DGN)
     # DGN = None
     # clipping_mode = ""
@@ -128,7 +128,7 @@ if __name__ == "__main__":
               "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
     setting_index = 0 # 0,3,6
-    s_index =0
+    s_index =1
     models_index = 5
     model_name = models[models_index]
     settings_path, Cs, sigma, s_start = settings[setting_index]["settings_path"], \
@@ -192,7 +192,7 @@ if __name__ == "__main__":
         """
         Load experiments data
         """
-        if(draw_SGD_case):
+        if(draw_SGD_case ):
             experiment = "SGD"
             # sgd_data_path  = base_path + '/' + experiment + '/' + setting +".json"
             sgd_data_path = base_path + '/' + model_name + '/' + experiment + '/SGD/' + setting +".json"
@@ -201,6 +201,7 @@ if __name__ == "__main__":
                 data = json.load(data_file)
                 SGD_train_accuracy = data["train_accuracy"]
                 SGD_test_accuracy = data["test_accuracy"]
+                print("SGD_test_accuracy[20]", SGD_test_accuracy[20])
                 SGD_epochs = len(SGD_train_accuracy)
                 SGD_epoch_index = [i for i in range(1, SGD_epochs+1)]
 
@@ -221,6 +222,7 @@ if __name__ == "__main__":
                     data = json.load(data_file)
                     BC_DPSGD_train_accuracy = data["train_accuracy"]
                     BC_DPSGD_test_accuracy = data["test_accuracy"]
+                    print("BC_DPSGD_test_accuracy[20]", BC_DPSGD_test_accuracy[20])
                     DPSGD_BC_epochs = len(BC_DPSGD_train_accuracy)
                     DPSGD_BC_epoch_index = [i for i in range(1, DPSGD_BC_epochs+1)]
         # else:
@@ -269,7 +271,7 @@ if __name__ == "__main__":
             plt.title('Train accuracy, lr = %f' % lr)
 
             if(draw_SGD_case):
-                plt.plot(SGD_epoch_index, SGD_train_accuracy, label="SGD, s= %d" % (s), color=cmap_color)
+                plt.plot(SGD_epoch_index, SGD_train_accuracy, label="SGD, m = %d" % (s), color=cmap_color)
                 mu = [0 for E in SGD_epoch_index]
                 print("SGD training acc:", SGD_train_accuracy[-1])
             if(draw_DPSGD_BC_case):
@@ -302,14 +304,22 @@ if __name__ == "__main__":
         else:
             plt.subplot(1, number_of_subgraphs, 1)
         if(draw_mixing_case or draw_DPSGD_IC_case or draw_DPSGD_BC_case):
-            plt.title('Test accuracy, lr = %s, C = %s, sigma = %d' % (str(lr).strip('0'),str(C).strip('0'),sigma))
+            plt.title('$\eta$ = %s, C = %s, $\sigma$ = %d' % (str(lr).strip('0'),str(C).strip('0'),sigma))
         else:
-            plt.title('Test accuracy, lr = %s' % (str(lr).strip('0')))
-        if(draw_SGD_case):
-            plt.plot(SGD_epoch_index, SGD_test_accuracy, label="SGD, s= %d" % (s), color=cmap_color)
+            plt.title('$\eta$ = %s' % (str(lr).strip('0')))
+        if(draw_SGD_case ):
+            # print("HERE")
+            # cmap_color = cmap(36)
+            if (setting_idx == 0):
+                plt.plot(SGD_epoch_index, SGD_test_accuracy,"-", label="SGD,m = %d" % (s), color="black",linewidth=3)
+            else:
+                plt.plot(SGD_epoch_index, SGD_test_accuracy, "-", label="SGD,m = %d" % (s), color=cmap_color,linewidth=3)
             print("SGD test acc:", SGD_test_accuracy[-5:-1])
         if(draw_DPSGD_BC_case):
-            plt.plot(DPSGD_BC_epoch_index, BC_DPSGD_test_accuracy, "o-", label="BC,m = %d" % (s), color=cmap_color)
+            if (setting_idx == 0):
+                plt.plot(DPSGD_BC_epoch_index, BC_DPSGD_test_accuracy, "-", label="BC,m = %d" % (s), color=cmap_color,linewidth=3)
+            else:
+                plt.plot(DPSGD_BC_epoch_index, BC_DPSGD_test_accuracy, "--", label="BC,m = %d" % (s), color=cmap_color,linewidth=3)
             print("BC test acc:", BC_DPSGD_test_accuracy[-5:-1])
         if(draw_DPSGD_IC_case):
             plt.plot(DPSGD_IC_epoch_index, IC_DPSGD_test_accuracy, "x-",label="IC, m = %d, %s" % (s,clipping_mode), color=cmap_color)
@@ -356,7 +366,9 @@ if __name__ == "__main__":
         file_name =  '/' + model_name + '_' + mode + '_' + prefix + '_lr_' + str(lr) + '_C_' + str(C) + '_sigma_' + str(sigma) + '_' + str(fig_index)
     fig = plt.gcf()
     fig.set_size_inches((22, 11), forward=False)
-    plt.savefig(graph_path + file_name +".png")
+    file_path = graph_path + file_name +".png"
+    print("saving data to ", file_path)
+    plt.savefig(file_path)
     plt.show()
     # plt.clf()
     # plt.plot(index, sigma, label="sigma")

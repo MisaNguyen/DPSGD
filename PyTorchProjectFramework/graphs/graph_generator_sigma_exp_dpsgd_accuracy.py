@@ -40,6 +40,13 @@ if __name__ == "__main__":
             "sigmas": [2*i for i in range(0,31)],
             "s": 64
         },
+        {
+            # Setting 1
+            "settings_path": "settings_sigma_dpsgd_large_sigma",
+            "C": 0.005,
+            "sigmas": [64*i for i in range(1,21)],
+            "s": 64
+        }
         # {
         #     # Setting 0
         #     "settings_path": "settings_sigma_dpsgd",
@@ -166,10 +173,11 @@ if __name__ == "__main__":
             BC_DPSGD_train_accuracy,BC_DPSGD_test_accuracy = get_data(bc_data_path)
             epochs = len(BC_DPSGD_train_accuracy)
             epochs_idx = [i for i in range(1, epochs+1)]
-            label = "BC, %s" % ( clipping_mode)
-            if (DGN):
-                label = label + ", diminishing C"
-            plt.plot(epochs_idx, BC_DPSGD_test_accuracy, "o-", label=label, color=cmap_color)
+            # label = "BC, %s" % ( clipping_mode)
+            label = "BC"
+            # if (DGN):
+            #     label = label + ", diminishing C"
+            plt.plot(epochs_idx, BC_DPSGD_test_accuracy, "o-", label=label, color="black",linewidth=3)
             # DPSGD_BC_epoch_index = [i for i in range(1, DPSGD_BC_epochs+1)]
         # else:
         #     s = s*2
@@ -193,10 +201,11 @@ if __name__ == "__main__":
             IC_DPSGD_train_accuracy,IC_DPSGD_test_accuracy = get_data(ic_data_path)
             epochs = len(IC_DPSGD_train_accuracy)
             epochs_idx = [i for i in range(1, epochs+1)]
-            label = "IC, %s" % ( clipping_mode)
-            if (DGN):
-                label = label + ", diminishing C"
-            plt.plot(epochs_idx, IC_DPSGD_test_accuracy, "o-", label=label, color=cmap_color)
+            # label = "IC, %s" % ( clipping_mode)
+            label = "IC"
+            # if (DGN):
+            #     label = label + ", diminishing C"
+            plt.plot(epochs_idx, IC_DPSGD_test_accuracy, "x--", label=label, color="red",linewidth=3)
             # DPSGD_IC_epoch_index = [i for i in range(1, DPSGD_IC_epochs+1)]
 
 
@@ -216,9 +225,9 @@ if __name__ == "__main__":
         # print("IC training acc:", IC_DPSGD_train_accuracy[-1])
         # experiment = "SGD"
     plt.xlabel("Epoch")
-    plt.ylabel("Testing Accuracy")
+    plt.ylabel("accuracy")
 
-    plt.title("%s, $\eta =$ %s, m = %s, C = %s, E =%s, $\sigma=%s$" % (model_name, lr,s,C,epochs,sigmas[setting_index]))
+    plt.title("$\eta =$ %s, m = %s, C = %s, $\sigma=%s$, E =%s" %  (lr,s,C,sigmas[setting_index],epochs))
     plt.legend()
         # ic_data_path = base_path + '_IC/' + model_name + '/' + experiment + '/IC/' + setting +".json"
         #
