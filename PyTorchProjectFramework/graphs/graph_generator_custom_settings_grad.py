@@ -7,10 +7,13 @@ import json
 font = {'family' : 'normal',
         'weight' : 'bold',
         'size'   : 22}
+from matplotlib.patches import Patch
+from matplotlib.lines import Line2D
+
 
 matplotlib.rc('font', **font)
 def get_data_from_settings(setting_path,setting_name,model_name,experiment,IC,BC):
-    data_path  = "./data_neurips_old/" + setting_path + '/'  + model_name + '/' + experiment + '/SGD/' + setting_name +".json" #SGD
+    data_path  = "./data_neurips/" + setting_path + '/'  + model_name + '/' + experiment + '/SGD/' + setting_name +".json" #SGD
     if(BC):
         data_path  = "./data_neurips/" + setting_path + '/'  + model_name + '/' + experiment + '/BC/' + setting_name +".json"
     if(IC):
@@ -23,7 +26,7 @@ def get_data_from_settings(setting_path,setting_name,model_name,experiment,IC,BC
     return DPSGD_train_accuracy, DPSGD_test_accuracy, DPSGD_epochs
 
 def get_grad_from_settings(setting_path,setting_name,model_name,experiment,IC,BC,epoch):
-    data_path  = "./data_neurips_old/" + setting_path + '/'  + model_name + '/' + experiment + '/SGD/grad/' + setting_name +".json" #SGD
+    data_path  = "./data_neurips/" + setting_path + '/'  + model_name + '/' + experiment + '/SGD/grad/' + setting_name +".json" #SGD
     if(BC):
         data_path  = "./data_neurips/" + setting_path + '/'  + model_name + '/' + experiment + '/BC/grad/' + setting_name +".json"
     if(IC):
@@ -53,7 +56,10 @@ def setup_plot(x_axis_label , y_axis_label,lr , C ):
     plt.title('Test accuracy, lr = %f, C = %f' % (lr,C))
     plt.xlabel(x_axis_label)
     plt.ylabel(y_axis_label)
-
+def get_cmap(n, name='hsv'):
+    '''Returns a function that maps each index in 0, 1, ..., n-1 to a distinct
+    RGB color; the keyword argument name must be a standard mpl colormap name.'''
+    return plt.cm.get_cmap(name, n)
 def get_perlayer_at_epoch(epoch_grad):
     epoch_num = epoch_grad["epoch"]
     layer_names = list(epoch_grad.keys())[1:]
@@ -151,6 +157,8 @@ if __name__ == "__main__":
     # index=5
     # s_arr = [32,64,128,256,512]
     # s = s_arr[index-1]
+    cmap = get_cmap(30)
+
     C = 10
     lr = 0.1
     draw_IC_case = False
@@ -158,8 +166,8 @@ if __name__ == "__main__":
     label = "BC sigma = %f, s = %f" if draw_BC_case else "IC sigma = %f, s = %f"
     # setup_plot('epoch' , 'accuracy',lr ,C)
     """SGD DATA 512"""
-    model_name = "convnet"
-    setting_path = "settings_clipping_exp_cifar10_dpsgd_shuffling"
+    model_name = "resnet18"
+    setting_path = "settings_sigma_dpsgd_super_sigma_subsampling_BC"
     s = 512
     setting_name = "setting_2"
     experiment = "SGD"
@@ -168,13 +176,22 @@ if __name__ == "__main__":
         setting_path,setting_name,
         model_name,experiment,
         False,False)
-    plt.title("convnet gradient norm graph")
-    plt.xticks(np.arange(0, epochs+5, step=5))
+    plt.title("resnet18 gradient norm graph")
+    plt.xticks(np.arange(0, epochs+5, step=2))
     plt.ylabel("Gradient norm")
     plt.xlabel("Epoch")
-    epoch_index = [i for i in range(1, epochs)]
+    epoch_index = [i for i in range(1, epochs+1)]
     per_layer_grad_norm_array = []
+    conv_cmap_color_weight = cmap(10)
+    conv_cmap_color_bias = cmap(11)
+    bn_cmap_color_weight = cmap(15)
+    bn_cmap_color_bias = cmap(16)
+    shortcut_cmap_color_weight = cmap(20)
+    shortcut_cmap_color_bias = cmap(21)
+    linear_cmap_color_weight = cmap(29)
+    linear_cmap_color_bias = cmap(30)
     for epoch in epoch_index:
+        print("epoch",epoch)
     # epoch = 2
         epoch_grad  = get_grad_from_settings(setting_path,setting_name,model_name,experiment,False,False,epoch)
         epoch_num = epoch_grad["epoch"]
@@ -188,12 +205,33 @@ if __name__ == "__main__":
             else:
                 per_layer_grad_norm_array[layer_idx].append(per_layer_grad_norm[layer_idx])
     for layer_idx, layer in enumerate(layer_names):
-        if layer_idx % 2 == 0 :
-            plt.plot(epoch_index,per_layer_grad_norm_array[layer_idx],'o-',label= "%s" % (layer[6:]))
-        else:
-            plt.plot(epoch_index,per_layer_grad_norm_array[layer_idx],'x--',label= "%s" % (layer[6:]))
+        if ("conv" in layer and "weight" in layer):
+            plt.plot(epoch_index,per_layer_grad_norm_array[layer_idx],'o-',label= "%s" % (layer[6:]),color=conv_cmap_color_weight)
+        elif("conv" in layer and "bias" in layer):
+            plt.plot(epoch_index,per_layer_grad_norm_array[layer_idx],'o--',label= "%s" % (layer[6:]),color=conv_cmap_color_bias)
+        elif ("bn" in layer and "weight" in layer):
+            plt.plot(epoch_index,per_layer_grad_norm_array[layer_idx],'x-',label= "%s" % (layer[6:]),color=bn_cmap_color_weight)
+        elif("bn" in layer and "bias" in layer):
+            plt.plot(epoch_index,per_layer_grad_norm_array[layer_idx],'x--',label= "%s" % (layer[6:]),color=bn_cmap_color_bias)
+        elif ("shortcut" in layer and "weight" in layer):
+            plt.plot(epoch_index,per_layer_grad_norm_array[layer_idx],'*-',label= "%s" % (layer[6:]),color=shortcut_cmap_color_weight)
+        elif("shortcut" in layer and "bias" in layer):
+            plt.plot(epoch_index,per_layer_grad_norm_array[layer_idx],'*--',label= "%s" % (layer[6:]),color=shortcut_cmap_color_bias)
+        elif ("linear" in layer and "weight" in layer):
+            plt.plot(epoch_index,per_layer_grad_norm_array[layer_idx],'D-',label= "%s" % (layer[6:]),color=linear_cmap_color_weight)
+        elif("linear" in layer and "bias" in layer):
+            plt.plot(epoch_index,per_layer_grad_norm_array[layer_idx],'D--',label= "%s" % (layer[6:]),color=linear_cmap_color_bias)
     # plt_draw(epoch_index, train_accuracy,test_accuracy,epoch_grad,"SGD s = 256",None,None)
-
+    legend_elements = [Line2D([0], [0],linestyle='-', marker='o',color=conv_cmap_color_weight, label='conv.weight'),
+                       Line2D([0], [0],linestyle='--', marker='o',color=conv_cmap_color_bias, label='conv.bias'),
+                       Line2D([0], [0],linestyle='-', marker='x',color=bn_cmap_color_weight, label='bn.weight'),
+                       Line2D([0], [0],linestyle='--', marker='x',color=bn_cmap_color_bias, label='bn.bias'),
+                       Line2D([0], [0],linestyle='-', marker='*',color=shortcut_cmap_color_weight, label='shortcut.weight'),
+                       Line2D([0], [0],linestyle='--', marker='*',color=shortcut_cmap_color_bias, label='shortcut.bias'),
+                       Line2D([0], [0],linestyle='-', marker='D',color=linear_cmap_color_weight, label='linear.weight'),
+                       Line2D([0], [0],linestyle='--', marker='D',color=linear_cmap_color_bias, label='linear.bias'),
+                        ]
+    plt.legend(handles=legend_elements, loc='best')
     # """SGD DATA 512"""
     # model_name = "squarenet"
     # setting_path = "settings_clipping_exp_cifar10_dpsgd_shuffling"
@@ -339,7 +377,7 @@ if __name__ == "__main__":
     #     draw_IC_case,draw_BC_case)
     # epoch_index = [i for i in range(1, epochs+1)]
     # plt_draw(epoch_index, train_accuracy,test_accuracy,label,sigma,s)
-    plt.legend()
+
 
 
     graph_path = "./graph/C_custom_compare"
@@ -387,5 +425,6 @@ if __name__ == "__main__":
     # # plt.show()
     # plt.clf()
     #
+
 
 

@@ -171,6 +171,7 @@ if __name__ == "__main__":
             #                  + '/BC/' + setting +".json"
             print("bc_data_path:",bc_data_path)
             BC_DPSGD_train_accuracy,BC_DPSGD_test_accuracy = get_data(bc_data_path)
+            print("BC_DPSGD_test_accuracy",BC_DPSGD_test_accuracy[-5:-1])
             epochs = len(BC_DPSGD_train_accuracy)
             epochs_idx = [i for i in range(1, epochs+1)]
             # label = "BC, %s" % ( clipping_mode)
@@ -199,6 +200,7 @@ if __name__ == "__main__":
                 ic_data_path  = ic_data_path + '/IC/' + setting +".json"
             print(ic_data_path)
             IC_DPSGD_train_accuracy,IC_DPSGD_test_accuracy = get_data(ic_data_path)
+            print("IC_DPSGD_test_accuracy",IC_DPSGD_test_accuracy[-5:-1])
             epochs = len(IC_DPSGD_train_accuracy)
             epochs_idx = [i for i in range(1, epochs+1)]
             # label = "IC, %s" % ( clipping_mode)

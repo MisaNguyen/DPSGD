@@ -290,10 +290,10 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
             """--------------LAYERWISE NOISE-----------------"""
             if(args.clipping=="layerwise"):
                 dist = torch.distributions.normal.Normal(torch.tensor(0.0),
-                                                         torch.tensor((2 * args.each_layer_C[layer_idx] *  args.max_grad_norm)))
+                                                         torch.tensor((2 * args.each_layer_C[layer_idx] *  args.noise_multiplier)))
             elif(args.clipping=="all"):
                 dist = torch.distributions.normal.Normal(torch.tensor(0.0),
-                                                         torch.tensor((2 * args.max_grad_norm *  args.max_grad_norm)))
+                                                         torch.tensor((2 * args.max_grad_norm *  args.noise_multiplier)))
             # print(param.grad.shape)
             noise = dist.rsample(param.grad.shape).to(device=device)
 
@@ -448,10 +448,10 @@ def DP_train(args, model, device, train_loader,optimizer):
             """--------------LAYERWISE NOISE-----------------"""
             if(args.clipping=="layerwise"):
                 dist = torch.distributions.normal.Normal(torch.tensor(0.0),
-                                                     torch.tensor((2 * args.each_layer_C[layer_idx] *  args.max_grad_norm)))
+                                                     torch.tensor((2 * args.each_layer_C[layer_idx] *  args.noise_multiplier)))
             elif(args.clipping=="all"):
                 dist = torch.distributions.normal.Normal(torch.tensor(0.0),
-                torch.tensor((2 * args.max_grad_norm *  args.max_grad_norm)))
+                torch.tensor((2 * args.max_grad_norm * args.noise_multiplier)))
             # print(param.grad.shape)
             noise = dist.rsample(param.grad.shape).to(device=device)
 

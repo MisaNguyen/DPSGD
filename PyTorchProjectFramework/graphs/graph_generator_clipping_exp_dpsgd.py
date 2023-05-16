@@ -120,7 +120,7 @@ if __name__ == "__main__":
     # clipping_mode = ""
     draw_DPSGD_IC_case = False
     draw_SGD_case = True
-    draw_DPSGD_BC_case = False
+    draw_DPSGD_BC_case = True
     draw_mixing_case = False
     enable_mu = False
     draw_training_acc = False
