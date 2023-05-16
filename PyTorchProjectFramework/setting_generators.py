@@ -14,14 +14,14 @@ settings = ["settings_clipping_exp_cifar10_dpsgd",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_8",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_p5",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_1p5",]
-settings = ["settings_duplicate"]
-base_sigma = 2
+settings = ["settings_sigma_dpsgd_large_sigma"]
+base_sigma = 64
 C = 0.005
 data_processing = "subsampling"
 # data_processing = "shuffling"
 
-is_batch_clipping = False
-is_individual_clipping = True
+is_batch_clipping = True
+is_individual_clipping = False
 count = 0
 for setting_file in settings:
 # setting_file = settings[0]
@@ -36,8 +36,8 @@ for setting_file in settings:
             data[k]['microbatch_size'] = data[k]['batch_size']
         elif(is_individual_clipping):
             data[k]['microbatch_size'] = 1
-        data[k]['max_grad_norm'] = 1.2
-        data[k]['noise_multiplier'] = 1.5
+        data[k]['max_grad_norm'] = C
+        data[k]['noise_multiplier'] = base_sigma*count
         # data[k]['learning_rate'] = 0.025
         data[k]['data_sampling'] = data_processing
         print("Key: " + k)

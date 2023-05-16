@@ -37,7 +37,7 @@ if __name__ == "__main__":
             # Setting 0
             "settings_path": "settings_sigma_dpsgd",
             "C": 0.005,
-            "sigmas": [2*i for i in range(1,31)],
+            "sigmas": [2*i for i in range(0,31)],
             "s": 64
         },
         # {
@@ -92,7 +92,8 @@ if __name__ == "__main__":
 
     s_index_min = 1 # min = 1
     s_index_max = 6 # max = 6
-    settings = ["setting_" + str(i) for i in range(1,31)]
+    setting_index = 30
+    settings = ["setting_" + str(setting_index)]
     # settings.append("setting_30")
     # settings = ["setting_" + str(5*s_index+i) for i in range(s_index_min,s_index_max)]
     # settings = ["setting_0" ]
@@ -128,13 +129,8 @@ if __name__ == "__main__":
         # Create a new directory because it does not exist
         os.makedirs(graph_path)
         print("The new directory is created: %s" % graph_path)
-    
-    sgd_testing_acc = []
-    IC_testing_acc=[]
-    BC_testing_acc=[]
-    sgd_sigma_arr = []
-    IC_sigma_arr = []
-    BC_sigma_arr = []
+    count = 5
+
     for setting_idx, setting in enumerate(settings):
 
         # if (setting == "setting_30"):
@@ -150,12 +146,12 @@ if __name__ == "__main__":
             print(sgd_data_path)
             SGD_train_accuracy,SGD_test_accuracy = get_data(sgd_data_path)
             if(SGD_test_accuracy!= None):
-                sgd_testing_acc.append(max(SGD_test_accuracy[-5:-1]))
-                sgd_sigma_arr.append(sigmas[setting_idx])
                 epochs = len(SGD_train_accuracy)
             # DPSGD_SGD_epoch_index = [i for i in range(1, DPSGD_SGD_epochs+1)]
 
         if(draw_DPSGD_BC_case):
+            count = count +1
+            cmap_color= cmap(4*count)
             experiment = "SGD"
             # bc_data_path  = "./data/" + settings_path + '/' + experiment + '/' + setting +".json"
             if(DGN):
@@ -168,10 +164,12 @@ if __name__ == "__main__":
             #                  + '/BC/' + setting +".json"
             print("bc_data_path:",bc_data_path)
             BC_DPSGD_train_accuracy,BC_DPSGD_test_accuracy = get_data(bc_data_path)
-            if(BC_DPSGD_test_accuracy!= None):
-                BC_testing_acc.append(max(BC_DPSGD_test_accuracy[-5:-1]))
-                BC_sigma_arr.append(sigmas[setting_idx])
-                epochs = len(BC_DPSGD_train_accuracy)
+            epochs = len(BC_DPSGD_train_accuracy)
+            epochs_idx = [i for i in range(1, epochs+1)]
+            label = "BC, %s" % ( clipping_mode)
+            if (DGN):
+                label = label + ", diminishing C"
+            plt.plot(epochs_idx, BC_DPSGD_test_accuracy, "o-", label=label, color=cmap_color)
             # DPSGD_BC_epoch_index = [i for i in range(1, DPSGD_BC_epochs+1)]
         # else:
         #     s = s*2
@@ -179,6 +177,8 @@ if __name__ == "__main__":
 
 
         if(draw_DPSGD_IC_case):
+            count = count +1
+            cmap_color= cmap(4*count)
             experiment = "SGD"
             # ic_data_path = base_path + '_IC/' + model_name + '/' + experiment + '/IC/' + setting +".json"
             ic_data_path  = base_path + '_IC/' + model_name + '/' + experiment \
@@ -191,64 +191,34 @@ if __name__ == "__main__":
                 ic_data_path  = ic_data_path + '/IC/' + setting +".json"
             print(ic_data_path)
             IC_DPSGD_train_accuracy,IC_DPSGD_test_accuracy = get_data(ic_data_path)
-            if(IC_DPSGD_test_accuracy!= None):
-                IC_testing_acc.append(max(IC_DPSGD_test_accuracy[-5:-1]))
-                IC_sigma_arr.append(sigmas[setting_idx])
-                epochs = len(IC_DPSGD_train_accuracy)
+            epochs = len(IC_DPSGD_train_accuracy)
+            epochs_idx = [i for i in range(1, epochs+1)]
+            label = "IC, %s" % ( clipping_mode)
+            if (DGN):
+                label = label + ", diminishing C"
+            plt.plot(epochs_idx, IC_DPSGD_test_accuracy, "o-", label=label, color=cmap_color)
             # DPSGD_IC_epoch_index = [i for i in range(1, DPSGD_IC_epochs+1)]
 
-        # if(draw_mixing_case):
-        #     experiment = "SGD"
-        #     ic_data_path = base_path + '/' + model_name + '/' + experiment + '/NM/' + setting +".json"
-        #     with open(ic_data_path, "r") as data_file:
-        #         data = json.load(data_file)
-        #         Mixing_DPSGD_train_accuracy = data["train_accuracy"]
-        #         Mixing_DPSGD_test_accuracy = data["test_accuracy"]
-        #         DPSGD_Mixing_epochs = len(Mixing_DPSGD_train_accuracy)
-        #         DPSGD_Mixing_epoch_index = [i for i in range(1, DPSGD_Mixing_epochs+1)]
 
         """
         Draw graphs
         """
-    count = 5
+    # count = 5
 
     # if(draw_training_acc):
     #
     #     plt.subplot(1, number_of_subgraphs, 1)
     #     plt.title('Train accuracy, lr = %f' % lr)
     #
-    if(draw_SGD_case):
-        plt.plot(sgd_sigma_arr, sgd_testing_acc, label="SGD", color=cmap_color)
-        # mu = [0 for E in SGD_epoch_index]
-        print("SGD training acc:", SGD_train_accuracy[-1])
-    if(draw_DPSGD_BC_case):
-        count = count +1
-        cmap_color = cmap(4*count)
-        label = "BC, %s" % ( clipping_mode)
-        if (DGN):
-            label = label + ", diminishing C"
-        plt.plot(BC_sigma_arr, BC_testing_acc, "o-", label=label, color=cmap_color)
-        plt.subplot(1,number_of_subgraphs,number_of_subgraphs)
-        # mu = [np.sqrt(E)/sigma for E in DPSGD_BC_epoch_index]
-        # mu_index = DPSGD_BC_epoch_index
-        print("BC training acc:", BC_DPSGD_train_accuracy[-1])
-
-    if(draw_DPSGD_IC_case):
-        print(IC_testing_acc)
-        count = count +1
-        cmap_color = cmap(4*count)
-        label = "IC, %s" % ( clipping_mode)
-        if (DGN):
-            label = label + ", diminishing C"
-        plt.plot(IC_sigma_arr, IC_testing_acc, "x--", label=label , color=cmap_color)
-        plt.subplot(1,number_of_subgraphs,number_of_subgraphs)
-        # mu = [np.sqrt(E)/sigma for E in DPSGD_IC_epoch_index]
-        # mu_index = DPSGD_IC_epoch_index
-        print("IC training acc:", IC_DPSGD_train_accuracy[-1])
+        # plt.subplot(1,number_of_subgraphs,number_of_subgraphs)
+        # # mu = [np.sqrt(E)/sigma for E in DPSGD_IC_epoch_index]
+        # # mu_index = DPSGD_IC_epoch_index
+        # print("IC training acc:", IC_DPSGD_train_accuracy[-1])
         # experiment = "SGD"
-    plt.xlabel("$\sigma$")
+    plt.xlabel("Epoch")
     plt.ylabel("Testing Accuracy")
-    plt.title("%s, $\eta =$ %s, m = %s, C = %s, E =%s" % (model_name, lr,s,C,epochs))
+
+    plt.title("%s, $\eta =$ %s, m = %s, C = %s, E =%s, $\sigma=%s$" % (model_name, lr,s,C,epochs,sigmas[setting_index]))
     plt.legend()
         # ic_data_path = base_path + '_IC/' + model_name + '/' + experiment + '/IC/' + setting +".json"
         #

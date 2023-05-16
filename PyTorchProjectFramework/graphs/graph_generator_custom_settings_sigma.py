@@ -38,12 +38,17 @@ def get_data_from_settings(setting_info):
             data_path  = base_path + '_' + setting_info["clipping_method"]+'/' + setting_info["model_name"] + '/' + \
                             setting_info["Optimizer"] + '/' + setting_info["clipping_mode"] + '/' + setting_info["clipping_method"] \
                             + '/' + setting_info["setting_index"] +".json"
-
-    with open(data_path, "r") as data_file:
-        data = json.load(data_file)
-        DPSGD_train_accuracy = data["train_accuracy"]
-        DPSGD_test_accuracy = data["test_accuracy"]
-        DPSGD_epochs = len(DPSGD_train_accuracy)
+    isExist = os.path.exists(data_path)
+    if isExist:
+        with open(data_path, "r") as data_file:
+            print("Loading setting:", data_path)
+            data = json.load(data_file)
+            DPSGD_train_accuracy = data["train_accuracy"]
+            DPSGD_test_accuracy = data["test_accuracy"]
+            DPSGD_epochs = len(DPSGD_train_accuracy)
+    else:
+        print("data_path not exist:", data_path)
+        return None, None, None
     return DPSGD_train_accuracy, DPSGD_test_accuracy, DPSGD_epochs
 def setup_plot(x_axis_label , y_axis_label,lr , C ):
     plt.subplot(1, 2, 1)
@@ -91,27 +96,67 @@ if __name__ == "__main__":
     # draw_BC_case = True
     # label = "BC sigma = %f, s = %f" if draw_BC_case else "IC sigma = %f, s = %f"
     # setup_plot('epoch' , 'accuracy',lr ,C)
+    settings = ["setting_" + str(i) for i in range(13,25)]
+    test_acc_IC_DGN = []
+    test_acc_IC_original = []
+    test_acc_IC_AN = []
+    for setting in settings:
+        """Line1"""
+        line_1_setting_info = {
+            "data_folder": "data_neurips",
+            "setting_path_base": "settings_duplicate",
+            "setting_index": setting,
+            "model_name": "convnet",
+            "sampling_mode": "subsampling",
+            "clipping_method": "IC",
+            "clipping_mode": "layerwise",
+            "DGN": True,
+            "AN": False,
+            "Optimizer": "SGD",
+        }
+        train_accuracy, test_accuracy, epochs = get_data_from_settings(line_1_setting_info)
+        test_acc_IC_DGN.append(test_accuracy)
+
+        """Line 4"""
+        line_4_setting_info = {
+            "data_folder": "data_neurips",
+            "setting_path_base": "settings_duplicate",
+            "setting_index": setting,
+            "model_name": "convnet",
+            "sampling_mode": "subsampling",
+            "clipping_method": "IC",
+            "clipping_mode": "layerwise",
+            "DGN": False,
+            "AN": True,
+            "Optimizer": "SGD",
+        }
+        train_accuracy, test_accuracy, epochs = get_data_from_settings(line_4_setting_info)
+        test_acc_IC_AN.append(test_accuracy)
+        epoch_index = [i for i in range(1, epochs+1)]
+        epoch_index = np.array(epoch_index)
+
+
+    """ DRAW PLOT"""
     """Line1"""
-    setting_info = {
-        "data_folder": "data_neurips",
-        "setting_path_base": "settings_sigma_dpsgd_large_C",
-        "setting_index": "setting_30",
-        "model_name": "convnet",
-        "sampling_mode": "subsampling",
-        "clipping_method": "IC",
-        "clipping_mode": "layerwise",
-        "DGN": True,
-        "AN": False,
-        "Optimizer": "SGD",
-    }
-    train_accuracy, test_accuracy, epochs = get_data_from_settings(setting_info)
-    epoch_index = [i for i in range(1, epochs+1)]
-    label = "%s , %s, DGN: %s" % (setting_info["clipping_method"], setting_info["clipping_mode"],str(setting_info["DGN"]))
-    plt.plot(epoch_index, test_accuracy,label=label)
+    """IC + DGN + layerwise"""
+
+    test_accuracy = np.array(np.mean(test_acc_IC_DGN, axis=0))
+
+    # 500 represents number of points to make between T.min and T.max
+    xnew = np.linspace(epoch_index.min(), epoch_index.max(), 500)
+    X_Y_Spline = make_interp_spline(epoch_index, test_accuracy)
+    test_accuracy_smooth = X_Y_Spline(xnew)
+
+    label = "%s , %s, DGN: %s" % (line_1_setting_info["clipping_method"], line_1_setting_info["clipping_mode"]\
+                                      ,str(line_1_setting_info["DGN"]))
+    plt.plot(xnew,test_accuracy_smooth,label=label)
+
+    # plt.plot(epoch_index, test_accuracy,label=label)
 
 
     """Line 2"""
-    setting_info = {
+    """IC + all"""
+    line_2_setting_info = {
         "data_folder": "data_neurips_old",
         "setting_path_base": "settings_sigma_dpsgd_large_C",
         "setting_index": "setting_30",
@@ -123,12 +168,23 @@ if __name__ == "__main__":
         "AN": False,
         "Optimizer": "SGD",
     }
-    train_accuracy, test_accuracy, epochs = get_data_from_settings(setting_info)
+    train_accuracy, test_accuracy, epochs = get_data_from_settings(line_2_setting_info)
     epoch_index = [i for i in range(1, epochs+1)]
-    label = "%s , %s, DGN: %s" % (setting_info["clipping_method"], setting_info["clipping_mode"],str(setting_info["DGN"]))
-    plt.plot(epoch_index, test_accuracy,label=label)
+    epoch_index = np.array(epoch_index)
+    test_accuracy = np.array(test_accuracy)
+    # 500 represents number of points to make between T.min and T.max
+    xnew = np.linspace(epoch_index.min(), epoch_index.max(), 500)
+    X_Y_Spline = make_interp_spline(epoch_index, test_accuracy)
+    test_accuracy_smooth = X_Y_Spline(xnew)
+
+    label = "%s , %s, DGN: %s" % (line_2_setting_info["clipping_method"], line_2_setting_info["clipping_mode"],\
+                                  str(line_2_setting_info["DGN"]))
+    plt.plot(xnew,test_accuracy_smooth,label=label)
+
+    # plt.plot(epoch_index, test_accuracy,label=label)
     """Line 3"""
-    setting_info = {
+    """base_line"""
+    line_3_setting_info = {
         "data_folder": "data_neurips",
         "setting_path_base": "settings_sigma_dpsgd",
         "setting_index": "setting_30",
@@ -140,19 +196,52 @@ if __name__ == "__main__":
         "AN": False,
         "Optimizer": "SGD",
     }
-    train_accuracy, test_accuracy, epochs = get_data_from_settings(setting_info)
+    train_accuracy, test_accuracy, epochs = get_data_from_settings(line_3_setting_info)
     epoch_index = [i for i in range(1, epochs+1)]
+    epoch_index = np.array(epoch_index)
+    test_accuracy = np.array(test_accuracy)
     label = "Baseline"
-    plt.plot(epoch_index, test_accuracy,label=label)
+
+    # 500 represents number of points to make between T.min and T.max
+    xnew = np.linspace(epoch_index.min(), epoch_index.max(), 500)
+    X_Y_Spline = make_interp_spline(epoch_index, test_accuracy)
+    test_accuracy_smooth = X_Y_Spline(xnew)
+
+    plt.plot(xnew,test_accuracy_smooth,label=label)
+    # plt.show()
+    # plt.plot(epoch_index, test_accuracy,label=label)
+    # plt.plot(xnew, test_accuracy_smooth,label=label)
     plt.xlabel("epoch")
     plt.ylabel("Testing accuracy")
     plt.title("Layerwise versus Full gradient clipping")
-    """Line 3"""
-    setting_info = {
+    """Line 4"""
+    # setting_info = {
+    #     "data_folder": "data_neurips",
+    #     "setting_path_base": "settings_sigma_dpsgd_large_C",
+    #     "setting_index": "setting_30",
+    #     "model_name": "convnet",
+    #     "sampling_mode": "subsampling",
+    #     "clipping_method": "IC",
+    #     "clipping_mode": "layerwise",
+    #     "DGN": False,
+    #     "AN": True,
+    #     "Optimizer": "SGD",
+    # }
+    test_accuracy = np.array(np.mean(test_acc_IC_AN, axis=0))
+    xnew = np.linspace(epoch_index.min(), epoch_index.max(), 500)
+    X_Y_Spline = make_interp_spline(epoch_index, test_accuracy)
+    test_accuracy_smooth = X_Y_Spline(xnew)
+    label = "IC, Zhang el at"
+    # X_Y_Spline  = make_interp_spline(epoch_index, np.array(test_accuracy))
+    # X_ = np.linspace(epoch_index.min(), epoch_index.max(), 500)
+    plt.plot(epoch_index, test_accuracy,label=label)
+
+    """Line 5"""
+    line_5_setting_info = {
         "data_folder": "data_neurips",
-        "setting_path_base": "settings_sigma_dpsgd_large_C",
+        "setting_path_base": "settings_sigma_dpsgd",
         "setting_index": "setting_30",
-        "model_name": "convnet",
+        "model_name": "resnet18",
         "sampling_mode": "subsampling",
         "clipping_method": "IC",
         "clipping_mode": "layerwise",
@@ -160,159 +249,73 @@ if __name__ == "__main__":
         "AN": True,
         "Optimizer": "SGD",
     }
-    train_accuracy, test_accuracy, epochs = get_data_from_settings(setting_info)
-    epoch_index = np.array([i for i in range(1, epochs+1)])
-    label = "IC, Zhang el at"
+    train_accuracy, test_accuracy, epochs = get_data_from_settings(line_5_setting_info)
+    epoch_index = [i for i in range(1, epochs+1)]
+    epoch_index = np.array(epoch_index)
+
+    xnew = np.linspace(epoch_index.min(), epoch_index.max(), 500)
+    X_Y_Spline = make_interp_spline(epoch_index, test_accuracy)
+    test_accuracy_smooth = X_Y_Spline(xnew)
+    label = "IC, Zhang el at, sigma = 60, resnet18"
     # X_Y_Spline  = make_interp_spline(epoch_index, np.array(test_accuracy))
     # X_ = np.linspace(epoch_index.min(), epoch_index.max(), 500)
     plt.plot(epoch_index, test_accuracy,label=label)
-    plt.xlabel("epoch")
-    plt.ylabel("Testing accuracy")
+
+    """Line 6"""
+    line_6_setting_info = {
+        "data_folder": "data_neurips",
+        "setting_path_base": "settings_sigma_dpsgd",
+        "setting_index": "setting_30",
+        "model_name": "resnet18",
+        "sampling_mode": "subsampling",
+        "clipping_method": "IC",
+        "clipping_mode": "layerwise",
+        "DGN": True,
+        "AN": False,
+        "Optimizer": "SGD",
+    }
+    train_accuracy, test_accuracy, epochs = get_data_from_settings(line_6_setting_info)
+    epoch_index = [i for i in range(1, epochs+1)]
+    epoch_index = np.array(epoch_index)
+
+    xnew = np.linspace(epoch_index.min(), epoch_index.max(), 500)
+    X_Y_Spline = make_interp_spline(epoch_index, test_accuracy)
+    test_accuracy_smooth = X_Y_Spline(xnew)
+    label = "IC, layerwise,DGN, sigma = 60, resnet18"
+    # X_Y_Spline  = make_interp_spline(epoch_index, np.array(test_accuracy))
+    # X_ = np.linspace(epoch_index.min(), epoch_index.max(), 500)
+    plt.plot(epoch_index, test_accuracy,label=label)
+
+    """Line 7"""
+    line_7_setting_info = {
+        "data_folder": "data_neurips",
+        "setting_path_base": "settings_sigma_dpsgd",
+        "setting_index": "setting_30",
+        "model_name": "resnet18",
+        "sampling_mode": "subsampling",
+        "clipping_method": "BC",
+        "clipping_mode": "layerwise",
+        "DGN": True,
+        "AN": False,
+        "Optimizer": "SGD",
+    }
+    train_accuracy, test_accuracy, epochs = get_data_from_settings(line_7_setting_info)
+    epoch_index = [i for i in range(1, epochs+1)]
+    epoch_index = np.array(epoch_index)
+
+    xnew = np.linspace(epoch_index.min(), epoch_index.max(), 500)
+    X_Y_Spline = make_interp_spline(epoch_index, test_accuracy)
+    test_accuracy_smooth = X_Y_Spline(xnew)
+    label = "BC, layerwise,DGN, sigma = 60, resnet18"
+    # X_Y_Spline  = make_interp_spline(epoch_index, np.array(test_accuracy))
+    # X_ = np.linspace(epoch_index.min(), epoch_index.max(), 500)
+    plt.plot(epoch_index, test_accuracy,label=label)
+    # plt.xlabel("epoch")
+    # plt.ylabel("Testing accuracy")
+
+
+    """----------------------------------------------"""
     plt.title("Layerwise versus Full gradient clipping")
-    # """SGD DATA 512"""
-    # model_name = "convnet"
-    # setting_path = "settings_clipping_exp_cifar10_dpsgd_large_C"
-    # s = 512
-    # setting_name = "setting_25"
-    # experiment = "SGD"
-    #
-    # train_accuracy, test_accuracy, epochs = get_data_from_settings(
-    #     setting_path,setting_name,
-    #     model_name,experiment,
-    #     False,False)
-    # epoch_index = [i for i in range(1, epochs+1)]
-    # plt_draw(epoch_index, train_accuracy,test_accuracy,"SGD, s = 512",None,None)
-    # """SETTING 1 DATA"""
-    # model_name = "convnet"
-    # setting_path = "settings_clipping_exp_cifar10_dpsgd_large_C"
-    #
-    # s = 256
-    # sigma = 2
-    # setting_name = "setting_24"
-    # experiment = "SGD"
-    #
-    # train_accuracy, test_accuracy, epochs = get_data_from_settings(
-    #     setting_path,setting_name,
-    #     model_name,experiment,
-    #     draw_IC_case,draw_BC_case)
-    # epoch_index = [i for i in range(1, epochs+1)]
-    # plt_draw(epoch_index, train_accuracy,test_accuracy,label,sigma,s)
-    #
-    # """SETTING 2 DATA"""
-    # model_name = "convnet"
-    # setting_path = "settings_clipping_exp_cifar10_dpsgd_large_C"
-    #
-    # s = 512
-    # sigma = 2
-    # setting_name = "setting_25"
-    # experiment = "SGD"
-    #
-    # train_accuracy, test_accuracy, epochs = get_data_from_settings(
-    #     setting_path,setting_name,
-    #     model_name,experiment,
-    #     draw_IC_case,draw_BC_case)
-    # epoch_index = [i for i in range(1, epochs+1)]
-    # plt_draw(epoch_index, train_accuracy,test_accuracy,label,sigma,s)
-    # plt.legend()
-    #
-    # """SETTING 3 DATA"""
-    # model_name = "convnet"
-    # setting_path = "settings_clipping_exp_cifar10_dpsgd_large_C_sigma_4"
-    #
-    # s = 256
-    # sigma = 4
-    # setting_name = "setting_24"
-    # experiment = "SGD"
-    #
-    # train_accuracy, test_accuracy, epochs = get_data_from_settings(
-    #     setting_path,setting_name,
-    #     model_name,experiment,
-    #     draw_IC_case,draw_BC_case)
-    # epoch_index = [i for i in range(1, epochs+1)]
-    # plt_draw(epoch_index, train_accuracy,test_accuracy,label,sigma,s)
-    # plt.legend()
-    #
-    # """SETTING 4 DATA"""
-    # model_name = "convnet"
-    # setting_path = "settings_clipping_exp_cifar10_dpsgd_large_C_sigma_4"
-    #
-    # s = 512
-    # sigma = 4
-    # setting_name = "setting_25"
-    # experiment = "SGD"
-    #
-    # train_accuracy, test_accuracy, epochs = get_data_from_settings(
-    #     setting_path,setting_name,
-    #     model_name,experiment,
-    #     draw_IC_case,draw_BC_case)
-    # epoch_index = [i for i in range(1, epochs+1)]
-    # plt_draw(epoch_index, train_accuracy,test_accuracy,label,sigma,s)
-    # plt.legend()
-    #
-    # """SETTING 5 DATA"""
-    # model_name = "convnet"
-    # setting_path = "settings_clipping_exp_cifar10_dpsgd_large_C_sigma_8"
-    #
-    # s = 256
-    # sigma = 8
-    # setting_name = "setting_24"
-    # experiment = "SGD"
-    #
-    # train_accuracy, test_accuracy, epochs = get_data_from_settings(
-    #     setting_path,setting_name,
-    #     model_name,experiment,
-    #     draw_IC_case,draw_BC_case)
-    # epoch_index = [i for i in range(1, epochs+1)]
-    # plt_draw(epoch_index, train_accuracy,test_accuracy,label,sigma,s)
-    #
-    # """SETTING 6 DATA"""
-    # model_name = "convnet"
-    # setting_path = "settings_clipping_exp_cifar10_dpsgd_large_C_sigma_8"
-    #
-    # s = 512
-    # sigma = 8
-    # setting_name = "setting_25"
-    # experiment = "SGD"
-    #
-    # train_accuracy, test_accuracy, epochs = get_data_from_settings(
-    #     setting_path,setting_name,
-    #     model_name,experiment,
-    #     draw_IC_case,draw_BC_case)
-    # epoch_index = [i for i in range(1, epochs+1)]
-    # plt_draw(epoch_index, train_accuracy,test_accuracy,label,sigma,s)
-    #
-    # # """SETTING 7 DATA"""
-    # # model_name = "convnet"
-    # # setting_path = "settings_clipping_exp_cifar10_dpsgd_large_C"
-    # #
-    # # s = 256
-    # # C = 20.0
-    # # setting_name = "setting_29"
-    # # experiment = "SGD"
-    # #
-    # # train_accuracy, test_accuracy, epochs = get_data_from_settings(
-    # #     setting_path,setting_name,
-    # #     model_name,experiment,
-    # #     draw_IC_case,draw_BC_case)
-    # # epoch_index = [i for i in range(1, epochs+1)]
-    # # plt_draw(epoch_index, train_accuracy,test_accuracy,label,sigma,s)
-    # plt.legend()
-    #
-    #
-    # graph_path = "./graph/C_custom_compare"
-    # # Check whether the specified path exists or not
-    # isExist = os.path.exists(graph_path)
-    # if not isExist:
-    #     # Create a new directory because it does not exist
-    #     os.makedirs(graph_path)
-    #     print("The new directory is created: %s" % graph_path)
-    #
-    #     # s = s*2
-    # file_name = '/dpsgd_sigma_comparing_lr_' + str(lr) + '_C_' + str(C)
-    # if (draw_IC_case):
-    #     file_name = '/IC_dpsgd_sigma_comparing_lr_' + str(lr) + '_C_' + str(C)
-    # if (draw_BC_case):
-    #     file_name = '/BC_dpsgd_sigma_comparing_lr_' + str(lr) + '_C_' + str(C)
     plt.legend()
     fig = plt.gcf()
     fig.set_size_inches((22, 11), forward=False)

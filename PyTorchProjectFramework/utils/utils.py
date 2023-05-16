@@ -142,7 +142,7 @@ def compute_layerwise_C(C_dataset_loader, model, epochs, device, optimizer, C_st
     return each_layer_C
 
 def compute_layerwise_C_average_norm(C_dataset_loader, model, epochs, device, optimizer, C_start, update_mode=False):
-    print("Generating layerwise C values")
+    print("Generating layerwise C values (average)")
     for epoch in range(epochs):
         # print("epoch:",epoch)
         for sample_idx, (data,target) in enumerate(C_dataset_loader):

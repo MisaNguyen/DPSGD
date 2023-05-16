@@ -142,7 +142,7 @@ def main():
     mode = "subsampling"
     # mode = "shuffling"
     # mode = None
-    settings_file = "settings_sigma_dpsgd_large_C"
+    settings_file = "settings_sigma_dpsgd"
     logging = True
 
     if (mode != None):
@@ -221,10 +221,10 @@ def main():
     # model = AlexNet(num_classes=10).to(device)
     # model_name = "AlexNet"
     # model = SimpleDLA().to(device)
-    model = convnet(num_classes=10).to(device)
-    model_name = "convnet"
-    # model = ResNet18(num_classes=10).to(device)
-    # model_name = "resnet18"
+    # model = convnet(num_classes=10).to(device)
+    # model_name = "convnet"
+    model = ResNet18(num_classes=10).to(device)
+    model_name = "resnet18"
     # model = PlainNet18(num_classes=10).to(device)
     # model_name = "plainnet18"
     # model = LeNet().to(device)
@@ -358,10 +358,10 @@ def main():
         out_file_path = out_file_path + "/SGD"
 
     # epochs = math.ceil(args.iterations* args.batch_size / dataset_size)
-    epochs = 50 #TODO: remove to calculated based on iterations
+    epochs = 20 #TODO: remove to calculated based on iterations
     print("Total epochs: %f" % epochs)
     print("Saving data to: %s" % out_file_path)
-    print("Saving data to: %s" % out_file_path)
+    # print("Saving data to: %s" % out_file_path)
 
     grad_array = []
     """TRAINING LOOP"""
@@ -402,7 +402,7 @@ def main():
                 else:
                     args.each_layer_C = compute_layerwise_C(C_dataset_loader, model, 1, device,
                                                         optimizer, args.max_grad_norm,False)
-            print("each_layer_C", args.each_layer_C)
+                print("each_layer_C", args.each_layer_C)
         """
         Update learning rate if test_accuracy does not increase
         """
