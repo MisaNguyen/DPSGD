@@ -139,12 +139,12 @@ def main():
     """
     Define sampling method here
     """
-    enable_individual_clipping = True
-    enable_batch_clipping = False
+    enable_individual_clipping = False
+    enable_batch_clipping = True
     mode = "subsampling"
     # mode = "shuffling"
     # mode = None
-    settings_file = "settings_sigma_dpsgd"
+    settings_file = "settings_vary_C"
     logging = True
 
     if (mode != None):
@@ -175,7 +175,7 @@ def main():
             print("sigma=",args.noise_multiplier)
             args.max_grad_norm = setting_data["max_grad_norm"]
             args.optimizer = setting_data["optimizer"]
-            args.enable_diminishing_gradient_norm = False
+            args.enable_diminishing_gradient_norm = True
             # args.enable_individual_clipping = setting_data["is_individual_clipping"]
             # args.enable_batch_clipping = False
             # args.enable_DP = setting_data["enable_DP"]
@@ -223,12 +223,12 @@ def main():
     # model = AlexNet(num_classes=10).to(device)
     # model_name = "AlexNet"
     # model = SimpleDLA().to(device)
-    model = convnet(num_classes=10).to(device)
-    model_name = "convnet"
-    # model = ResNet18(num_classes=10).to(device)
-    # model_name = "resnet18"
-    summary(model,(3, 32, 32))
-    print(model)
+    # model = convnet(num_classes=10).to(device)
+    # model_name = "convnet"
+    model = ResNet18(num_classes=10).to(device)
+    model_name = "resnet18"
+    # summary(model,(3, 32, 32))
+    # print(model)
     # input()
     # model = PlainNet18(num_classes=10).to(device)
     # model_name = "plainnet18"
@@ -345,13 +345,9 @@ def main():
             if (args.microbatch_size == 1):
                 print("Individual clipping")
                 out_file_path = out_file_path + "/IC"
-                if(args.ci_as_average_norm):
-                    out_file_path = out_file_path + "/AN"
             elif(args.microbatch_size == args.batch_size):
                 print("Batch clipping")
                 out_file_path = out_file_path + "/BC"
-                if(args.ci_as_average_norm):
-                    out_file_path = out_file_path + "/AN"
                 if(args.classicalSGD):
                     out_file_path = out_file_path + "/classical"
 
@@ -360,12 +356,14 @@ def main():
                 out_file_path = out_file_path + "/NM"
         if(args.enable_diminishing_gradient_norm):
             out_file_path = out_file_path + "/DGN"
+        elif(args.ci_as_average_norm):
+            out_file_path = out_file_path + "/AN"
 
     else:
         out_file_path = out_file_path + "/SGD"
 
     # epochs = math.ceil(args.iterations* args.batch_size / dataset_size)
-    epochs = 20 #TODO: remove to calculated based on iterations
+    epochs = 10 #TODO: remove to calculated based on iterations
     print("Total epochs: %f" % epochs)
     print("Saving data to: %s" % out_file_path)
     # print("Saving data to: %s" % out_file_path)
