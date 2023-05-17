@@ -144,7 +144,7 @@ def main():
     mode = "subsampling"
     # mode = "shuffling"
     # mode = None
-    settings_file = "settings_vary_sigma_resnet18"
+    settings_file = "settings_best_settings"
     logging = True
 
     if (mode != None):
