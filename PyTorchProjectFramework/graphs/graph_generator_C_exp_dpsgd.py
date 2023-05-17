@@ -39,6 +39,13 @@ if __name__ == "__main__":
             "Cs": [0.05+ 0.05*i for i in range(0,31)],
             "sigma": 0.15,
             "s": 64
+        },
+        {
+            # Setting 1
+            "settings_path": "settings_vary_small_C",
+            "Cs": [0.005+ 0.005*i for i in range(0,31)],
+            "sigma": 0.15,
+            "s": 64
         }
     ]
     # mode = None
@@ -64,10 +71,12 @@ if __name__ == "__main__":
               "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
     # setting_indexes = [3,4,5] # 0,3,6
-    setting_indexes = [0] # 0,3,6
+    setting_indexes = [1] # 0,3,6
     models_index = 5
     model_name = models[models_index]
     count = 0
+
+
     for idx, setting_index in enumerate(setting_indexes):
         # s_index =0
         # print(setting_index)
@@ -234,6 +243,11 @@ if __name__ == "__main__":
         #     plt.subplot(1, number_of_subgraphs, 1)
         #     plt.title('Train accuracy, lr = %f' % lr)
         #
+
+        # Get max index
+        C_max_index = BC_testing_acc.index(max(BC_testing_acc))
+        C_max = Cs[C_max_index]
+        print(C_max)
         if(draw_SGD_case):
             count = count +1
             cmap_color = cmap(4*count)
