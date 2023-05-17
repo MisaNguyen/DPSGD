@@ -35,9 +35,9 @@ for setting_file in settings:
         if(is_batch_clipping):
             data[k]['microbatch_size'] = data[k]['batch_size']
         elif(is_individual_clipping):
-            data[k]['microbatch_size'] = C
-        data[k]['max_grad_norm'] = base_sigma*pow(1/2,count)
-        data[k]['noise_multiplier'] = base_sigma
+            data[k]['microbatch_size'] = 1
+        data[k]['max_grad_norm'] = C
+        data[k]['noise_multiplier'] = base_sigma*pow(1/2,count)
         # data[k]['learning_rate'] = 0.025
         data[k]['data_sampling'] = data_processing
         print("Key: " + k)

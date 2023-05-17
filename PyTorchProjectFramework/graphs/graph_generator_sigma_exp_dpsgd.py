@@ -75,6 +75,14 @@ if __name__ == "__main__":
             "sigmas": [2*pow(2,i) for i in range(0,31)],
             "s": 64
         }
+        ,
+        {
+            # Setting 5
+            "settings_path": "settings_sigma_dpsgd_super_small_C",
+            "C": 0.95,
+            "sigmas": [2*pow(2,i) for i in range(0,31)],
+            "s": 64
+        }
         # {
         #     # Setting 0
         #     "settings_path": "settings_sigma_dpsgd",
