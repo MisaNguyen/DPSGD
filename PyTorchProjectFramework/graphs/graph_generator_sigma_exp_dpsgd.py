@@ -74,13 +74,12 @@ if __name__ == "__main__":
             "C": 0.00005,
             "sigmas": [2*pow(2,i) for i in range(0,31)],
             "s": 64
-        }
-        ,
+        },
         {
-            # Setting 5
-            "settings_path": "settings_sigma_dpsgd_super_small_C",
+            # Setting 6
+            "settings_path": "settings_vary_sigma",
             "C": 0.95,
-            "sigmas": [2*pow(2,i) for i in range(0,31)],
+            "sigmas": [0.15*pow(1/2,i) for i in range(0,31)],
             "s": 64
         }
         # {
@@ -115,7 +114,7 @@ if __name__ == "__main__":
               "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
     # setting_indexes = [3,4,5] # 0,3,6
-    setting_indexes = [0] # 0,3,6
+    setting_indexes = [6] # 0,3,6
     models_index = 5
     model_name = models[models_index]
     count = 0
@@ -279,7 +278,9 @@ if __name__ == "__main__":
             Draw graphs
             """
 
-
+        sigma_best_index = BC_testing_acc.index(max(BC_testing_acc))
+        sigma_best_max = sigmas[sigma_best_index]
+        print(sigma_best_max)
         # if(draw_training_acc):
         #
         #     plt.subplot(1, number_of_subgraphs, 1)

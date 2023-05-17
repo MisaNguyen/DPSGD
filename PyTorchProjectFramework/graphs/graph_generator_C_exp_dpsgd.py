@@ -46,7 +46,14 @@ if __name__ == "__main__":
             "Cs": [0.005+ 0.005*i for i in range(0,31)],
             "sigma": 0.15,
             "s": 64
-        }
+        },
+        # {
+        #     # Setting 2
+        #     "settings_path": "settings_vary_sigma_old",
+        #     "Cs": [0.15*pow(1/2,i) for i in range(0,31)],
+        #     "sigma": 0.15,
+        #     "s": 64
+        # },
     ]
     # mode = None
     cmap = get_cmap(30)
@@ -71,7 +78,7 @@ if __name__ == "__main__":
               "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
     # setting_indexes = [3,4,5] # 0,3,6
-    setting_indexes = [1] # 0,3,6
+    setting_indexes = [2] # 0,3,6
     models_index = 5
     model_name = models[models_index]
     count = 0
