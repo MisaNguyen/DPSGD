@@ -145,7 +145,7 @@ def main():
     mode = "subsampling"
     # mode = "shuffling"
     # mode = None
-    settings_file = "settings_vary_C_sigma_0"
+    settings_file = "settings_clipping_exp_cifar10_dpsgd"
     logging = True
 
     if (mode != None):

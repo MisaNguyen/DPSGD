@@ -14,12 +14,11 @@ settings = ["settings_clipping_exp_cifar10_dpsgd",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_8",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_p5",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_1p5",]
-settings = ["settings_best_settings"]
-base_sigma = 0.01875
-C = 0.095
+settings = ["settings_vary_C_sigma_0"]
+base_sigma = 0
+C = 0.01
 data_processing = "subsampling"
 # data_processing = "shuffling"
-
 is_batch_clipping = True
 is_individual_clipping = False
 count = 0
@@ -36,7 +35,7 @@ for setting_file in settings:
             data[k]['microbatch_size'] = data[k]['batch_size']
         elif(is_individual_clipping):
             data[k]['microbatch_size'] = 1
-        data[k]['max_grad_norm'] = C
+        data[k]['max_grad_norm'] = C + 0.04*count
         data[k]['noise_multiplier'] = base_sigma
         # data[k]['learning_rate'] = 0.025
         data[k]['data_sampling'] = data_processing

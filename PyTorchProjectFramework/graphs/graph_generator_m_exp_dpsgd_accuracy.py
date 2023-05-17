@@ -35,17 +35,10 @@ if __name__ == "__main__":
     settings = [
         {
             # Setting 0
-            "settings_path": "settings_sigma_dpsgd",
-            "C": 0.005,
-            "sigmas": [2*i for i in range(0,31)],
-            "s": 64
-        },
-        {
-            # Setting 1
-            "settings_path": "settings_sigma_dpsgd_large_sigma",
-            "C": 0.005,
-            "sigmas": [64*i for i in range(1,21)],
-            "s": 64
+            "settings_path": "settings_best_settings",
+            "C": 0.095,
+            "sigma": 0.01875,
+            "ss": [64*i for i in range(0,64)]
         }
         # {
         #     # Setting 0
@@ -67,7 +60,7 @@ if __name__ == "__main__":
     print("DGN:", DGN)
     # DGN = None
     # clipping_mode = ""
-    draw_DPSGD_IC_case = True
+    draw_DPSGD_IC_case = False
     draw_SGD_case = False
     draw_DPSGD_BC_case = True
     draw_mixing_case = False
@@ -82,10 +75,10 @@ if __name__ == "__main__":
     s_index =0
     models_index = 5
     model_name = models[models_index]
-    settings_path, C, sigmas, s = settings[setting_index]["settings_path"], \
+    settings_path, C, sigma, ss = settings[setting_index]["settings_path"], \
                                         settings[setting_index]["C"], \
-                                        settings[setting_index]["sigmas"], \
-                                        settings[setting_index]["s"]
+                                        settings[setting_index]["sigma"], \
+                                        settings[setting_index]["ss"]
     # Partition setting
     partition = False
 
@@ -100,7 +93,7 @@ if __name__ == "__main__":
 
     s_index_min = 1 # min = 1
     s_index_max = 6 # max = 6
-    setting_index = 30
+    setting_index = 1
     settings = ["setting_" + str(setting_index)]
     # settings.append("setting_30")
     # settings = ["setting_" + str(5*s_index+i) for i in range(s_index_min,s_index_max)]
@@ -154,9 +147,28 @@ if __name__ == "__main__":
             print(sgd_data_path)
             SGD_train_accuracy,SGD_test_accuracy = get_data(sgd_data_path)
             if(SGD_test_accuracy!= None):
-                epochs = len(SGD_train_accuracy)
+                SGD_epochs = len(SGD_train_accuracy)
             # DPSGD_SGD_epoch_index = [i for i in range(1, DPSGD_SGD_epochs+1)]
-
+        if(draw_AN):
+            count = count +1
+            cmap_color= cmap(4*count)
+            experiment = "SGD"
+            # bc_data_path  = "./data/" + settings_path + '/' + experiment + '/' + setting +".json"
+            Zhang_data_path  = base_path + '_BC/' + model_name + '/' + experiment \
+                            + '/' + clipping_mode + '/BC/AN/' + setting +".json"
+            # bc_data_path  = base_path + '_BC/' + model_name + '/' + experiment \
+            #                  + '/BC/' + setting +".json"
+            print("Zhang_data_path:",Zhang_data_path)
+            zhang_DPSGD_train_accuracy,zhang_DPSGD_test_accuracy = get_data(Zhang_data_path)
+            print("BC_DPSGD_test_accuracy",zhang_DPSGD_test_accuracy[-5:-1])
+            epochs = len(zhang_DPSGD_test_accuracy)
+            zhang_epochs_idx = [i for i in range(1, epochs+1)]
+            # label = "BC, %s" % ( clipping_mode)
+            label = "Zhang el at"
+            # if (DGN):
+            #     label = label + ", diminishing C"
+            plt.plot(zhang_epochs_idx, zhang_DPSGD_test_accuracy, "o-", label=label, color="blue",linewidth=3)
+            # DPSGD_BC_epoch_index = [i for i in range(1, DPSGD_BC_epochs+1)]
         if(draw_DPSGD_BC_case):
             count = count +1
             cmap_color= cmap(4*count)
@@ -174,12 +186,12 @@ if __name__ == "__main__":
             BC_DPSGD_train_accuracy,BC_DPSGD_test_accuracy = get_data(bc_data_path)
             print("BC_DPSGD_test_accuracy",BC_DPSGD_test_accuracy[-5:-1])
             epochs = len(BC_DPSGD_train_accuracy)
-            epochs_idx = [i for i in range(1, epochs+1)]
+            BC_epochs_idx = [i for i in range(1, epochs+1)]
             # label = "BC, %s" % ( clipping_mode)
             label = "BC"
             # if (DGN):
             #     label = label + ", diminishing C"
-            plt.plot(epochs_idx, BC_DPSGD_test_accuracy, "o-", label=label, color="black",linewidth=3)
+            plt.plot(BC_epochs_idx, BC_DPSGD_test_accuracy, "o-", label=label, color="black",linewidth=3)
             # DPSGD_BC_epoch_index = [i for i in range(1, DPSGD_BC_epochs+1)]
         # else:
         #     s = s*2
@@ -203,12 +215,12 @@ if __name__ == "__main__":
             IC_DPSGD_train_accuracy,IC_DPSGD_test_accuracy = get_data(ic_data_path)
             print("IC_DPSGD_test_accuracy",IC_DPSGD_test_accuracy[-5:-1])
             epochs = len(IC_DPSGD_train_accuracy)
-            epochs_idx = [i for i in range(1, epochs+1)]
+            IC_epochs_idx = [i for i in range(1, epochs+1)]
             # label = "IC, %s" % ( clipping_mode)
             label = "IC"
             # if (DGN):
             #     label = label + ", diminishing C"
-            plt.plot(epochs_idx, IC_DPSGD_test_accuracy, "x--", label=label, color="red",linewidth=3)
+            plt.plot(IC_epochs_idx, IC_DPSGD_test_accuracy, "x--", label=label, color="red",linewidth=3)
             # DPSGD_IC_epoch_index = [i for i in range(1, DPSGD_IC_epochs+1)]
 
 
@@ -230,7 +242,7 @@ if __name__ == "__main__":
     plt.xlabel("Epoch")
     plt.ylabel("accuracy")
 
-    plt.title("$\eta =$ %s, m = %s, C = %s, $\sigma=%s$, E =%s" %  (lr,s,C,sigmas[setting_index],epochs))
+    plt.title("$\eta =$ %s, m = %s, C = %s, $\sigma=%s$, E =%s" %  (lr,ss[setting_index],C,sigma,epochs))
     plt.legend()
         # ic_data_path = base_path + '_IC/' + model_name + '/' + experiment + '/IC/' + setting +".json"
         #
