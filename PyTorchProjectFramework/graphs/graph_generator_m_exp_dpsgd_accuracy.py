@@ -56,7 +56,7 @@ if __name__ == "__main__":
     mode = "subsampling"
     clipping_mode = "layerwise"
     # clipping_mode = "all"
-    DGN = True
+    DGN = False
     print("DGN:", DGN)
     # DGN = None
     # clipping_mode = ""
@@ -67,7 +67,7 @@ if __name__ == "__main__":
     enable_mu = False
     draw_training_acc = False
     constant_ci = False
-    draw_AN = True #Zhang setting
+    draw_AN = False #Zhang setting
     models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet",
               "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
@@ -93,7 +93,7 @@ if __name__ == "__main__":
 
     s_index_min = 1 # min = 1
     s_index_max = 6 # max = 6
-    setting_index = 1
+    setting_index = 3
     settings = ["setting_" + str(setting_index)]
     # settings.append("setting_30")
     # settings = ["setting_" + str(5*s_index+i) for i in range(s_index_min,s_index_max)]

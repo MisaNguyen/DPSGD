@@ -459,38 +459,39 @@ def DP_train(args, model, device, train_loader,optimizer):
         for param in model_clone.parameters():
             delattr(param, 'sum_grad')
         # Update model
-        for layer_idx, (name,param) in enumerate(model.named_parameters()):
-            """
-            Add Gaussian noise to gradients
-            """
-            """--------------STATIC NOISE-----------------"""
-            # dist = torch.distributions.normal.Normal(torch.tensor(0.0),
-            #                                          torch.tensor((2 * args.noise_multiplier *  args.max_grad_norm)))
-            """--------------LAYERWISE NOISE-----------------"""
-            if(args.clipping=="layerwise"):
-                dist = torch.distributions.normal.Normal(torch.tensor(0.0),
-                                                     torch.tensor((2 * args.each_layer_C[layer_idx] *  args.noise_multiplier)))
-            elif(args.clipping=="all"):
-                dist = torch.distributions.normal.Normal(torch.tensor(0.0),
-                torch.tensor((2 * args.max_grad_norm * args.noise_multiplier)))
-            # print(param.grad.shape)
-            # if("test_layer" in name):
-            #     print("layer:", name)
-            #     # print("Before adding noise, grad_norm =", param.grad.data.norm(2))
-            #     print("Before adding noise, grad =", param.grad.data)
-            #     print("Before adding noise, c_i =", args.each_layer_C[layer_idx])
-            #     noise = dist.rsample(param.grad.shape).to(device=device)
-            #     # print("Noise value =", noise)
-            #     param.grad = (param.grad + noise).div(len(micro_train_loader))
-                # print("After clipping, grad_norm =", param.grad.data.norm(2))
-                # print("After adding noise, grad =", param.grad.data)
-                # print("After adding noise, c_i =", args.each_layer_C[layer_idx])
-                # input()
-            noise = dist.rsample(param.grad.shape).to(device=device)
+        if(args.noise_multiplier <= 0):
+            for layer_idx, (name,param) in enumerate(model.named_parameters()):
+                """
+                Add Gaussian noise to gradients
+                """
+                """--------------STATIC NOISE-----------------"""
+                # dist = torch.distributions.normal.Normal(torch.tensor(0.0),
+                #                                          torch.tensor((2 * args.noise_multiplier *  args.max_grad_norm)))
+                """--------------LAYERWISE NOISE-----------------"""
+                if(args.clipping=="layerwise"):
+                    dist = torch.distributions.normal.Normal(torch.tensor(0.0),
+                                                         torch.tensor((2 * args.each_layer_C[layer_idx] *  args.noise_multiplier)))
+                elif(args.clipping=="all"):
+                    dist = torch.distributions.normal.Normal(torch.tensor(0.0),
+                    torch.tensor((2 * args.max_grad_norm * args.noise_multiplier)))
+                # print(param.grad.shape)
+                # if("test_layer" in name):
+                #     print("layer:", name)
+                #     # print("Before adding noise, grad_norm =", param.grad.data.norm(2))
+                #     print("Before adding noise, grad =", param.grad.data)
+                #     print("Before adding noise, c_i =", args.each_layer_C[layer_idx])
+                #     noise = dist.rsample(param.grad.shape).to(device=device)
+                #     # print("Noise value =", noise)
+                #     param.grad = (param.grad + noise).div(len(micro_train_loader))
+                    # print("After clipping, grad_norm =", param.grad.data.norm(2))
+                    # print("After adding noise, grad =", param.grad.data)
+                    # print("After adding noise, c_i =", args.each_layer_C[layer_idx])
+                    # input()
+                noise = dist.rsample(param.grad.shape).to(device=device)
 
-            # Compute noisy grad
-            param.grad = (param.grad + noise).div(len(micro_train_loader))
-            # param.grad = param.grad + noise.div(len(micro_train_loader))
+                # Compute noisy grad
+                param.grad = (param.grad + noise).div(len(micro_train_loader))
+                # param.grad = param.grad + noise.div(len(micro_train_loader))
 
         # Update model with noisy grad
         optimizer.step()
