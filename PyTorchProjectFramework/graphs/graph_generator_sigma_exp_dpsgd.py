@@ -81,7 +81,15 @@ if __name__ == "__main__":
             "C": 0.95,
             "sigmas": [0.15*pow(1/2,i) for i in range(0,31)],
             "s": 64
+        },
+        {
+            # Setting 7
+            "settings_path": "settings_vary_sigma_resnet18",
+            "C": 0.95,
+            "sigmas": [0.01875*pow(2,i) for i in range(0,31)],
+            "s": 64
         }
+
         # {
         #     # Setting 0
         #     "settings_path": "settings_sigma_dpsgd",
@@ -98,7 +106,7 @@ if __name__ == "__main__":
     mode = "subsampling"
     clipping_mode = "layerwise"
     # clipping_mode = "all"
-    DGN = True
+    DGN = False
     print("DGN:", DGN)
     # DGN = None
     # clipping_mode = ""
@@ -109,14 +117,14 @@ if __name__ == "__main__":
     enable_mu = False
     draw_training_acc = False
     constant_ci = False
-    draw_AN = True #Zhang setting
+    draw_AN = False #Zhang setting
     models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet",
               "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
     # setting_indexes = [3,4,5] # 0,3,6
-    setting_indexes = [6] # 0,3,6
-    models_index = 5
-    model_name = models[models_index]
+    setting_indexes = [7] # 0,3,6
+    models_index = 2
+    model_name =models[models_index]
     count = 0
     for idx, setting_index in enumerate(setting_indexes):
         # s_index =0

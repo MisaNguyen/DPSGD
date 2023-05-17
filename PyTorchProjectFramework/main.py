@@ -225,12 +225,12 @@ def main():
     # model = AlexNet(num_classes=10).to(device)
     # model_name = "AlexNet"
     # model = SimpleDLA().to(device)
-    model = nor_convnet(num_classes=10).to(device)
-    model_name = "nor_convnet"
+    # model = nor_convnet(num_classes=10).to(device)
+    # model_name = "nor_convnet"
     # model = convnet(num_classes=10).to(device)
     # model_name = "convnet"
-    # model = ResNet18(num_classes=10).to(device)
-    # model_name = "resnet18"
+    model = ResNet18(num_classes=10).to(device)
+    model_name = "resnet18"
     # summary(model,(3, 32, 32))
     # print(model)
     # input()
