@@ -1,5 +1,6 @@
 
 import torch
+from torchsummary import summary
 import argparse
 import json
 import copy
@@ -16,6 +17,7 @@ from models.resnet_model import ResNet18
 from models.plainnet import PlainNet18
 from models.square_model import SquareNet
 # from models.vgg16 import VGGNet
+
 """DATASETS"""
 
 from datasets.dataset_preprocessing import dataset_preprocessing
@@ -221,10 +223,13 @@ def main():
     # model = AlexNet(num_classes=10).to(device)
     # model_name = "AlexNet"
     # model = SimpleDLA().to(device)
-    # model = convnet(num_classes=10).to(device)
-    # model_name = "convnet"
-    model = ResNet18(num_classes=10).to(device)
-    model_name = "resnet18"
+    model = convnet(num_classes=10).to(device)
+    model_name = "convnet"
+    # model = ResNet18(num_classes=10).to(device)
+    # model_name = "resnet18"
+    summary(model,(3, 32, 32))
+    print(model)
+    # input()
     # model = PlainNet18(num_classes=10).to(device)
     # model_name = "plainnet18"
     # model = LeNet().to(device)

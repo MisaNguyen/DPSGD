@@ -385,6 +385,17 @@ def DP_train(args, model, device, train_loader,optimizer):
             """
             if(args.clipping == "layerwise"):
                 """------------------------------------------------"""
+                # for layer_idx, (name, param) in enumerate(model_clone.named_parameters()):
+                    # if("test_layer" in name):
+                    #     print("layer:", name)
+                    #     print("Before clipping, grad_norm =", param.grad.data.norm(2))
+                    #     print("Before clipping, grad =", param.grad.data)
+                    #     print("Before clipping, c_i =", args.each_layer_C[layer_idx])
+                    #     torch.nn.utils.clip_grad_norm_(param, max_norm=args.each_layer_C[layer_idx])
+                    #     print("After clipping, grad_norm =", param.grad.data.norm(2))
+                    #     print("After clipping, grad =", param.grad.data)
+                    #     print("After clipping, c_i =", args.each_layer_C[layer_idx])
+                        # input()
                 for layer_idx, param in enumerate(model_clone.parameters()):
                     """
                     Clip each layer gradients with args.max_grad_norm
@@ -448,7 +459,7 @@ def DP_train(args, model, device, train_loader,optimizer):
         for param in model_clone.parameters():
             delattr(param, 'sum_grad')
         # Update model
-        for layer_idx, param in enumerate(model.parameters()):
+        for layer_idx, (name,param) in enumerate(model.named_parameters()):
             """
             Add Gaussian noise to gradients
             """
@@ -463,6 +474,18 @@ def DP_train(args, model, device, train_loader,optimizer):
                 dist = torch.distributions.normal.Normal(torch.tensor(0.0),
                 torch.tensor((2 * args.max_grad_norm * args.noise_multiplier)))
             # print(param.grad.shape)
+            # if("test_layer" in name):
+            #     print("layer:", name)
+            #     # print("Before adding noise, grad_norm =", param.grad.data.norm(2))
+            #     print("Before adding noise, grad =", param.grad.data)
+            #     print("Before adding noise, c_i =", args.each_layer_C[layer_idx])
+            #     noise = dist.rsample(param.grad.shape).to(device=device)
+            #     # print("Noise value =", noise)
+            #     param.grad = (param.grad + noise).div(len(micro_train_loader))
+                # print("After clipping, grad_norm =", param.grad.data.norm(2))
+                # print("After adding noise, grad =", param.grad.data)
+                # print("After adding noise, c_i =", args.each_layer_C[layer_idx])
+                # input()
             noise = dist.rsample(param.grad.shape).to(device=device)
 
             # Compute noisy grad

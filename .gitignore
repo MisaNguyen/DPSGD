@@ -16,6 +16,7 @@ PytorchProjectFramework/graphs/data_sum/*
 PytorchProjectFramework/graphs/data_neurips/*
 PytorchProjectFramework/graphs/data_neurips_old/*
 PytorchProjectFramework/graphs/data_neurips_incorrect/*
+PytorchProjectFramework/graphs/data_neurips_clipping_error/*
 PytorchProjectFramework/graphs/data_sum_flaw/*
 PytorchProjectFramework/graphs/data_sum_old/*
 PytorchProjectFramework/graphs/data_sum_FINAL/*
