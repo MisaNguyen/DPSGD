@@ -459,7 +459,7 @@ def DP_train(args, model, device, train_loader,optimizer):
         for param in model_clone.parameters():
             delattr(param, 'sum_grad')
         # Update model
-        if(args.noise_multiplier <= 0):
+        if(args.noise_multiplier > 0):
             for layer_idx, (name,param) in enumerate(model.named_parameters()):
                 """
                 Add Gaussian noise to gradients

@@ -60,14 +60,14 @@ if __name__ == "__main__":
     print("DGN:", DGN)
     # DGN = None
     # clipping_mode = ""
-    draw_DPSGD_IC_case = True
-    draw_SGD_case = False
+    draw_DPSGD_IC_case = False
+    draw_SGD_case = True
     draw_DPSGD_BC_case = True
     draw_mixing_case = False
     enable_mu = False
     draw_training_acc = False
     constant_ci = False
-    draw_AN = True #Zhang setting
+    draw_AN = False #Zhang setting
     models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet",
               "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
@@ -91,10 +91,13 @@ if __name__ == "__main__":
     # settings = ["setting_" + str(i) for i in range(21,26)]
     # settings = ["setting_" + str(i) for i in range(26,31)]
 
-    s_index_min = 1 # min = 1
-    s_index_max = 6 # max = 6
-    setting_index = 1
-    settings = ["setting_" + str(setting_index)]
+    # s_index_min = 1 # min = 1
+    # s_index_max = 6 # max = 6
+    # setting_index = 1
+    # settings = ["setting_" + str(setting_index)]
+    # settings = ["setting_" + str(i) for i in range(1,11)]
+    double_batch_size_settings = [1,2,4,8,17]
+    settings = ["setting_" + str(i) for i in double_batch_size_settings]
     # settings.append("setting_30")
     # settings = ["setting_" + str(5*s_index+i) for i in range(s_index_min,s_index_max)]
     # settings = ["setting_0" ]
@@ -130,7 +133,7 @@ if __name__ == "__main__":
         # Create a new directory because it does not exist
         os.makedirs(graph_path)
         print("The new directory is created: %s" % graph_path)
-    count = 5
+    count = 0
 
     for setting_idx, setting in enumerate(settings):
 
@@ -140,14 +143,20 @@ if __name__ == "__main__":
         """
         Load experiments data
         """
-        if(draw_SGD_case):
+        if(draw_SGD_case and setting_idx == 0):
             experiment = "SGD"
             # sgd_data_path  = base_path + '/' + experiment + '/' + setting +".json"
             sgd_data_path = base_path + '/' + model_name + '/' + experiment + '/SGD/' + setting +".json"
             print(sgd_data_path)
             SGD_train_accuracy,SGD_test_accuracy = get_data(sgd_data_path)
             if(SGD_test_accuracy!= None):
-                SGD_epochs = len(SGD_train_accuracy)
+                epochs = len(SGD_test_accuracy)
+                print("SGD_test_accuracy",SGD_test_accuracy[-5:-1])
+
+                SGD_epochs = [i for i in range(1, epochs+1)]
+                print("SGD_epochs",SGD_epochs)
+                label = "SGD, No DP, m= %s" % (ss[double_batch_size_settings[setting_idx]])
+                plt.plot(SGD_epochs, SGD_test_accuracy, "o-", label=label, color="black",linewidth=3)
             # DPSGD_SGD_epoch_index = [i for i in range(1, DPSGD_SGD_epochs+1)]
         if(draw_AN):
             count = count +1
@@ -171,7 +180,7 @@ if __name__ == "__main__":
             # DPSGD_BC_epoch_index = [i for i in range(1, DPSGD_BC_epochs+1)]
         if(draw_DPSGD_BC_case):
             count = count +1
-            cmap_color= cmap(4*count)
+            cmap_color= cmap(2*count)
             experiment = "SGD"
             # bc_data_path  = "./data/" + settings_path + '/' + experiment + '/' + setting +".json"
             if(DGN):
@@ -187,11 +196,15 @@ if __name__ == "__main__":
             print("BC_DPSGD_test_accuracy",BC_DPSGD_test_accuracy[-5:-1])
             epochs = len(BC_DPSGD_train_accuracy)
             BC_epochs_idx = [i for i in range(1, epochs+1)]
-            # label = "BC, %s" % ( clipping_mode)
-            label = "BC"
+            label = "BC, m= %s" % (ss[double_batch_size_settings[setting_idx]])
+            # if(ss[setting_idx+1] == 64):
+            #     print(len(BC_DPSGD_test_accuracy))
+            #     print(BC_DPSGD_test_accuracy[19])
+            #     print(BC_DPSGD_test_accuracy[49])
+            # label = "BC"
             # if (DGN):
             #     label = label + ", diminishing C"
-            plt.plot(BC_epochs_idx, BC_DPSGD_test_accuracy, "o-", label=label, color="black",linewidth=3)
+            plt.plot(BC_epochs_idx, BC_DPSGD_test_accuracy, "o-", label=label, color=cmap_color,linewidth=3)
             # DPSGD_BC_epoch_index = [i for i in range(1, DPSGD_BC_epochs+1)]
         # else:
         #     s = s*2
@@ -242,7 +255,7 @@ if __name__ == "__main__":
     plt.xlabel("Epoch")
     plt.ylabel("accuracy")
 
-    plt.title("$\eta =$ %s, m = %s, C = %s, $\sigma=%s$, E =%s" %  (lr,ss[setting_index],C,sigma,epochs))
+    plt.title("$\eta =$ %s, C = %s, $\sigma=%s$, E =%s" %  (lr,C,sigma,epochs))
     plt.legend()
         # ic_data_path = base_path + '_IC/' + model_name + '/' + experiment + '/IC/' + setting +".json"
         #

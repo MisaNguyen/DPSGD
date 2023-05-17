@@ -85,7 +85,7 @@ if __name__ == "__main__":
         {
             # Setting 7
             "settings_path": "settings_vary_sigma_resnet18",
-            "C": 0.95,
+            "C": 0.095,
             "sigmas": [0.01875*pow(2,i) for i in range(0,31)],
             "s": 64
         }
@@ -123,7 +123,7 @@ if __name__ == "__main__":
     # Get models and settings
     # setting_indexes = [3,4,5] # 0,3,6
     setting_indexes = [7] # 0,3,6
-    models_index = 2
+    models_index = 5
     model_name =models[models_index]
     count = 0
     for idx, setting_index in enumerate(setting_indexes):
