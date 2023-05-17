@@ -260,7 +260,9 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
             Clip each layer gradients with args.max_grad_norm
             """
             for param in model.parameters:
-                torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.each_layer_C[layer_idx]) # in-place computation, layerwise clipping
+                # print("Before clipping, grad_norm =", param.grad.data.norm(2))
+                torch.nn.utils.clip_grad_norm_(param, max_norm=args.each_layer_C[layer_idx]) # in-place computation, layerwise clipping
+
         elif (args.clipping == "all"):
             """
             Clip entire gradients with args.max_grad_norm
@@ -387,8 +389,14 @@ def DP_train(args, model, device, train_loader,optimizer):
                     """
                     Clip each layer gradients with args.max_grad_norm
                     """
-                    torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.each_layer_C[layer_idx]) # in-place computation, layerwise clipping
-                    """
+                    # print("-"*20)
+                    # print("Before clipping, grad_norm =", param.grad.data.norm(2))
+                    # print("Before clipping, c_i =", args.each_layer_C[layer_idx])
+                    # torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.each_layer_C[layer_idx]) # in-place computation, layerwise clipping
+                    torch.nn.utils.clip_grad_norm_(param, max_norm=args.each_layer_C[layer_idx])
+                    # print("After clipping, grad_norm =", param.grad.data.norm(2))
+                    # print("-"*20)
+                    """ 
                     Accumulate gradients
                     """
                     if not hasattr(param, "sum_grad"):
@@ -433,6 +441,8 @@ def DP_train(args, model, device, train_loader,optimizer):
         for net1, net2 in zip(model.named_parameters(), model_clone.named_parameters()): # (layer_name, value) for each layer
             # input(net2[1])
             net1[1].grad = net2[1].sum_grad
+            # print("After copying grad, grad_norm =", net1[1].grad.data.norm(2))
+            # input()
             # net1[1].grad = net2[1].sum_grad.div(len(micro_train_loader)) # Averaging the gradients
         # Reset sum_grad
         for param in model_clone.parameters():

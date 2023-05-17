@@ -193,7 +193,7 @@ def main():
             args.save_gradient = False
             args.constant_c_i = False
             args.classicalSGD = False
-            args.ci_as_average_norm = True
+            args.ci_as_average_norm = False
     if(logging == True):
         print("Clipping method: ", args.clipping)
 
