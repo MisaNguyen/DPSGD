@@ -12,6 +12,7 @@ import os
 # from models.alexnet_simple import AlexNet
 # from models.simple_dla import SimpleDLA
 from models.convnet_model import convnet
+from models.nor_convnet_model import nor_convnet
 from models.Lenet_model import LeNet
 from models.resnet_model import ResNet18
 from models.plainnet import PlainNet18
@@ -139,12 +140,12 @@ def main():
     """
     Define sampling method here
     """
-    enable_individual_clipping = True
-    enable_batch_clipping = False
+    enable_individual_clipping = False
+    enable_batch_clipping = True
     mode = "subsampling"
     # mode = "shuffling"
     # mode = None
-    settings_file = "settings_vary_sigma_resnet18"
+    settings_file = "settings_vary_C_sigma_0"
     logging = True
 
     if (mode != None):
@@ -175,7 +176,7 @@ def main():
             print("sigma=",args.noise_multiplier)
             args.max_grad_norm = setting_data["max_grad_norm"]
             args.optimizer = setting_data["optimizer"]
-            args.enable_diminishing_gradient_norm = True
+            args.enable_diminishing_gradient_norm = False
             # args.enable_individual_clipping = setting_data["is_individual_clipping"]
             # args.enable_batch_clipping = False
             # args.enable_DP = setting_data["enable_DP"]
@@ -196,6 +197,7 @@ def main():
             args.constant_c_i = False
             args.classicalSGD = False
             args.ci_as_average_norm = False
+            # args.brake_C = True
     if(logging == True):
         print("Clipping method: ", args.clipping)
 
@@ -223,10 +225,12 @@ def main():
     # model = AlexNet(num_classes=10).to(device)
     # model_name = "AlexNet"
     # model = SimpleDLA().to(device)
+    model = nor_convnet(num_classes=10).to(device)
+    model_name = "nor_convnet"
     # model = convnet(num_classes=10).to(device)
     # model_name = "convnet"
-    model = ResNet18(num_classes=10).to(device)
-    model_name = "resnet18"
+    # model = ResNet18(num_classes=10).to(device)
+    # model_name = "resnet18"
     # summary(model,(3, 32, 32))
     # print(model)
     # input()
@@ -395,10 +399,12 @@ def main():
         """
         DECREASE C VALUE
         """
+
         if not args.ci_as_average_norm:
             # args.each_layer_C = compute_layerwise_C_average_norm(C_dataset_loader, dummy_model, at_epoch, device,
             #                                                      dummy_optimizer, args.max_grad_norm,True))
             if(args.enable_DP and args.enable_diminishing_gradient_norm and args.clipping == "layerwise" and not args.opacus_training):
+                # if (args.brake_C):
                 args.max_grad_norm = args.max_grad_norm * args.C_decay
                 # Recompute each layer C
                 if (args.constant_c_i):
