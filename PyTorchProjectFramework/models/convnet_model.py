@@ -42,16 +42,16 @@ class convnet(nn.Module):
             nn.ReLU(),
             nn.AdaptiveAvgPool2d((1, 1)),
         )
-        self.softmax_layer = nn.Sequential(
-            nn.Flatten(start_dim=1, end_dim=-1),
-            # nn.Linear(128,1),
-            nn.Linear(128, num_classes, bias=True),
-            # nn.Linear(1, num_classes, bias=True),
-        )
-        # self.flatten = nn.Flatten(start_dim=1, end_dim=-1)
-        # self.test_layer1 = nn.Linear(128,1)
-        # self.test_layer2 = nn.Linear(1,1)
-        # self.softmax_layer = nn.Linear(1, num_classes, bias=True)
+        # self.softmax_layer = nn.Sequential(
+        #     nn.Flatten(start_dim=1, end_dim=-1),
+        #     # nn.Linear(128,1),
+        #     nn.Linear(128, num_classes, bias=True),
+        #     # nn.Linear(1, num_classes, bias=True),
+        # )
+        self.flatten = nn.Flatten(start_dim=1, end_dim=-1)
+        self.test_layer1 = nn.Linear(128,1)
+        self.test_layer2 = nn.Linear(1,1)
+        self.softmax_layer = nn.Linear(1, num_classes, bias=True)
     def forward(self, x):
         # x = self.layers(x)
         # print("x1=")
@@ -70,11 +70,11 @@ class convnet(nn.Module):
         # print(x.shape)
         # print(x.shape)
         # input()
-        x = self.softmax_layer(x)
-        # x= self.flatten(x)
-        # x= self.test_layer1(x)
-        # x= self.test_layer2(x)
-        # x= self.softmax_layer(x)
+        # x = self.softmax_layer(x)
+        x= self.flatten(x)
+        x= self.test_layer1(x)
+        x= self.test_layer2(x)
+        x= self.softmax_layer(x)
         # print("x5=")
         # print(x.shape)
         # input()

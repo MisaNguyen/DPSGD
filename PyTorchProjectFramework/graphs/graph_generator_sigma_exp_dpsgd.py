@@ -150,7 +150,7 @@ if __name__ == "__main__":
 
         # s_index_min = 1 # min = 1
         # s_index_max = 6 # max = 6
-        settings = ["setting_" + str(i) for i in range(1,11)]
+        settings = ["setting_" + str(i) for i in range(1,9)]
         # settings.append("setting_30")
         # settings = ["setting_" + str(5*s_index+i) for i in range(s_index_min,s_index_max)]
         # settings = ["setting_0" ]
@@ -313,10 +313,11 @@ if __name__ == "__main__":
             count = count +1
             cmap_color = cmap(4*count)
             # label = "BC, %s" % ( clipping_mode)
-            label = "ours, C= %s" % (C)
+            # label = "BC,ALC, C= %s" % (C)
+            label = "BC, ALC"
             # if (DGN):
             #     label = label + ", diminishing C"
-            plt.plot(BC_sigma_arr, BC_testing_acc, "o-", label=label, color=cmap_color,linewidth=3)
+            plt.plot(BC_sigma_arr, BC_testing_acc, "o-", label=label, color="black",linewidth=3)
             plt.subplot(1,number_of_subgraphs,number_of_subgraphs)
             # mu = [np.sqrt(E)/sigma for E in DPSGD_BC_epoch_index]
             # mu_index = DPSGD_BC_epoch_index

@@ -365,9 +365,10 @@ def DP_train(args, model, device, train_loader,optimizer):
         # print("micro batch size =", args.microbatch_size) ### args.microbatch_size = s/m
         micro_train_loader = torch.utils.data.DataLoader(batch, batch_size=args.microbatch_size,
                                                          shuffle=True) # Load each data
-
+        print("Minibatch shape", batch_data.shape)
         """ Original SGD updates"""
         for sample_idx, (data,target) in enumerate(micro_train_loader):
+            print("microbatch shape", data.shape)
             optimizer_clone.zero_grad()
             iteration += 1
             data, target = data.to(device), target.to(device)

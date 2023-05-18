@@ -13,22 +13,31 @@ def compute_f(f1,f2):
 def compute_G(alpha,mu):
     return stats.norm.cdf(stats.norm.ppf(1-alpha) - mu)
 
+def compute_h_sigma(sigma):
+    term_2 = np.exp(pow(-sigma,-2))*stats.norm.cdf(3*pow(sigma,-1)/2)
+    term_3 = 3* stats.norm.cdf(pow(-sigma,-1)/2)
+    return np.sqrt(term_2 + term_3 - 2)
 def main():
     use_fdp = False
-    epoch = 1
-    noise_multi = 2
-    N = 50000 # Cifar 10
+    epoch = 50
+    noise_multi = 0.01875
+    N = 45000 # Cifar 10
     batch_size = 64
     delta = 1/N
     m = N/batch_size
+    # sigma = 0.01875
+
+    # print("Print1",3* stats.norm.cdf(pow(-sigma,-1)/2))
+    # test = compute_h_sigma(sigma)
+    # input(test)
     # gdp_mu = compute_mu_uniform(epoch, noise_multi, N, batch_size)
     gdp_mu = np.sqrt(m/N)/noise_multi
-    our_mu = 1/noise_multi
+    our_mu = 0.38
     print("their",gdp_mu)
     print("our", our_mu)
     #------------------------------#
     alpha = np.linspace(0,1,100)
-    plt.title("N = %s, batch_size = %s, sigma = %s, epoch = %s" % (N,batch_size,noise_multi,epoch))
+    plt.title("N = %s, m = %s, sigma = %s, epoch = %s" % (N,batch_size,noise_multi,epoch))
     #------------------------------#
     indinguishable_line = 1-alpha
     plt.plot(alpha, indinguishable_line, '-g', label='indinguishable_line')
@@ -40,7 +49,7 @@ def main():
         f2 = compute_f2(gdp_eps,delta,alpha)
         f = compute_f(f1,f2)
         # print("f",f)
-        plt.plot(alpha, f, '-r', label='dong el at')
+        # plt.plot(alpha, f, '-r', label='dong el at')
         #------------------------------#
         f1 = compute_f1(our_eps,delta,alpha)
         f2 = compute_f2(our_eps,delta,alpha)
@@ -50,13 +59,13 @@ def main():
         #------------------------------#
     else:
         #------------------------------#
-        G = compute_G(alpha,gdp_mu)
+        # G = compute_G(alpha,gdp_mu)
         # print("f",f)
-        plt.plot(alpha, G, '-r', label='G_((m/N)/sigma)')
+        # plt.plot(alpha, G, '-r', label='G_((m/N)/sigma)')
         #------------------------------#
         G = compute_G(alpha,our_mu)
         # print("f",f)
-        plt.plot(alpha, G, '-b', label='G_(1/sigma)')
+        plt.plot(alpha, G, '-b', label='G_%s' %(our_mu))
         #------------------------------#
 
     plt.legend()
