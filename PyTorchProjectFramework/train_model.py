@@ -250,7 +250,7 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
             #####
         # Computing aH
         for param1, param2 in zip(model.parameters(), model_clone.parameters()):
-            param1.grad.data = torch.sub(param2.grad.data,param1.grad.data).div(args.lr) #aH = (W_m - W_0)/eta
+            param1.grad.data = torch.sub(param2.data,param1.data).div(args.lr) #aH = (W_m - W_0)/eta
 
             """
             Batch clipping each "batch"
