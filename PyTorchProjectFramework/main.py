@@ -146,7 +146,7 @@ def main():
     mode = "subsampling"
     # mode = "shuffling"
     # mode = None
-    settings_file = "settings_classical_BC"
+    settings_file = "settings_classical_BC_small_C"
     logging = True
 
     if (mode != None):
@@ -425,7 +425,7 @@ def main():
         if (epoch > 2):
             if(test_accuracy[-1] <= test_accuracy[-2]):
                 args.lr = args.lr * args.gamma
-                print(args.lr)
+                print("current learning rate:", args.lr)
                 for param_group in optimizer.param_groups:
                     param_group["lr"] = args.lr
     if (args.save_gradient):
