@@ -229,7 +229,7 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
                                    )
         batch = TensorDataset(batch_data,batch_target)
         # print("micro batch size =", args.microbatch_size) ### args.microbatch_size = 1 => Input each data sample
-        micro_train_loader = torch.utils.data.DataLoader(batch, batch_size=1,
+        micro_train_loader = torch.utils.data.DataLoader(batch, batch_size=args.microbatch_size,
                                                          shuffle=True) # Load each data
 
         """ Classical SGD updates"""
@@ -259,7 +259,7 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
             """
             Clip each layer gradients with args.max_grad_norm
             """
-            for param in model.parameters:
+            for layer_idx, param in enumerate(model.parameters()):
                 # print("Before clipping, grad_norm =", param.grad.data.norm(2))
                 torch.nn.utils.clip_grad_norm_(param, max_norm=args.each_layer_C[layer_idx]) # in-place computation, layerwise clipping
 
@@ -300,7 +300,7 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
             noise = dist.rsample(param.grad.shape).to(device=device)
 
             # Compute noisy grad
-            param.grad = (param.grad + noise).div(len(micro_train_loader))
+            param.grad = (param.grad + noise).div(len(micro_train_loader)) # len(micro_train_loader) = number of microbatches
             # param.grad = param.grad + noise.div(len(micro_train_loader))
 
         # Update model with noisy grad

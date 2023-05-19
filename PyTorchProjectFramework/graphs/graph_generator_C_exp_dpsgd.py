@@ -47,6 +47,13 @@ if __name__ == "__main__":
             "sigma": 0.15,
             "s": 64
         },
+        {
+            # Setting 2
+            "settings_path": "settings_vary_C_sigma_0.5",
+            "Cs": [0.05+ 0.05*i for i in range(0,31)],
+            "sigma": 0.5,
+            "s": 64
+        },
         # {
         #     # Setting 2
         #     "settings_path": "settings_vary_sigma_old",
@@ -62,7 +69,7 @@ if __name__ == "__main__":
     mode = "subsampling"
     clipping_mode = "layerwise"
     # clipping_mode = "all"
-    DGN = True
+    DGN = False
     print("DGN:", DGN)
     # DGN = None
     # clipping_mode = ""
@@ -78,7 +85,7 @@ if __name__ == "__main__":
               "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
     # setting_indexes = [3,4,5] # 0,3,6
-    setting_indexes = [1] # 0,3,6
+    setting_indexes = [2] # 0,3,6
     models_index = 5
     model_name = models[models_index]
     count = 0

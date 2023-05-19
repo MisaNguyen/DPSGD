@@ -14,13 +14,14 @@ settings = ["settings_clipping_exp_cifar10_dpsgd",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_8",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_p5",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_1p5",]
-settings = ["settings_vary_C_sigma_0.5"]
+settings = ["settings_classical_BC"]
 base_sigma = 0.5
 C = 0.05
 data_processing = "subsampling"
 # data_processing = "shuffling"
-is_batch_clipping = True
+is_batch_clipping = False
 is_individual_clipping = False
+is_classical_BC = True
 count = 0
 for setting_file in settings:
 # setting_file = settings[0]
@@ -30,11 +31,13 @@ for setting_file in settings:
     f.close()
     """Update elements"""
     for (k, v) in data.items():
-        data[k]['batch_size'] = 64
+        data[k]['batch_size'] = 1024
         if(is_batch_clipping):
             data[k]['microbatch_size'] = data[k]['batch_size']
         elif(is_individual_clipping):
             data[k]['microbatch_size'] = 1
+        elif(is_classical_BC):
+            data[k]['microbatch_size'] = 64
         data[k]['max_grad_norm'] = C+ 0.05 *count
         data[k]['noise_multiplier'] = base_sigma
         # data[k]['learning_rate'] = 0.025
@@ -47,6 +50,8 @@ for setting_file in settings:
         output_file = setting_file + "_" + data_processing +"_BC.json"
     elif(is_individual_clipping):
         output_file = setting_file + "_" + data_processing +"_IC.json"
+    elif(is_classical_BC):
+        output_file = setting_file + "_" + data_processing +"_classical.json"
     else:
         output_file = setting_file + "_" + data_processing +".json"
     with open(output_file, "w") as data_file:

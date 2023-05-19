@@ -141,11 +141,12 @@ def main():
     Define sampling method here
     """
     enable_individual_clipping = False
-    enable_batch_clipping = True
+    enable_batch_clipping = False
+    enable_classical_BC = True
     mode = "subsampling"
     # mode = "shuffling"
     # mode = None
-    settings_file = "settings_vary_C_sigma_0.5"
+    settings_file = "settings_classical_BC"
     logging = True
 
     if (mode != None):
@@ -155,6 +156,8 @@ def main():
         settings_file = settings_file + "_IC"
     elif(enable_batch_clipping):
         settings_file = settings_file + "_BC"
+    elif(enable_classical_BC):
+        settings_file = settings_file + "_classical"
     print("Running setting: %s.json" % settings_file)
     if(args.load_setting != ""):
         with open(settings_file +".json", "r") as json_file:
@@ -195,13 +198,16 @@ def main():
             args.opacus_training = False
             args.save_gradient = False
             args.constant_c_i = False
-            args.classicalSGD = False
+            # args.classicalSGD = False
             args.ci_as_average_norm = False
             # args.brake_C = True
     if(logging == True):
         print("Clipping method: ", args.clipping)
 
-    print("Mode: DGN (%s), IC (%s)" %  (args.enable_diminishing_gradient_norm, args.enable_individual_clipping))
+    print("Mode: DGN (%s), IC (%s), BC (%s), classical(%s), AN( %s)" %  \
+          (args.enable_diminishing_gradient_norm, enable_individual_clipping, \
+           enable_batch_clipping, enable_classical_BC, \
+           args.ci_as_average_norm))
 
     use_cuda = not args.no_cuda and torch.cuda.is_available()
 
@@ -352,9 +358,8 @@ def main():
             elif(args.microbatch_size == args.batch_size):
                 print("Batch clipping")
                 out_file_path = out_file_path + "/BC"
-                if(args.classicalSGD):
-                    out_file_path = out_file_path + "/classical"
-
+            elif(enable_classical_BC):
+                out_file_path = out_file_path + "/classical"
             else:
                 print("Normal Mode")
                 out_file_path = out_file_path + "/NM"
@@ -381,7 +386,7 @@ def main():
                 print("Opacus training")
                 train_acc, gradient_stats = train_model.train(args, model, device, train_loader, optimizer,epoch)
                 train_accuracy.append(train_acc)
-            elif(args.classicalSGD and enable_batch_clipping):
+            elif(enable_classical_BC):
                 print("Classical training")
                 train_accuracy.append(train_model.DP_train_classical(args, model, device, train_loader, optimizer))
             else:
