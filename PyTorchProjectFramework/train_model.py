@@ -250,7 +250,7 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
             #####
         # Computing aH
         for param1, param2 in zip(model.parameters(), model_clone.parameters()):
-            param1.grad.data = torch.sub(param2.data,param1.data).div(args.lr) #aH = (W_m - W_0)/eta
+            param1.grad= torch.sub(param2.data,param1.data).div(args.lr) #aH = (W_m - W_0)/eta
 
             """
             Batch clipping each "batch"
@@ -365,10 +365,10 @@ def DP_train(args, model, device, train_loader,optimizer):
         # print("micro batch size =", args.microbatch_size) ### args.microbatch_size = s/m
         micro_train_loader = torch.utils.data.DataLoader(batch, batch_size=args.microbatch_size,
                                                          shuffle=True) # Load each data
-        print("Minibatch shape", batch_data.shape)
+        # print("Minibatch shape", batch_data.shape)
         """ Original SGD updates"""
         for sample_idx, (data,target) in enumerate(micro_train_loader):
-            print("microbatch shape", data.shape)
+            # print("microbatch shape", data.shape)
             optimizer_clone.zero_grad()
             iteration += 1
             data, target = data.to(device), target.to(device)

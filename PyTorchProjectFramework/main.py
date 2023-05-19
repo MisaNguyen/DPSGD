@@ -141,12 +141,12 @@ def main():
     Define sampling method here
     """
     enable_individual_clipping = False
-    enable_batch_clipping = False
-    enable_classical_BC = True
+    enable_batch_clipping = True
+    enable_classical_BC = False
     mode = "subsampling"
     # mode = "shuffling"
     # mode = None
-    settings_file = "settings_classical_BC_small_C"
+    settings_file = "settings_vary_C_convnet"
     logging = True
 
     if (mode != None):
@@ -231,12 +231,12 @@ def main():
     # model = AlexNet(num_classes=10).to(device)
     # model_name = "AlexNet"
     # model = SimpleDLA().to(device)
-    # model = nor_convnet(num_classes=10).to(device)
-    # model_name = "nor_convnet"
+    model = nor_convnet(num_classes=10).to(device)
+    model_name = "nor_convnet"
     # model = convnet(num_classes=10).to(device)
     # model_name = "convnet"
-    model = ResNet18(num_classes=10).to(device)
-    model_name = "resnet18"
+    # model = ResNet18(num_classes=10).to(device)
+    # model_name = "resnet18"
     # summary(model,(3, 32, 32))
     # print(model)
     # input()
@@ -264,7 +264,7 @@ def main():
     # BNF_nor_convnet_model
     # model = BNF_convnet(num_classes=10).to(device)
     # model_name = "BNF_convnet"
-
+    print("Training with model:", model_name)
     optimizer = get_optimizer(args.optimizer,model ,args.lr)
     """VGG 16 """
     # arch = [64, 64, 'M',
