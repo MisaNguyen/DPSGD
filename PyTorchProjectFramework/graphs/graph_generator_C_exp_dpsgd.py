@@ -68,6 +68,13 @@ if __name__ == "__main__":
             "sigma": 0.5,
             "s": 1024
         },
+        {
+            # Setting 5
+            "settings_path": "settings_vary_super_small_C_convnet_sigma_0.5",
+            "Cs": [0.005+ 0.005*i for i in range(0,31)],
+            "sigma": 0.5,
+            "s": 64
+        },
         # {
         #     # Setting 2
         #     "settings_path": "settings_vary_sigma_old",
@@ -99,11 +106,11 @@ if __name__ == "__main__":
               "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
     # setting_indexes = [3,4,5] # 0,3,6
-    setting_indexes = [3,4] # 0,3,6
+    setting_indexes = [5] # 0,3,6
     models_index = 2
     model_name = models[models_index]
     count = 0
-
+    max_Epochs = 50
 
     for idx, setting_index in enumerate(setting_indexes):
         # s_index =0
@@ -189,9 +196,13 @@ if __name__ == "__main__":
                 print(sgd_data_path)
                 SGD_train_accuracy,SGD_test_accuracy = get_data(sgd_data_path)
                 if(SGD_test_accuracy!= None):
-                    sgd_testing_acc.append(max(SGD_test_accuracy[-5:-1]))
+                    if (max_Epochs < len(SGD_test_accuracy)):
+                        sgd_testing_acc.append(max(SGD_test_accuracy[max_Epochs-5: max_Epochs]))
+                        epochs = max_Epochs
+                    else:
+                        sgd_testing_acc.append(max(SGD_test_accuracy[-5: -1]))
+                        epochs = len(SGD_test_accuracy)
                     sgd_C_arr.append(Cs[setting_idx])
-                    epochs = len(SGD_train_accuracy)
                 # DPSGD_SGD_epoch_index = [i for i in range(1, DPSGD_SGD_epochs+1)]
 
             if(draw_DPSGD_BC_case):
@@ -214,18 +225,26 @@ if __name__ == "__main__":
                     AN_BC_DPSGD_train_accuracy,AN_BC_DPSGD_test_accuracy = get_data(AN_bc_data_path)
 
                     if(AN_BC_DPSGD_test_accuracy!= None):
-                        AN_BC_testing_acc.append(max(AN_BC_DPSGD_test_accuracy[-5:-1]))
+                        if (max_Epochs < len(AN_BC_DPSGD_test_accuracy)):
+                            AN_BC_testing_acc.append(max(AN_BC_DPSGD_test_accuracy[max_Epochs-5: max_Epochs]))
+                            epochs = max_Epochs
+                        else:
+                            AN_BC_testing_acc.append(max(AN_BC_DPSGD_test_accuracy[-5: -1]))
+                            epochs = len(AN_BC_DPSGD_test_accuracy)
                         AN_BC_C_arr.append(Cs[setting_idx])
-                        epochs = len(AN_BC_DPSGD_test_accuracy)
                 bc_data_path  = bc_data_path + setting +".json"
                 # bc_data_path  = base_path + '_BC/' + model_name + '/' + experiment \
                 #                  + '/BC/' + setting +".json"
                 print("bc_data_path:",bc_data_path)
                 BC_DPSGD_train_accuracy,BC_DPSGD_test_accuracy = get_data(bc_data_path)
                 if(BC_DPSGD_test_accuracy!= None):
-                    BC_testing_acc.append(max(BC_DPSGD_test_accuracy[-5:-1]))
+                    if (max_Epochs < len(BC_DPSGD_train_accuracy)):
+                        BC_testing_acc.append(max(BC_DPSGD_test_accuracy[max_Epochs-5: max_Epochs]))
+                        epochs = max_Epochs
+                    else:
+                        BC_testing_acc.append(max(BC_DPSGD_test_accuracy[-5: -1]))
+                        epochs = len(BC_DPSGD_train_accuracy)
                     BC_C_arr.append(Cs[setting_idx])
-                    epochs = len(BC_DPSGD_train_accuracy)
                 # DPSGD_BC_epoch_index = [i for i in range(1, DPSGD_BC_epochs+1)]
             # else:
             #     s = s*2
@@ -246,9 +265,13 @@ if __name__ == "__main__":
                 print(ic_data_path)
                 IC_DPSGD_train_accuracy,IC_DPSGD_test_accuracy = get_data(ic_data_path)
                 if(IC_DPSGD_test_accuracy!= None):
-                    IC_testing_acc.append(max(IC_DPSGD_test_accuracy[-5:-1]))
+                    if (max_Epochs < len(IC_testing_acc)):
+                        sgd_testing_acc.append(max(IC_testing_acc[max_Epochs-5: max_Epochs]))
+                        epochs = max_Epochs
+                    else:
+                        sgd_testing_acc.append(max(IC_testing_acc[-5: -1]))
+                        epochs = len(IC_testing_acc)
                     IC_C_arr.append(Cs[setting_idx])
-                    epochs = len(IC_DPSGD_train_accuracy)
                 # DPSGD_IC_epoch_index = [i for i in range(1, DPSGD_IC_epochs+1)]
 
             # if(draw_mixing_case):
@@ -275,7 +298,7 @@ if __name__ == "__main__":
         # Get max index
         C_max_index = BC_testing_acc.index(max(BC_testing_acc))
         C_max = Cs[C_max_index]
-        print(C_max)
+        print("C_best=",C_max)
         if(draw_SGD_case):
             count = count +1
             cmap_color = cmap(4*count)
@@ -343,14 +366,14 @@ if __name__ == "__main__":
         #     plt.title('Test accuracy, lr = %s' % (str(lr).strip('0')))
         # if(draw_SGD_case):
         #     plt.plot(SGD_epoch_index, SGD_test_accuracy, label="SGD, s= %d" % (s), color=cmap_color)
-        #     print("SGD test acc:", SGD_test_accuracy[-5:-1])
+        #     print("SGD test acc:", SGD_test_accuracy[max_Epochs-5: max_Epochs])
         # if(draw_DPSGD_BC_case):
         #     plt.plot(DPSGD_BC_epoch_index, BC_DPSGD_test_accuracy, "o-", label="BC,", color=cmap_color)
-        #     print("BC test acc:", BC_DPSGD_test_accuracy[-5:-1])
+        #     print("BC test acc:", BC_DPSGD_test_accuracy[max_Epochs-5: max_Epochs])
         # if(draw_DPSGD_IC_case):
         #     print("HERE")
         #     plt.plot(DPSGD_IC_epoch_index, IC_DPSGD_test_accuracy, "x-",label="IC, m= %d, %s" % (s,clipping_mode), color=cmap_color)
-        #     print("IC test acc:", IC_DPSGD_test_accuracy[-5:-1])
+        #     print("IC test acc:", IC_DPSGD_test_accuracy[max_Epochs-5: max_Epochs])
         #     # clipping_mode = "all"
         #     # if(DGN):
         #     #     ic_data_path  = base_path + '_IC/' + model_name + '/' + experiment \
@@ -372,7 +395,7 @@ if __name__ == "__main__":
         #
         # if(draw_mixing_case):
         #     plt.plot(DPSGD_Mixing_epoch_index, Mixing_DPSGD_test_accuracy, "x-",label="MC, ", color=cmap_color)
-        #     print("Mixing test acc:", Mixing_DPSGD_test_accuracy[-5:-1])
+        #     print("Mixing test acc:", Mixing_DPSGD_test_accuracy[max_Epochs-5: max_Epochs])
         # plt.legend()
         # if(enable_mu):
         #     if(draw_DPSGD_BC_case or draw_DPSGD_IC_case or draw_mixing_case):

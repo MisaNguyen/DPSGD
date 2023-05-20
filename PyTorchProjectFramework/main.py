@@ -138,13 +138,21 @@ def main():
     args = parser.parse_args()
     #Add setting path here
     """
-    Define sampling method here
+    Define sampling mode here
+    """
+    mode = "subsampling"
+    # mode = "shuffling"
+    """
+    Define clipping mode here
     """
     enable_individual_clipping = False
     enable_batch_clipping = True
     enable_classical_BC = False
-    mode = "subsampling"
-    # mode = "shuffling"
+    """
+    Define stepsize mode here
+    """
+    train_with_constant_step_size = False
+
     # mode = None
     settings_file = "settings_vary_super_small_C_convnet_sigma_0.5"
     logging = True
@@ -158,6 +166,8 @@ def main():
         settings_file = settings_file + "_BC"
     elif(enable_classical_BC):
         settings_file = settings_file + "_classical"
+    if(train_with_constant_step_size):
+        settings_file = settings_file + "_css"
     print("Running setting: %s.json" % settings_file)
     if(args.load_setting != ""):
         with open(settings_file +".json", "r") as json_file:
@@ -372,7 +382,7 @@ def main():
         out_file_path = out_file_path + "/SGD"
 
     # epochs = math.ceil(args.iterations* args.batch_size / dataset_size)
-    epochs = 10 #TODO: remove to calculated based on iterations
+    epochs = 50 #TODO: remove to calculated based on iterations
     print("Total epochs: %f" % epochs)
     print("Saving data to: %s" % out_file_path)
     # print("Saving data to: %s" % out_file_path)
