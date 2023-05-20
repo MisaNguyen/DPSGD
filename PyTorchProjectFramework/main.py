@@ -146,7 +146,7 @@ def main():
     mode = "subsampling"
     # mode = "shuffling"
     # mode = None
-    settings_file = "settings_vary_C_convnet_sigma_0.5"
+    settings_file = "settings_vary_super_small_C_convnet_sigma_0.5"
     logging = True
 
     if (mode != None):

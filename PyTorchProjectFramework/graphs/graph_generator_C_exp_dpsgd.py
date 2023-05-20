@@ -54,6 +54,20 @@ if __name__ == "__main__":
             "sigma": 0.5,
             "s": 64
         },
+        {
+            # Setting 3
+            "settings_path": "settings_vary_C_convnet",
+            "Cs": [0.05+ 0.05*i for i in range(0,31)],
+            "sigma": 0.01875,
+            "s": 1024
+        },
+        {
+            # Setting 4
+            "settings_path": "settings_vary_C_convnet_sigma_0.5",
+            "Cs": [0.05+ 0.05*i for i in range(0,31)],
+            "sigma": 0.5,
+            "s": 1024
+        },
         # {
         #     # Setting 2
         #     "settings_path": "settings_vary_sigma_old",
@@ -80,13 +94,13 @@ if __name__ == "__main__":
     enable_mu = False
     draw_training_acc = False
     constant_ci = False
-    draw_AN = True #Zhang setting
+    draw_AN = False #Zhang setting
     models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet",
               "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
     # setting_indexes = [3,4,5] # 0,3,6
-    setting_indexes = [2] # 0,3,6
-    models_index = 5
+    setting_indexes = [3,4] # 0,3,6
+    models_index = 2
     model_name = models[models_index]
     count = 0
 

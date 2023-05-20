@@ -14,9 +14,9 @@ settings = ["settings_clipping_exp_cifar10_dpsgd",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_8",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_p5",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_1p5",]
-settings = ["settings_vary_C_convnet_sigma_0.5"]
+settings = ["settings_vary_super_small_C_convnet_sigma_0.5"]
 base_sigma = 0.5
-C = 0.05
+C = 0.005
 data_processing = "subsampling"
 # data_processing = "shuffling"
 is_batch_clipping = True
@@ -31,14 +31,14 @@ for setting_file in settings:
     f.close()
     """Update elements"""
     for (k, v) in data.items():
-        data[k]['batch_size'] = 1024
+        data[k]['batch_size'] = 64
         if(is_batch_clipping):
             data[k]['microbatch_size'] = data[k]['batch_size']
         elif(is_individual_clipping):
             data[k]['microbatch_size'] = 1
         elif(is_classical_BC):
             data[k]['microbatch_size'] = 64
-        data[k]['max_grad_norm'] = C+ 0.05 *count
+        data[k]['max_grad_norm'] = C+ 0.005 *count
         data[k]['noise_multiplier'] = base_sigma
         # data[k]['learning_rate'] = 0.025
         data[k]['data_sampling'] = data_processing
