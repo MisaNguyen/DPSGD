@@ -38,8 +38,16 @@ if __name__ == "__main__":
             "settings_path": "settings_best_settings",
             "C": 0.095,
             "sigma": 0.01875,
-            "ss": [64*i for i in range(0,64)]
+            "ss": [64*i for i in range(0,31)]
+        },
+        {
+            # Setting 1
+            "settings_path": "settings_best_settings_convnet",
+            "C": 0.14,
+            "sigma": 0.5,
+            "ss": [64+ 64*i for i in range(0,31)]
         }
+
         # {
         #     # Setting 0
         #     "settings_path": "settings_sigma_dpsgd",
@@ -71,9 +79,9 @@ if __name__ == "__main__":
     models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet",
               "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
-    setting_index = 0 # 0,3,6
+    setting_index = 1 # 0,3,6
     s_index =0
-    models_index = 5
+    models_index = 2
     model_name = models[models_index]
     settings_path, C, sigma, ss = settings[setting_index]["settings_path"], \
                                         settings[setting_index]["C"], \
@@ -96,7 +104,7 @@ if __name__ == "__main__":
     # setting_index = 1
     # settings = ["setting_" + str(setting_index)]
     # settings = ["setting_" + str(i) for i in range(1,11)]
-    double_batch_size_settings = [1,2,4,8,17]
+    double_batch_size_settings = [1,2,4,8,16]
     settings = ["setting_" + str(i) for i in double_batch_size_settings]
     # settings.append("setting_30")
     # settings = ["setting_" + str(5*s_index+i) for i in range(s_index_min,s_index_max)]

@@ -43,7 +43,7 @@ for setting_file in settings:
     f.close()
     """Update elements"""
     for (k, v) in data.items():
-        data[k]['batch_size'] = 64 + 64*count
+        data[k]['batch_size'] = 64 + 64*(count-1)
         if(is_batch_clipping):
             data[k]['microbatch_size'] = data[k]['batch_size']
         elif(is_individual_clipping):
@@ -70,6 +70,7 @@ for setting_file in settings:
     else:
         output_file = setting_file + "_" + data_processing
     if(is_constant_step_size):
-        output_file = setting_file + "_" + data_processing +"_css"
+        output_file = output_file +"_css"
+    print("output_file:", output_file + ".json")
     with open(output_file + ".json", "w") as data_file:
         json.dump(data, data_file,indent=2)

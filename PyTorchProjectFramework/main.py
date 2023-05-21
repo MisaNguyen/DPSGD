@@ -145,8 +145,8 @@ def main():
     """
     Define clipping mode here
     """
-    enable_individual_clipping = False
-    enable_batch_clipping = True
+    enable_individual_clipping = True
+    enable_batch_clipping = False
     enable_classical_BC = False
     """
     Define stepsize mode here
@@ -154,7 +154,7 @@ def main():
     train_with_constant_step_size = False
 
     # mode = None
-    settings_file = "settings_vary_super_small_C_convnet_sigma_0.5"
+    settings_file = "settings_best_settings_convnet"
     logging = True
 
     if (mode != None):
@@ -430,14 +430,14 @@ def main():
                                                         optimizer, args.max_grad_norm,False)
                 print("each_layer_C", args.each_layer_C)
         """
-        Update learning rate if test_accuracy does not increase
+        Update learning rate after each epoch
         """
-        if (epoch > 2):
-            if(test_accuracy[-1] <= test_accuracy[-2]):
-                args.lr = args.lr * args.gamma
-                print("current learning rate:", args.lr)
-                for param_group in optimizer.param_groups:
-                    param_group["lr"] = args.lr
+        if (args.gamma < 1):
+            # if(test_accuracy[-1] <= test_accuracy[-2]):
+            args.lr = args.lr * args.gamma
+            print("current learning rate:", args.lr)
+            for param_group in optimizer.param_groups:
+                param_group["lr"] = args.lr
     if (args.save_gradient):
         grad_out_file_path = out_file_path + "/grad"
         json_to_file(grad_out_file_path, args.load_setting, grad_array)
