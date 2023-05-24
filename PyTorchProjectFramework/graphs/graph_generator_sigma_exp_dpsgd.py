@@ -157,7 +157,7 @@ if __name__ == "__main__":
 
         # s_index_min = 1 # min = 1
         # s_index_max = 6 # max = 6
-        settings = ["setting_" + str(i) for i in range(1,9)]
+        settings = ["setting_" + str(i) for i in range(1,30)]
         # settings.append("setting_30")
         # settings = ["setting_" + str(5*s_index+i) for i in range(s_index_min,s_index_max)]
         # settings = ["setting_0" ]
@@ -295,6 +295,8 @@ if __name__ == "__main__":
 
         sigma_best_index = BC_testing_acc.index(max(BC_testing_acc))
         sigma_best_max = sigmas[sigma_best_index]
+        print("BC_testing_acc", BC_testing_acc[-5:-1])
+        print("BC_sigma_arr", BC_sigma_arr[-5:-1])
         print(sigma_best_max)
         # if(draw_training_acc):
         #
