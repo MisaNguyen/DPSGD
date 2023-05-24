@@ -88,6 +88,13 @@ if __name__ == "__main__":
             "C": 0.095,
             "sigmas": [0.01875*pow(2,i) for i in range(0,31)],
             "s": 64
+        },
+        {
+            # Setting 8
+            "settings_path": "settings_vary_sigma_LeNet",
+            "C": 0.2,
+            "sigmas": [0.1 + 0.1*i for i in range(0,31)],
+            "s": 64
         }
 
         # {
@@ -118,12 +125,12 @@ if __name__ == "__main__":
     draw_training_acc = False
     constant_ci = False
     draw_AN = False #Zhang setting
-    models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet",
+    models = ["Lenet","nor_Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet",
               "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
     # setting_indexes = [3,4,5] # 0,3,6
-    setting_indexes = [7] # 0,3,6
-    models_index = 5
+    setting_indexes = [8] # 0,3,6
+    models_index = 1
     model_name =models[models_index]
     count = 0
     for idx, setting_index in enumerate(setting_indexes):

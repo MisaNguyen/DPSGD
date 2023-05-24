@@ -33,7 +33,7 @@ is_classical_BC = False
 """
 Stepsize mode
 """
-is_constant_step_size = True
+is_constant_step_size = False
 count = 0
 for setting_file in settings:
 # setting_file = settings[0]
@@ -54,7 +54,7 @@ for setting_file in settings:
         if(is_constant_step_size):
             data[k]['gamma'] = 1
         data[k]['max_grad_norm'] = C
-        data[k]['noise_multiplier'] = base_sigma + 0.1*count
+        data[k]['noise_multiplier'] = base_sigma *pow(2,count)
         # data[k]['learning_rate'] = 0.025
         data[k]['data_sampling'] = data_processing
         print("Key: " + k)
