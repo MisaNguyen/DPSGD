@@ -1,7 +1,7 @@
 {
   "setting_0": {
-    "batch_size": 0,
-    "microbatch_size": 0,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 5000,
     "learning_rate": 0.001,
@@ -11,7 +11,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 0.01,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -31,7 +31,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 0.02,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -40,8 +40,8 @@
     "data_sampling": "subsampling"
   },
   "setting_2": {
-    "batch_size": 128,
-    "microbatch_size": 128,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -51,7 +51,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 0.04,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -60,8 +60,8 @@
     "data_sampling": "subsampling"
   },
   "setting_3": {
-    "batch_size": 192,
-    "microbatch_size": 192,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -71,7 +71,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 0.08,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -80,8 +80,8 @@
     "data_sampling": "subsampling"
   },
   "setting_4": {
-    "batch_size": 256,
-    "microbatch_size": 256,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -91,7 +91,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 0.16,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -100,8 +100,8 @@
     "data_sampling": "subsampling"
   },
   "setting_5": {
-    "batch_size": 320,
-    "microbatch_size": 320,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -111,7 +111,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 0.32,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -120,8 +120,8 @@
     "data_sampling": "subsampling"
   },
   "setting_6": {
-    "batch_size": 384,
-    "microbatch_size": 384,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -131,7 +131,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 0.64,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -140,8 +140,8 @@
     "data_sampling": "subsampling"
   },
   "setting_7": {
-    "batch_size": 448,
-    "microbatch_size": 448,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -151,7 +151,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 1.28,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -160,8 +160,8 @@
     "data_sampling": "subsampling"
   },
   "setting_8": {
-    "batch_size": 512,
-    "microbatch_size": 512,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -171,7 +171,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 2.56,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -180,8 +180,8 @@
     "data_sampling": "subsampling"
   },
   "setting_9": {
-    "batch_size": 576,
-    "microbatch_size": 576,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -191,7 +191,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 5.12,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -200,8 +200,8 @@
     "data_sampling": "subsampling"
   },
   "setting_10": {
-    "batch_size": 640,
-    "microbatch_size": 640,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -211,7 +211,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 10.24,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -220,8 +220,8 @@
     "data_sampling": "subsampling"
   },
   "setting_11": {
-    "batch_size": 704,
-    "microbatch_size": 704,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -231,7 +231,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 20.48,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -240,8 +240,8 @@
     "data_sampling": "subsampling"
   },
   "setting_12": {
-    "batch_size": 768,
-    "microbatch_size": 768,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -251,7 +251,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 40.96,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -260,8 +260,8 @@
     "data_sampling": "subsampling"
   },
   "setting_13": {
-    "batch_size": 832,
-    "microbatch_size": 832,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -271,7 +271,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 81.92,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -280,8 +280,8 @@
     "data_sampling": "subsampling"
   },
   "setting_14": {
-    "batch_size": 896,
-    "microbatch_size": 896,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -291,7 +291,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 163.84,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -300,8 +300,8 @@
     "data_sampling": "subsampling"
   },
   "setting_15": {
-    "batch_size": 960,
-    "microbatch_size": 960,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -311,7 +311,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 327.68,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -320,8 +320,8 @@
     "data_sampling": "subsampling"
   },
   "setting_16": {
-    "batch_size": 1024,
-    "microbatch_size": 1024,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -331,7 +331,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 655.36,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -340,8 +340,8 @@
     "data_sampling": "subsampling"
   },
   "setting_17": {
-    "batch_size": 1088,
-    "microbatch_size": 1088,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -351,7 +351,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 1310.72,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -360,8 +360,8 @@
     "data_sampling": "subsampling"
   },
   "setting_18": {
-    "batch_size": 1152,
-    "microbatch_size": 1152,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -371,7 +371,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 2621.44,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -380,8 +380,8 @@
     "data_sampling": "subsampling"
   },
   "setting_19": {
-    "batch_size": 1216,
-    "microbatch_size": 1216,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -391,7 +391,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 5242.88,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -400,8 +400,8 @@
     "data_sampling": "subsampling"
   },
   "setting_20": {
-    "batch_size": 1280,
-    "microbatch_size": 1280,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -411,7 +411,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 10485.76,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -420,8 +420,8 @@
     "data_sampling": "subsampling"
   },
   "setting_21": {
-    "batch_size": 1344,
-    "microbatch_size": 1344,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -431,7 +431,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 20971.52,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -440,8 +440,8 @@
     "data_sampling": "subsampling"
   },
   "setting_22": {
-    "batch_size": 1408,
-    "microbatch_size": 1408,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -451,7 +451,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 41943.04,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -460,8 +460,8 @@
     "data_sampling": "subsampling"
   },
   "setting_23": {
-    "batch_size": 1472,
-    "microbatch_size": 1472,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -471,7 +471,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 83886.08,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -480,8 +480,8 @@
     "data_sampling": "subsampling"
   },
   "setting_24": {
-    "batch_size": 1536,
-    "microbatch_size": 1536,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -491,7 +491,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 167772.16,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -500,8 +500,8 @@
     "data_sampling": "subsampling"
   },
   "setting_25": {
-    "batch_size": 1600,
-    "microbatch_size": 1600,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -511,7 +511,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 335544.32,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -520,8 +520,8 @@
     "data_sampling": "subsampling"
   },
   "setting_26": {
-    "batch_size": 1664,
-    "microbatch_size": 1664,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -531,7 +531,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 671088.64,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -540,8 +540,8 @@
     "data_sampling": "subsampling"
   },
   "setting_27": {
-    "batch_size": 1728,
-    "microbatch_size": 1728,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -551,7 +551,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 1342177.28,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -560,8 +560,8 @@
     "data_sampling": "subsampling"
   },
   "setting_28": {
-    "batch_size": 1792,
-    "microbatch_size": 1792,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -571,7 +571,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 2684354.56,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -580,8 +580,8 @@
     "data_sampling": "subsampling"
   },
   "setting_29": {
-    "batch_size": 1856,
-    "microbatch_size": 1856,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -591,7 +591,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 5368709.12,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -600,8 +600,8 @@
     "data_sampling": "subsampling"
   },
   "setting_30": {
-    "batch_size": 1920,
-    "microbatch_size": 1920,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -611,7 +611,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 10737418.24,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,
@@ -620,8 +620,8 @@
     "data_sampling": "subsampling"
   },
   "setting_31": {
-    "batch_size": 1984,
-    "microbatch_size": 1984,
+    "batch_size": 64,
+    "microbatch_size": 64,
     "test_batch_size": 1000,
     "iterations": 10000,
     "learning_rate": 0.025,
@@ -631,7 +631,7 @@
     "seed": 1,
     "log_interval": 10,
     "save_model": false,
-    "noise_multiplier": 0.5,
+    "noise_multiplier": 21474836.48,
     "max_grad_norm": 0.14,
     "optimizer": "SGD",
     "enable_DP": true,

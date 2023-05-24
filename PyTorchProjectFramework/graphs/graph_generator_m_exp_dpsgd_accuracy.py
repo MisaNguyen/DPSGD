@@ -46,6 +46,13 @@ if __name__ == "__main__":
             "C": 0.14,
             "sigma": 0.5,
             "ss": [0+ 64*i for i in range(0,31)]
+        },
+        {
+            # Setting 1
+            "settings_path": "settings_best_settings_LeNet",
+            "C": 0.2,
+            "sigma": 2.5,
+            "ss": [64*i for i in range(0,31)]
         }
 
         # {
@@ -77,12 +84,12 @@ if __name__ == "__main__":
     constant_ci = False
     draw_AN = False #Zhang setting
     is_constant_step_size = False
-    models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet",
+    models = ["Lenet","nor_Lenet" ,"convnet","nor_convnet","BNF_convnet", "AlexNet",
               "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
-    setting_index = 1 # 0,3,6
+    setting_index = 2 # 0,3,6
     s_index =0
-    models_index = 2
+    models_index = 1
     model_name = models[models_index]
     settings_path, C, sigma, ss = settings[setting_index]["settings_path"], \
                                         settings[setting_index]["C"], \

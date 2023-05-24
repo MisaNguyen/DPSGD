@@ -89,11 +89,18 @@ if __name__ == "__main__":
             "sigmas": [0.01875*pow(2,i) for i in range(0,31)],
             "s": 64
         },
+        # {
+        #     # Setting 8
+        #     "settings_path": "settings_vary_sigma_LeNet",
+        #     "C": 0.2,
+        #     "sigmas": [0.1 + 0.1*i for i in range(0,31)],
+        #     "s": 64
+        # },
         {
             # Setting 8
             "settings_path": "settings_vary_sigma_LeNet",
             "C": 0.2,
-            "sigmas": [0.1 + 0.1*i for i in range(0,31)],
+            "sigmas": [0.1 *pow(2,i) for i in range(0,31)],
             "s": 64
         }
 
@@ -157,7 +164,7 @@ if __name__ == "__main__":
 
         # s_index_min = 1 # min = 1
         # s_index_max = 6 # max = 6
-        settings = ["setting_" + str(i) for i in range(1,30)]
+        settings = ["setting_" + str(i) for i in range(1,9)]
         # settings.append("setting_30")
         # settings = ["setting_" + str(5*s_index+i) for i in range(s_index_min,s_index_max)]
         # settings = ["setting_0" ]
