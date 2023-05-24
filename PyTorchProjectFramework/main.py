@@ -155,7 +155,7 @@ def main():
     train_with_constant_step_size = True
 
     # mode = None
-    settings_file = "settings_vary_C_LeNet"
+    settings_file = "settings_vary_sigma_LeNet"
     logging = True
 
     if (mode != None):

@@ -75,6 +75,13 @@ if __name__ == "__main__":
             "sigma": 0.5,
             "s": 64
         },
+        {
+            # Setting 6
+            "settings_path": "settings_vary_C_LeNet",
+            "Cs": [0.05*i for i in range(0,31)],
+            "sigma": 0.5,
+            "s": 64
+        },
         # {
         #     # Setting 2
         #     "settings_path": "settings_vary_sigma_old",
@@ -102,12 +109,12 @@ if __name__ == "__main__":
     draw_training_acc = False
     constant_ci = False
     draw_AN = False #Zhang setting
-    models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet",
+    models = ["Lenet","nor_Lenet","convnet","nor_convnet","BNF_convnet", "AlexNet",
               "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
     # setting_indexes = [3,4,5] # 0,3,6
-    setting_indexes = [2] # 0,3,6
-    models_index = 5
+    setting_indexes = [6] # 0,3,6
+    models_index = 1
     model_name = models[models_index]
     count = 0
     max_Epochs = 50
@@ -168,6 +175,7 @@ if __name__ == "__main__":
         else:
             base_path = "./" + data_folder + "/" + settings_path + "/" + model_name
         # base_path = "./data/" + settings_path + "/" + model_name
+        print("base_path",base_path)
         if not isExist:
             # Create a new directory because it does not exist
             os.makedirs(graph_path)
@@ -207,6 +215,7 @@ if __name__ == "__main__":
 
             if(draw_DPSGD_BC_case):
                 experiment = "SGD"
+
                 bc_data_path = base_path + '_BC/' + model_name + '/' + experiment \
                                + '/' + clipping_mode
                 # bc_data_path  = "./data/" + settings_path + '/' + experiment + '/' + setting +".json"
