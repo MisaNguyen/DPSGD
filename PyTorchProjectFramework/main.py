@@ -14,6 +14,7 @@ import os
 from models.convnet_model import convnet
 from models.nor_convnet_model import nor_convnet
 from models.Lenet_model import LeNet
+from models.nor_Lenet_model import nor_LeNet
 from models.resnet_model import ResNet18
 from models.plainnet import PlainNet18
 from models.square_model import SquareNet
@@ -145,16 +146,16 @@ def main():
     """
     Define clipping mode here
     """
-    enable_individual_clipping = True
-    enable_batch_clipping = False
+    enable_individual_clipping = False
+    enable_batch_clipping = True
     enable_classical_BC = False
     """
     Define stepsize mode here
     """
-    train_with_constant_step_size = False
+    train_with_constant_step_size = True
 
     # mode = None
-    settings_file = "settings_best_settings_convnet"
+    settings_file = "settings_vary_C_LeNet"
     logging = True
 
     if (mode != None):
@@ -202,8 +203,8 @@ def main():
             args.clipping = "layerwise"#TODO: add to setting file
             # args.clipping = "all"
             args.C_decay = 0.9
-            # args.dataset_name = "MNIST"
-            args.dataset_name = "CIFAR10"#TODO: add to setting file
+            args.dataset_name = "MNIST"
+            # args.dataset_name = "CIFAR10"#TODO: add to setting file
             # args.dataset_name = "Imagenet"#TODO: add to setting file
             args.opacus_training = False
             args.save_gradient = False
@@ -241,8 +242,8 @@ def main():
     # model = AlexNet(num_classes=10).to(device)
     # model_name = "AlexNet"
     # model = SimpleDLA().to(device)
-    model = nor_convnet(num_classes=10).to(device)
-    model_name = "nor_convnet"
+    # model = nor_convnet(num_classes=10).to(device)
+    # model_name = "nor_convnet"
     # model = convnet(num_classes=10).to(device)
     # model_name = "convnet"
     # model = ResNet18(num_classes=10).to(device)
@@ -254,7 +255,8 @@ def main():
     # model_name = "plainnet18"
     # model = LeNet().to(device)
     # model_name = "LeNet"
-
+    model = nor_LeNet().to(device)
+    model_name = "nor_LeNet"
     # model = SquareNet().to(device)
     # model_name = "squarenet"
     # number_of_layer = get_number_of_layer(model, model_name)

@@ -106,8 +106,8 @@ if __name__ == "__main__":
               "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
     # setting_indexes = [3,4,5] # 0,3,6
-    setting_indexes = [5] # 0,3,6
-    models_index = 2
+    setting_indexes = [2] # 0,3,6
+    models_index = 5
     model_name = models[models_index]
     count = 0
     max_Epochs = 50
@@ -237,6 +237,7 @@ if __name__ == "__main__":
                 #                  + '/BC/' + setting +".json"
                 print("bc_data_path:",bc_data_path)
                 BC_DPSGD_train_accuracy,BC_DPSGD_test_accuracy = get_data(bc_data_path)
+                # print("BC_DPSGD_test_accuracy",BC_DPSGD_test_accuracy[-5:-1])
                 if(BC_DPSGD_test_accuracy!= None):
                     if (max_Epochs < len(BC_DPSGD_train_accuracy)):
                         BC_testing_acc.append(max(BC_DPSGD_test_accuracy[max_Epochs-5: max_Epochs]))
@@ -266,10 +267,10 @@ if __name__ == "__main__":
                 IC_DPSGD_train_accuracy,IC_DPSGD_test_accuracy = get_data(ic_data_path)
                 if(IC_DPSGD_test_accuracy!= None):
                     if (max_Epochs < len(IC_testing_acc)):
-                        sgd_testing_acc.append(max(IC_testing_acc[max_Epochs-5: max_Epochs]))
+                        IC_testing_acc.append(max(IC_testing_acc[max_Epochs-5: max_Epochs]))
                         epochs = max_Epochs
                     else:
-                        sgd_testing_acc.append(max(IC_testing_acc[-5: -1]))
+                        IC_testing_acc.append(max(IC_testing_acc[-5: -1]))
                         epochs = len(IC_testing_acc)
                     IC_C_arr.append(Cs[setting_idx])
                 # DPSGD_IC_epoch_index = [i for i in range(1, DPSGD_IC_epochs+1)]
@@ -298,13 +299,15 @@ if __name__ == "__main__":
         # Get max index
         C_max_index = BC_testing_acc.index(max(BC_testing_acc))
         C_max = Cs[C_max_index]
+        print("Max_acc",max(BC_testing_acc))
         print("C_best=",C_max)
         if(draw_SGD_case):
             count = count +1
             cmap_color = cmap(4*count)
             plt.plot(sgd_C_arr, sgd_testing_acc, label="SGD", color=cmap_color)
             # mu = [0 for E in SGD_epoch_index]
-            print("SGD training acc:", SGD_train_accuracy[-1])
+            # print("SGD training acc:", SGD_train_accuracy[-1])
+            print("SGD training acc:", sgd_testing_acc)
         if(draw_AN and idx <1):
             count = count +1
             cmap_color = cmap(4*count)
@@ -318,7 +321,8 @@ if __name__ == "__main__":
             count = count +1
             cmap_color = cmap(4*count)
             # label = "BC, %s" % ( clipping_mode)
-            label = "ours, $\sigma$= %s" % (sigma)
+            # label = "ours, $\sigma$= %s" % (sigma)
+            label = "BC, ALC"
             # if (DGN):
             #     label = label + ", diminishing C"
             plt.plot(BC_C_arr, BC_testing_acc, "o-", label=label, color=cmap_color,linewidth=3)

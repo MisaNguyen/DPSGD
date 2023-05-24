@@ -14,9 +14,9 @@ settings = ["settings_clipping_exp_cifar10_dpsgd",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_8",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_p5",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_1p5",]
-settings = ["settings_best_settings_convnet"]
+settings = ["settings_vary_C_LeNet"]
 base_sigma = 0.5
-C = 0.14
+C = 0
 """
 Sampler mode
 """
@@ -33,7 +33,7 @@ is_classical_BC = False
 """
 Stepsize mode
 """
-is_constant_step_size = True
+is_constant_step_size = False
 count = 0
 for setting_file in settings:
 # setting_file = settings[0]
@@ -43,7 +43,7 @@ for setting_file in settings:
     f.close()
     """Update elements"""
     for (k, v) in data.items():
-        data[k]['batch_size'] = 64 + 64*(count-1)
+        data[k]['batch_size'] = 64
         if(is_batch_clipping):
             data[k]['microbatch_size'] = data[k]['batch_size']
         elif(is_individual_clipping):
@@ -53,7 +53,7 @@ for setting_file in settings:
 
         if(is_constant_step_size):
             data[k]['gamma'] = 1
-        data[k]['max_grad_norm'] = C+ 0.005 *count
+        data[k]['max_grad_norm'] = C+ 0.05 *count
         data[k]['noise_multiplier'] = base_sigma
         # data[k]['learning_rate'] = 0.025
         data[k]['data_sampling'] = data_processing

@@ -45,7 +45,7 @@ if __name__ == "__main__":
             "settings_path": "settings_best_settings_convnet",
             "C": 0.14,
             "sigma": 0.5,
-            "ss": [64+ 64*i for i in range(0,31)]
+            "ss": [0+ 64*i for i in range(0,31)]
         }
 
         # {
@@ -69,13 +69,14 @@ if __name__ == "__main__":
     # DGN = None
     # clipping_mode = ""
     draw_DPSGD_IC_case = False
-    draw_SGD_case = True
+    draw_SGD_case = False
     draw_DPSGD_BC_case = True
     draw_mixing_case = False
     enable_mu = False
     draw_training_acc = False
     constant_ci = False
     draw_AN = False #Zhang setting
+    is_constant_step_size = False
     models = ["Lenet", "convnet","nor_convnet","BNF_convnet", "AlexNet",
               "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
@@ -87,6 +88,8 @@ if __name__ == "__main__":
                                         settings[setting_index]["C"], \
                                         settings[setting_index]["sigma"], \
                                         settings[setting_index]["ss"]
+    if(is_constant_step_size):
+        settings_path = settings_path + "_css"
     # Partition setting
     partition = False
 
@@ -105,11 +108,13 @@ if __name__ == "__main__":
     # settings = ["setting_" + str(setting_index)]
     # settings = ["setting_" + str(i) for i in range(1,11)]
     double_batch_size_settings = [1,2,4,8,16]
+    # double_batch_size_settings = [1,3,7,15]
     settings = ["setting_" + str(i) for i in double_batch_size_settings]
     # settings.append("setting_30")
     # settings = ["setting_" + str(5*s_index+i) for i in range(s_index_min,s_index_max)]
     # settings = ["setting_0" ]
     lr = 0.025
+
     # Cs = [0.1,0.05,0.01,0.005,0.5,1.0] #old
     # Cs = [1.0,1.5,2,2.5,3,3.5]
     # Cs = [6.0,7.0,8.0,9.0,10.0,20.0]
@@ -152,6 +157,9 @@ if __name__ == "__main__":
         Load experiments data
         """
         if(draw_SGD_case and setting_idx == 0):
+        # if(draw_SGD_case):
+            count = count +1
+            cmap_color= cmap(4*count)
             experiment = "SGD"
             # sgd_data_path  = base_path + '/' + experiment + '/' + setting +".json"
             sgd_data_path = base_path + '/' + model_name + '/' + experiment + '/SGD/' + setting +".json"
@@ -164,7 +172,8 @@ if __name__ == "__main__":
                 SGD_epochs = [i for i in range(1, epochs+1)]
                 print("SGD_epochs",SGD_epochs)
                 label = "SGD, No DP, m= %s" % (ss[double_batch_size_settings[setting_idx]])
-                plt.plot(SGD_epochs, SGD_test_accuracy, "o-", label=label, color="black",linewidth=3)
+                plt.plot(SGD_epochs, SGD_test_accuracy, "o-", label=label, color=cmap_color,linewidth=3)
+                # print("SGD_test_accuracy", SGD_test_accuracy[-5])
             # DPSGD_SGD_epoch_index = [i for i in range(1, DPSGD_SGD_epochs+1)]
         if(draw_AN):
             count = count +1
@@ -188,7 +197,7 @@ if __name__ == "__main__":
             # DPSGD_BC_epoch_index = [i for i in range(1, DPSGD_BC_epochs+1)]
         if(draw_DPSGD_BC_case):
             count = count +1
-            cmap_color= cmap(2*count)
+            cmap_color= cmap(4*count)
             experiment = "SGD"
             # bc_data_path  = "./data/" + settings_path + '/' + experiment + '/' + setting +".json"
             if(DGN):
@@ -204,7 +213,7 @@ if __name__ == "__main__":
             print("BC_DPSGD_test_accuracy",BC_DPSGD_test_accuracy[-5:-1])
             epochs = len(BC_DPSGD_train_accuracy)
             BC_epochs_idx = [i for i in range(1, epochs+1)]
-            label = "BC, m= %s" % (ss[double_batch_size_settings[setting_idx]])
+            label = "BC, ALC, m= %s" % (ss[double_batch_size_settings[setting_idx]])
             # if(ss[setting_idx+1] == 64):
             #     print(len(BC_DPSGD_test_accuracy))
             #     print(BC_DPSGD_test_accuracy[19])
@@ -264,6 +273,7 @@ if __name__ == "__main__":
     plt.ylabel("accuracy")
 
     plt.title("$\eta =$ %s, C = %s, $\sigma=%s$, E =%s" %  (lr,C,sigma,epochs))
+    # plt.title("$\eta =$ %s, E =%s" %  (lr,epochs))
     plt.legend()
         # ic_data_path = base_path + '_IC/' + model_name + '/' + experiment + '/IC/' + setting +".json"
         #
