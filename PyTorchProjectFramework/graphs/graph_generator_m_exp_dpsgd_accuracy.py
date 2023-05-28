@@ -77,7 +77,7 @@ if __name__ == "__main__":
     # clipping_mode = ""
     draw_DPSGD_IC_case = False
     draw_SGD_case = True
-    draw_DPSGD_BC_case = True
+    draw_DPSGD_BC_case = False
     draw_mixing_case = False
     enable_mu = False
     draw_training_acc = False
@@ -87,9 +87,9 @@ if __name__ == "__main__":
     models = ["Lenet","nor_Lenet" ,"convnet","nor_convnet","BNF_convnet", "AlexNet",
               "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
-    setting_index = 2 # 0,3,6
+    setting_index = 1 # 0,3,6
     s_index =0
-    models_index = 1
+    models_index = 2
     model_name = models[models_index]
     settings_path, C, sigma, ss = settings[setting_index]["settings_path"], \
                                         settings[setting_index]["C"], \
@@ -163,8 +163,8 @@ if __name__ == "__main__":
         """
         Load experiments data
         """
-        if(draw_SGD_case and setting_idx == 0):
-        # if(draw_SGD_case):
+        # if(draw_SGD_case and setting_idx == 0):
+        if(draw_SGD_case):
             count = count +1
             cmap_color= cmap(4*count)
             experiment = "SGD"
@@ -279,8 +279,8 @@ if __name__ == "__main__":
     plt.xlabel("Epoch")
     plt.ylabel("accuracy")
 
-    plt.title("$\eta =$ %s, C = %s, $\sigma=%s$, E =%s" %  (lr,C,sigma,epochs))
-    # plt.title("$\eta =$ %s, E =%s" %  (lr,epochs))
+    # plt.title("$\eta =$ %s, C = %s, $\sigma=%s$, E =%s" %  (lr,C,sigma,epochs))
+    plt.title("$\eta =$ %s, E =%s" %  (lr,epochs))
     plt.legend()
         # ic_data_path = base_path + '_IC/' + model_name + '/' + experiment + '/IC/' + setting +".json"
         #

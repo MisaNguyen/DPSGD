@@ -146,8 +146,8 @@ def main():
     """
     Define clipping mode here
     """
-    enable_individual_clipping = False
-    enable_batch_clipping = True
+    enable_individual_clipping = True
+    enable_batch_clipping = False
     enable_classical_BC = False
     """
     Define stepsize mode here
@@ -155,7 +155,7 @@ def main():
     train_with_constant_step_size = True
 
     # mode = None
-    settings_file = "settings_vary_sigma_convnet"
+    settings_file = "settings_clipping_exp_cifar10_dpsgd_opacus_test"
     logging = True
 
     if (mode != None):
@@ -200,11 +200,11 @@ def main():
             args.shuffle_dataset = True
             # args.is_partition_train = False
             args.mode = setting_data["data_sampling"]
-            args.clipping = "layerwise"#TODO: add to setting file
-            # args.clipping = "all"
+            # args.clipping = "layerwise"#TODO: add to setting file
+            args.clipping = "all"
             args.C_decay = 0.9
-            args.dataset_name = "MNIST"
-            # args.dataset_name = "CIFAR10"#TODO: add to setting file
+            # args.dataset_name = "MNIST"
+            args.dataset_name = "CIFAR10"#TODO: add to setting file
             # args.dataset_name = "Imagenet"#TODO: add to setting file
             args.opacus_training = False
             args.save_gradient = False

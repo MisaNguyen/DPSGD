@@ -308,6 +308,7 @@ if __name__ == "__main__":
         # Get max index
         C_max_index = BC_testing_acc.index(max(BC_testing_acc))
         C_max = Cs[C_max_index]
+        print("C_max_index",C_max_index)
         print("Max_acc",max(BC_testing_acc))
         print("C_best=",C_max)
         if(draw_SGD_case):

@@ -195,7 +195,7 @@ def calculate_full_gradient_norm(model):
     for i in range(len(each_layer_norm)):
         flat_grad_norm += pow(each_layer_norm[i],2)
         # print("flat_grad_norm",flat_grad_norm)
-    flat_grad_norm = np.sqrt(flat_grad_norm)
+    flat_grad_norm = np.sqrt(flat_grad_norm.cpu())
     return flat_grad_norm
 """
 END OPACUS code
@@ -427,7 +427,7 @@ def DP_train(args, model, device, train_loader,optimizer):
                 Compute flat list of gradient tensors and its norm 
                 """
                 flat_grad_norm = calculate_full_gradient_norm(model_clone)
-                print("Current norm = ", flat_grad_norm)
+                # print("Current norm = ", flat_grad_norm)
                 """
                 Clip all gradients
                 """
