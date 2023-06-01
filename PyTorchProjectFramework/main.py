@@ -146,8 +146,8 @@ def main():
     """
     Define clipping mode here
     """
-    enable_individual_clipping = True
-    enable_batch_clipping = False
+    enable_individual_clipping = False
+    enable_batch_clipping = True
     enable_classical_BC = False
     """
     Define stepsize mode here
@@ -155,7 +155,7 @@ def main():
     train_with_constant_step_size = True
 
     # mode = None
-    settings_file = "settings_clipping_exp_cifar10_dpsgd_opacus_test"
+    settings_file = "settings_best_settings"
     logging = True
 
     if (mode != None):

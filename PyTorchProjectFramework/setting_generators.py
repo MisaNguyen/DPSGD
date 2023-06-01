@@ -14,9 +14,9 @@ settings = ["settings_clipping_exp_cifar10_dpsgd",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_8",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_p5",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_1p5",]
-settings = ["settings_clipping_exp_cifar10_dpsgd_opacus_test"]
-# "C": 0.095,
-# "sigma": 0.01875,
+settings = ["settings_best_settings"]
+# settings = ["settings_clipping_exp_cifar10_dpsgd_opacus_test"]
+
 # base_sigma = 0.1
 # C = 1.2
 base_sigma = 0.01875
