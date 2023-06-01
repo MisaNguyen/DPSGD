@@ -15,8 +15,12 @@ settings = ["settings_clipping_exp_cifar10_dpsgd",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_p5",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_1p5",]
 settings = ["settings_clipping_exp_cifar10_dpsgd_opacus_test"]
-base_sigma = 0.1
-C = 1.2
+# "C": 0.095,
+# "sigma": 0.01875,
+# base_sigma = 0.1
+# C = 1.2
+base_sigma = 0.01875
+C = 0.095
 """
 Sampler mode
 """
@@ -26,8 +30,8 @@ data_processing = "subsampling"
 """
 Clipping mode
 """
-is_batch_clipping = False
-is_individual_clipping = True
+is_batch_clipping = True
+is_individual_clipping = False
 is_classical_BC = False
 
 """

@@ -246,8 +246,8 @@ def main():
     # model_name = "nor_convnet"
     # model = convnet(num_classes=10).to(device)
     # model_name = "convnet"
-    # model = ResNet18(num_classes=10).to(device)
-    # model_name = "resnet18"
+    model = ResNet18(num_classes=10).to(device)
+    model_name = "resnet18"
     # summary(model,(3, 32, 32))
     # print(model)
     # input()
@@ -255,8 +255,8 @@ def main():
     # model_name = "plainnet18"
     # model = LeNet().to(device)
     # model_name = "LeNet"
-    model = nor_LeNet().to(device)
-    model_name = "nor_LeNet"
+    # model = nor_LeNet().to(device)
+    # model_name = "nor_LeNet"
     # model = SquareNet().to(device)
     # model_name = "squarenet"
     # number_of_layer = get_number_of_layer(model, model_name)
