@@ -16,6 +16,7 @@ from models.nor_convnet_model import nor_convnet
 from models.Lenet_model import LeNet
 from models.nor_Lenet_model import nor_LeNet
 from models.resnet_model import ResNet18
+from models.resnet_model_no_BN import ResNet18_no_BN
 from models.plainnet import PlainNet18
 from models.square_model import SquareNet
 # from models.vgg16 import VGGNet
@@ -246,8 +247,11 @@ def main():
     # model_name = "nor_convnet"
     # model = convnet(num_classes=10).to(device)
     # model_name = "convnet"
-    model = ResNet18(num_classes=10).to(device)
-    model_name = "resnet18"
+    # model = ResNet18(num_classes=10).to(device)
+    # model_name = "resnet18"
+    model = ResNet18_no_BN(num_classes=10).to(device)
+    model_name = "resnet18_no_BN"
+
     # summary(model,(3, 32, 32))
     # print(model)
     # input()
