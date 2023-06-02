@@ -147,8 +147,8 @@ def main():
     """
     Define clipping mode here
     """
-    enable_individual_clipping = False
-    enable_batch_clipping = True
+    enable_individual_clipping = True
+    enable_batch_clipping = False
     enable_classical_BC = False
     """
     Define stepsize mode here

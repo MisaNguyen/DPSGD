@@ -30,14 +30,14 @@ data_processing = "subsampling"
 """
 Clipping mode
 """
-is_batch_clipping = True
-is_individual_clipping = False
+is_batch_clipping = False
+is_individual_clipping = True
 is_classical_BC = False
 
 """
 Stepsize mode
 """
-is_constant_step_size = True
+is_constant_step_size = False
 count = 0
 for setting_file in settings:
 # setting_file = settings[0]
