@@ -76,8 +76,8 @@ if __name__ == "__main__":
     # DGN = None
     # clipping_mode = ""
     draw_DPSGD_IC_case = False
-    draw_SGD_case = True
-    draw_DPSGD_BC_case = False
+    draw_SGD_case = False
+    draw_DPSGD_BC_case = True
     draw_mixing_case = False
     enable_mu = False
     draw_training_acc = False
@@ -87,9 +87,9 @@ if __name__ == "__main__":
     models = ["Lenet","nor_Lenet" ,"convnet","nor_convnet","BNF_convnet", "AlexNet",
               "resnet18", "resnet34","resnet50","squarenet"]
     # Get models and settings
-    setting_index = 1 # 0,3,6
+    setting_index = 0 # 0,3,6
     s_index =0
-    models_index = 2
+    models_index = 6
     model_name = models[models_index]
     settings_path, C, sigma, ss = settings[setting_index]["settings_path"], \
                                         settings[setting_index]["C"], \
@@ -114,7 +114,8 @@ if __name__ == "__main__":
     # setting_index = 1
     # settings = ["setting_" + str(setting_index)]
     # settings = ["setting_" + str(i) for i in range(1,11)]
-    double_batch_size_settings = [1,2,4,8,16]
+    # double_batch_size_settings = [1,2,4,8,16]
+    double_batch_size_settings = [1]
     # double_batch_size_settings = [1,3,7,15]
     settings = ["setting_" + str(i) for i in double_batch_size_settings]
     # settings.append("setting_30")
@@ -221,14 +222,30 @@ if __name__ == "__main__":
             epochs = len(BC_DPSGD_train_accuracy)
             BC_epochs_idx = [i for i in range(1, epochs+1)]
             label = "BC, ALC, m= %s" % (ss[double_batch_size_settings[setting_idx]])
-            # if(ss[setting_idx+1] == 64):
-            #     print(len(BC_DPSGD_test_accuracy))
-            #     print(BC_DPSGD_test_accuracy[19])
-            #     print(BC_DPSGD_test_accuracy[49])
-            # label = "BC"
-            # if (DGN):
-            #     label = label + ", diminishing C"
             plt.plot(BC_epochs_idx, BC_DPSGD_test_accuracy, "o-", label=label, color=cmap_color,linewidth=3)
+
+            """ TEMP"""
+            clipping_mode= "all"
+            count = count +1
+            cmap_color= cmap(4*count)
+            experiment = "SGD"
+            # bc_data_path  = "./data/" + settings_path + '/' + experiment + '/' + setting +".json"
+            if(DGN):
+                bc_data_path  = base_path + '_BC/' + model_name + '/' + experiment \
+                                + '/' + clipping_mode + '/BC/DGN/' + setting +".json"
+            else:
+                bc_data_path  = base_path + '_BC/' + model_name + '/' + experiment \
+                                + '/' + clipping_mode + '/BC/' + setting +".json"
+            # bc_data_path  = base_path + '_BC/' + model_name + '/' + experiment \
+            #                  + '/BC/' + setting +".json"
+            print("bc_data_path:",bc_data_path)
+            BC_DPSGD_train_accuracy,BC_DPSGD_test_accuracy = get_data(bc_data_path)
+            print("BC_DPSGD_test_accuracy",BC_DPSGD_test_accuracy[-5:-1])
+            epochs = len(BC_DPSGD_train_accuracy)
+            BC_epochs_idx = [i for i in range(1, epochs+1)]
+            label = "BC, FGC, m= %s" % (ss[double_batch_size_settings[setting_idx]])
+            plt.plot(BC_epochs_idx, BC_DPSGD_test_accuracy, "o-", label=label, color=cmap_color,linewidth=3)
+            """ END TEMP """
             # DPSGD_BC_epoch_index = [i for i in range(1, DPSGD_BC_epochs+1)]
         # else:
         #     s = s*2
@@ -279,8 +296,8 @@ if __name__ == "__main__":
     plt.xlabel("Epoch")
     plt.ylabel("accuracy")
 
-    # plt.title("$\eta =$ %s, C = %s, $\sigma=%s$, E =%s" %  (lr,C,sigma,epochs))
-    plt.title("$\eta =$ %s, E =%s" %  (lr,epochs))
+    plt.title("$\eta =$ %s, C = %s, $\sigma=%s$, E =%s" %  (lr,C,sigma,epochs))
+    # plt.title("$\eta =$ %s, E =%s" %  (lr,epochs))
     plt.legend()
         # ic_data_path = base_path + '_IC/' + model_name + '/' + experiment + '/IC/' + setting +".json"
         #

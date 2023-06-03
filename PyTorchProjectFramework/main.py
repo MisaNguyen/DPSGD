@@ -147,14 +147,17 @@ def main():
     """
     Define clipping mode here
     """
-    enable_individual_clipping = True
-    enable_batch_clipping = False
+    enable_individual_clipping = False
+    enable_batch_clipping = True
     enable_classical_BC = False
     """
     Define stepsize mode here
     """
     train_with_constant_step_size = True
-
+    """
+    Toggle on/off noise multiplier (sigma) discount for full gradient clipping
+    """
+    sigma_discount_on = True
     # mode = None
     settings_file = "settings_best_settings"
     logging = True
@@ -247,10 +250,10 @@ def main():
     # model_name = "nor_convnet"
     # model = convnet(num_classes=10).to(device)
     # model_name = "convnet"
-    # model = ResNet18(num_classes=10).to(device)
-    # model_name = "resnet18"
-    model = ResNet18_no_BN(num_classes=10).to(device)
-    model_name = "resnet18_no_BN"
+    model = ResNet18(num_classes=10).to(device)
+    model_name = "resnet18"
+    # model = ResNet18_no_BN(num_classes=10).to(device)
+    # model_name = "resnet18_no_BN"
 
     # summary(model,(3, 32, 32))
     # print(model)
@@ -270,7 +273,9 @@ def main():
         # Fix incompatiple components such as BatchNorm2D layer
         model = ModuleValidator.fix(model)
         ModuleValidator.validate(model, strict=False)
-
+    if(sigma_discount_on):
+        number_of_layer = get_number_of_layer(model,model_name)
+        args.noise_multiplier = args.noise_multiplier / number_of_layer
 
     # model = nor_LeNet().to(device)
     # model_name = "nor_LeNet"
@@ -383,7 +388,8 @@ def main():
             out_file_path = out_file_path + "/DGN"
         elif(args.ci_as_average_norm):
             out_file_path = out_file_path + "/AN"
-
+        if(sigma_discount_on):
+            out_file_path = out_file_path + "/discounted"
     else:
         out_file_path = out_file_path + "/SGD"
 
