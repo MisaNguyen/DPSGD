@@ -75,28 +75,29 @@ if __name__ == "__main__":
     print("DGN:", DGN)
     # DGN = None
     # clipping_mode = ""
-    draw_DPSGD_IC_case = False
+    draw_DPSGD_IC_case = True
     draw_SGD_case = False
-    draw_DPSGD_BC_case = True
+    draw_DPSGD_BC_case = False
     draw_mixing_case = False
     enable_mu = False
     draw_training_acc = False
     constant_ci = False
     draw_AN = False #Zhang setting
-    is_constant_step_size = False
+    is_constant_step_size = True
+    # is_sigma_discounted = True
     models = ["Lenet","nor_Lenet" ,"convnet","nor_convnet","BNF_convnet", "AlexNet",
-              "resnet18", "resnet34","resnet50","squarenet"]
+              "resnet18","resnet18_no_BN", "resnet34","resnet50","squarenet"]
     # Get models and settings
     setting_index = 0 # 0,3,6
     s_index =0
-    models_index = 6
+    # models_index = 7
+    models_index = 2
     model_name = models[models_index]
     settings_path, C, sigma, ss = settings[setting_index]["settings_path"], \
                                         settings[setting_index]["C"], \
                                         settings[setting_index]["sigma"], \
                                         settings[setting_index]["ss"]
-    if(is_constant_step_size):
-        settings_path = settings_path + "_css"
+
     # Partition setting
     partition = False
 
@@ -114,8 +115,8 @@ if __name__ == "__main__":
     # setting_index = 1
     # settings = ["setting_" + str(setting_index)]
     # settings = ["setting_" + str(i) for i in range(1,11)]
-    # double_batch_size_settings = [1,2,4,8,16]
-    double_batch_size_settings = [1]
+    double_batch_size_settings = [1,2,4,8,16]
+    # double_batch_size_settings = [1]
     # double_batch_size_settings = [1,3,7,15]
     settings = ["setting_" + str(i) for i in double_batch_size_settings]
     # settings.append("setting_30")
@@ -208,11 +209,15 @@ if __name__ == "__main__":
             cmap_color= cmap(4*count)
             experiment = "SGD"
             # bc_data_path  = "./data/" + settings_path + '/' + experiment + '/' + setting +".json"
+            if(is_constant_step_size):
+                bc_data_path = base_path + "_BC_css/"
+            else:
+                bc_data_path = base_path + '_BC/'
             if(DGN):
-                bc_data_path  = base_path + '_BC/' + model_name + '/' + experiment \
+                bc_data_path  = bc_data_path + model_name + '/' + experiment \
                                 + '/' + clipping_mode + '/BC/DGN/' + setting +".json"
             else:
-                bc_data_path  = base_path + '_BC/' + model_name + '/' + experiment \
+                bc_data_path  = bc_data_path + model_name + '/' + experiment \
                                 + '/' + clipping_mode + '/BC/' + setting +".json"
             # bc_data_path  = base_path + '_BC/' + model_name + '/' + experiment \
             #                  + '/BC/' + setting +".json"
@@ -224,28 +229,28 @@ if __name__ == "__main__":
             label = "BC, ALC, m= %s" % (ss[double_batch_size_settings[setting_idx]])
             plt.plot(BC_epochs_idx, BC_DPSGD_test_accuracy, "o-", label=label, color=cmap_color,linewidth=3)
 
-            """ TEMP"""
-            clipping_mode= "all"
-            count = count +1
-            cmap_color= cmap(4*count)
-            experiment = "SGD"
-            # bc_data_path  = "./data/" + settings_path + '/' + experiment + '/' + setting +".json"
-            if(DGN):
-                bc_data_path  = base_path + '_BC/' + model_name + '/' + experiment \
-                                + '/' + clipping_mode + '/BC/DGN/' + setting +".json"
-            else:
-                bc_data_path  = base_path + '_BC/' + model_name + '/' + experiment \
-                                + '/' + clipping_mode + '/BC/' + setting +".json"
-            # bc_data_path  = base_path + '_BC/' + model_name + '/' + experiment \
-            #                  + '/BC/' + setting +".json"
-            print("bc_data_path:",bc_data_path)
-            BC_DPSGD_train_accuracy,BC_DPSGD_test_accuracy = get_data(bc_data_path)
-            print("BC_DPSGD_test_accuracy",BC_DPSGD_test_accuracy[-5:-1])
-            epochs = len(BC_DPSGD_train_accuracy)
-            BC_epochs_idx = [i for i in range(1, epochs+1)]
-            label = "BC, FGC, m= %s" % (ss[double_batch_size_settings[setting_idx]])
-            plt.plot(BC_epochs_idx, BC_DPSGD_test_accuracy, "o-", label=label, color=cmap_color,linewidth=3)
-            """ END TEMP """
+            # """ TEMP"""
+            # clipping_mode= "all"
+            # count = count +1
+            # cmap_color= cmap(4*count)
+            # experiment = "SGD"
+            # # bc_data_path  = "./data/" + settings_path + '/' + experiment + '/' + setting +".json"
+            # if(DGN):
+            #     bc_data_path  = base_path + '_BC/' + model_name + '/' + experiment \
+            #                     + '/' + clipping_mode + '/BC/DGN/discounted/' + setting +".json"
+            # else:
+            #     bc_data_path  = base_path + '_BC/' + model_name + '/' + experiment \
+            #                     + '/' + clipping_mode + '/BC/discounted/' + setting +".json"
+            # # bc_data_path  = base_path + '_BC/' + model_name + '/' + experiment \
+            # #                  + '/BC/' + setting +".json"
+            # print("bc_data_path:",bc_data_path)
+            # BC_DPSGD_train_accuracy,BC_DPSGD_test_accuracy = get_data(bc_data_path)
+            # print("BC_DPSGD_test_accuracy",BC_DPSGD_test_accuracy[-5:-1])
+            # epochs = len(BC_DPSGD_train_accuracy)
+            # BC_epochs_idx = [i for i in range(1, epochs+1)]
+            # label = "BC, FGC, m= %s, $\\bar{\sigma} =\sigma/62$" % (ss[double_batch_size_settings[setting_idx]])
+            # plt.plot(BC_epochs_idx, BC_DPSGD_test_accuracy, "o-", label=label, color=cmap_color,linewidth=3)
+            # """ END TEMP """
             # DPSGD_BC_epoch_index = [i for i in range(1, DPSGD_BC_epochs+1)]
         # else:
         #     s = s*2
@@ -257,8 +262,13 @@ if __name__ == "__main__":
             cmap_color= cmap(4*count)
             experiment = "SGD"
             # ic_data_path = base_path + '_IC/' + model_name + '/' + experiment + '/IC/' + setting +".json"
-            ic_data_path  = base_path + '_IC/' + model_name + '/' + experiment \
+            if(is_constant_step_size):
+                ic_data_path = base_path + "_IC_css/"
+            else:
+                ic_data_path = base_path + '_IC/'
+            ic_data_path  = ic_data_path + model_name + '/' + experiment \
                             + '/' + clipping_mode
+
             if(constant_ci):
                 ic_data_path  = ic_data_path + "/constant_c_i"
             if(DGN):
@@ -271,10 +281,12 @@ if __name__ == "__main__":
             epochs = len(IC_DPSGD_train_accuracy)
             IC_epochs_idx = [i for i in range(1, epochs+1)]
             # label = "IC, %s" % ( clipping_mode)
-            label = "IC"
+            label = "IC, ALC, m= %s" % (ss[double_batch_size_settings[setting_idx]])
+            # label = "IC"
             # if (DGN):
             #     label = label + ", diminishing C"
-            plt.plot(IC_epochs_idx, IC_DPSGD_test_accuracy, "x--", label=label, color="red",linewidth=3)
+            plt.plot(IC_epochs_idx, IC_DPSGD_test_accuracy, "x--", label=label, color=cmap_color,linewidth=3)
+            # plt.plot(IC_epochs_idx, IC_DPSGD_test_accuracy, "x--", label=label, color="red",linewidth=3)
             # DPSGD_IC_epoch_index = [i for i in range(1, DPSGD_IC_epochs+1)]
 
 

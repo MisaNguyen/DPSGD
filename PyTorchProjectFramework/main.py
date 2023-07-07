@@ -157,7 +157,7 @@ def main():
     """
     Toggle on/off noise multiplier (sigma) discount for full gradient clipping
     """
-    sigma_discount_on = True
+    sigma_discount_on = False
     # mode = None
     settings_file = "settings_best_settings"
     logging = True
@@ -205,7 +205,8 @@ def main():
             # args.is_partition_train = False
             args.mode = setting_data["data_sampling"]
             # args.clipping = "layerwise"#TODO: add to setting file
-            args.clipping = "all"
+            # args.clipping = "all"
+            args.clipping = "weight_FGC"
             args.C_decay = 0.9
             # args.dataset_name = "MNIST"
             args.dataset_name = "CIFAR10"#TODO: add to setting file
@@ -248,10 +249,10 @@ def main():
     # model = SimpleDLA().to(device)
     # model = nor_convnet(num_classes=10).to(device)
     # model_name = "nor_convnet"
-    # model = convnet(num_classes=10).to(device)
-    # model_name = "convnet"
-    model = ResNet18(num_classes=10).to(device)
-    model_name = "resnet18"
+    model = convnet(num_classes=10).to(device)
+    model_name = "convnet"
+    # model = ResNet18(num_classes=10).to(device)
+    # model_name = "resnet18"
     # model = ResNet18_no_BN(num_classes=10).to(device)
     # model_name = "resnet18_no_BN"
 
@@ -330,20 +331,21 @@ def main():
                                                                      test_kwargs,mode
                                                                      )
 
-    if (args.enable_DP and args.clipping == "layerwise" and not args.opacus_training):
-        if (args.constant_c_i):
-            number_of_layer = get_number_of_layer(model,model_name)
-            args.each_layer_C = [args.max_grad_norm]*number_of_layer
-        else:
-            at_epoch = 5
-            dummy_model = copy.deepcopy(model)
-            dummy_optimizer = get_optimizer(args.optimizer,dummy_model ,args.lr)
-            if(args.ci_as_average_norm):
-                args.each_layer_C = compute_layerwise_C_average_norm(C_dataset_loader, dummy_model, at_epoch, device,
-                                                                     dummy_optimizer, args.max_grad_norm,True)
+    if (args.enable_DP and not args.opacus_training):
+        if(args.clipping == "layerwise" or args.clipping == "weight_FGC"):
+            if (args.constant_c_i):
+                number_of_layer = get_number_of_layer(model,model_name)
+                args.each_layer_C = [args.max_grad_norm]*number_of_layer
             else:
-                args.each_layer_C = compute_layerwise_C(C_dataset_loader, dummy_model, at_epoch, device,
-                                                    dummy_optimizer, args.max_grad_norm,True)
+                at_epoch = 5
+                dummy_model = copy.deepcopy(model)
+                dummy_optimizer = get_optimizer(args.optimizer,dummy_model ,args.lr)
+                if(args.ci_as_average_norm):
+                    args.each_layer_C = compute_layerwise_C_average_norm(C_dataset_loader, dummy_model, at_epoch, device,
+                                                                         dummy_optimizer, args.max_grad_norm,True)
+                else:
+                    args.each_layer_C = compute_layerwise_C(C_dataset_loader, dummy_model, at_epoch, device,
+                                                        dummy_optimizer, args.max_grad_norm,True)
         print(args.each_layer_C)
     # DP settings:
     print(args.microbatch_size)
@@ -411,6 +413,9 @@ def main():
             elif(enable_classical_BC):
                 print("Classical training")
                 train_accuracy.append(train_model.DP_train_classical(args, model, device, train_loader, optimizer))
+            elif(args.clipping == "weight_FGC"):
+                print("Minibatch training")
+                train_accuracy.append(train_model.DP_train_weighted_FGC(args, model, device, train_loader, optimizer))
             else:
                 print("Minibatch training")
                 train_accuracy.append(train_model.DP_train(args, model, device, train_loader, optimizer))

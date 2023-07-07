@@ -200,6 +200,147 @@ def calculate_full_gradient_norm(model):
 """
 END OPACUS code
 """
+
+"""
+New method idea: Taking advantage of ALC method without extra privacy cost \sqrt(L)
+1) Compute gradient at i-th layer [g_i]_{m_i} = g_i * m_i
+2) Clip full gradient: [g]_C = [[g_1]_{m_1},...,[g_L]_{m_L}]_C
+3) Compute update: U = [g]_C + N(0,4C^2\sigma^2)
+4) Discount update: U_bar = \eta [U_1/m_1,...U_L/m_L] where U = [U_1,U_2,...,U_L]
+"""
+def DP_train_weighted_FGC(args, model, device, train_loader,optimizer):
+    model.train()
+    print("Training using %s optimizer" % optimizer.__class__.__name__)
+    print("Training with method: weighted full gradient descent")
+    train_loss = 0
+    train_correct = 0
+    total = 0
+    loss = 0
+    # Get optimizer
+
+    iteration = 0
+    losses = []
+    top1_acc = []
+
+    for batch_idx, (batch_data,batch_target) in enumerate(train_loader): # Batch loop
+        optimizer.zero_grad()
+        # copy current model
+        model_clone = copy.deepcopy(model)
+
+        optimizer_clone= optim.SGD(model_clone.parameters(),
+                                   # [
+                                   #     {"params": model_clone.layer1.parameters(), "lr": args.lr},
+                                   #     {"params": model_clone.layer2.parameters(),"lr": args.lr},
+                                   #     {"params": model_clone.layer3.parameters(), "lr": args.lr},
+                                   #     {"params": model_clone.layer4.parameters(), "lr": args.lr},
+                                   # ],
+                                   lr=args.lr,
+                                   )
+        # batch = train_batches[indice]
+        batch = TensorDataset(batch_data,batch_target)
+        # print("micro batch size =", args.microbatch_size) ### args.microbatch_size = s/m
+        micro_train_loader = torch.utils.data.DataLoader(batch, batch_size=args.microbatch_size,
+                                                         shuffle=True) # Load each data
+
+        # print("Minibatch shape", batch_data.shape)
+        """ Original SGD updates"""
+        for sample_idx, (data,target) in enumerate(micro_train_loader):
+            # print("microbatch shape", data.shape)
+            optimizer_clone.zero_grad()
+            iteration += 1
+            data, target = data.to(device), target.to(device)
+            # compute output
+            output = model_clone(data)
+            # compute loss
+            loss = nn.CrossEntropyLoss()(output, target)
+            losses.append(loss.item())
+            # compute gradient
+            loss.backward()
+
+            """
+            Add multiplier to gradients (new)
+            """
+            grad_multi = [1/c_i for c_i in args.each_layer_C]
+            for layer_idx, (name,param) in enumerate(model_clone.named_parameters()):
+                param.grad = torch.mul(param.grad,grad_multi[layer_idx])
+
+            """
+            Clip entire gradients with args.max_grad_norm
+            """
+            torch.nn.utils.clip_grad_norm_(optimizer_clone.param_groups[0]['params'],args.max_grad_norm)
+            """
+            Accumulate gradients
+            """
+            for param in model_clone.parameters():
+                # param.grad = param.grad / flat_grad_norm * args.max_grad_norm
+                if not hasattr(param, "sum_grad"):
+                    param.sum_grad = param.grad
+                    # print(param.sum_grad)
+                else:
+                    param.sum_grad = param.sum_grad.add(param.grad)
+                    # print(param.sum_grad)
+        """
+        Discount updates: U = \sum_{i=1}{m} [U_{i,j}/m_i]_{j=1}^{L}. Note that m_i is the multiply factor
+        """
+        for layer_idx, (name,param) in enumerate(model_clone.named_parameters()):
+            param.grad = torch.div(param.sum_grad,grad_multi[layer_idx])
+        """
+        Copy sum of clipped grad to the model gradient
+        """
+
+        for net1, net2 in zip(model.named_parameters(), model_clone.named_parameters()): # (layer_name, value) for each layer
+            # input(net2[1])
+            net1[1].grad = net2[1].sum_grad
+            # print("After copying grad, grad_norm =", net1[1].grad.data.norm(2))
+            # input()
+            # net1[1].grad = net2[1].sum_grad.div(len(micro_train_loader)) # Averaging the gradients
+        # Reset sum_grad
+        for param in model_clone.parameters():
+            delattr(param, 'sum_grad')
+        # Update model
+        if(args.noise_multiplier > 0):
+            for layer_idx, (name,param) in enumerate(model.named_parameters()):
+                """
+                Add Gaussian noise to gradients
+                """
+                dist = torch.distributions.normal.Normal(torch.tensor(0.0),
+                                                         torch.tensor((2 * args.max_grad_norm * args.noise_multiplier)))
+                noise = dist.rsample(param.grad.shape).to(device=device)
+
+                # Compute noisy grad
+                param.grad = (param.grad + noise).div(len(micro_train_loader))
+
+        """
+        Update model with noisy grad
+        """
+        optimizer.step()
+
+        """
+        Calculate top 1 acc
+        """
+        # batch = train_batches[indice]
+        # input(len(batch))
+        batch_data, batch_target = batch_data.to(device), batch_target.to(device)
+        output = model(batch_data)
+        preds = np.argmax(output.detach().cpu().numpy(), axis=1)
+        labels = batch_target.detach().cpu().numpy()
+        acc1 = accuracy(preds, labels)
+        top1_acc.append(acc1)
+        if batch_idx % (args.log_interval*len(train_loader)) == 0:
+
+            # train_loss += loss.item()
+            # prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
+            #
+            # total += batch_target.size(0)
+            #
+            # train_correct += np.sum(prediction[1].cpu().numpy() == batch_target.cpu().numpy())
+            print(
+                f"Loss: {np.mean(losses):.6f} "
+                f"Acc@1: {np.mean(top1_acc):.6f} "
+            )
+    return np.mean(top1_acc)
+
+
 def DP_train_classical(args, model, device, train_loader,optimizer):
     model.train()
     print("Training using %s optimizer" % optimizer.__class__.__name__)
@@ -426,14 +567,15 @@ def DP_train(args, model, device, train_loader,optimizer):
                 """
                 Compute flat list of gradient tensors and its norm 
                 """
-                flat_grad_norm = calculate_full_gradient_norm(model_clone)
+                # flat_grad_norm = calculate_full_gradient_norm(model_clone)
                 # print("Current norm = ", flat_grad_norm)
                 """
                 Clip all gradients
                 """
-                if (flat_grad_norm > args.max_grad_norm):
-                    for param in model_clone.parameters():
-                        param.grad = param.grad / flat_grad_norm * args.max_grad_norm
+                # if (flat_grad_norm > args.max_grad_norm):
+                #     for param in model_clone.parameters():
+                #         param.grad = param.grad / flat_grad_norm * args.max_grad_norm
+                torch.nn.utils.clip_grad_norm_(optimizer_clone.param_groups[0]['params'],args.max_grad_norm)
                 """
                 Accumulate gradients
                 """
