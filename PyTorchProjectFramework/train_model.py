@@ -259,8 +259,10 @@ def DP_train_weighted_FGC(args, model, device, train_loader,optimizer):
 
             """
             Add multiplier to gradients (new)
+            c_i = C e_i/M
+            m_i = C/c_i = M/e_i
             """
-            grad_multi = [1/c_i for c_i in args.each_layer_C]
+            grad_multi = [args.max_grad_norm/c_i for c_i in args.each_layer_C]
             for layer_idx, (name,param) in enumerate(model_clone.named_parameters()):
                 param.grad = torch.mul(param.grad,grad_multi[layer_idx])
 

@@ -159,7 +159,7 @@ def main():
     """
     sigma_discount_on = False
     # mode = None
-    settings_file = "settings_best_settings"
+    settings_file = "settings_best_settings_new"
     logging = True
 
     if (mode != None):

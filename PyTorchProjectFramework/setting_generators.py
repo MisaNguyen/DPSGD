@@ -14,13 +14,13 @@ settings = ["settings_clipping_exp_cifar10_dpsgd",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_8",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_p5",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_1p5",]
-settings = ["settings_best_settings"]
+settings = ["settings_best_settings_new"]
 # settings = ["settings_clipping_exp_cifar10_dpsgd_opacus_test"]
 
 # base_sigma = 0.1
 # C = 1.2
 base_sigma = 0.01875
-C = 0.095
+C = 2*0.095
 """
 Sampler mode
 """
@@ -37,7 +37,7 @@ is_classical_BC = False
 """
 Stepsize mode
 """
-is_constant_step_size = False
+is_constant_step_size = True
 count = 0
 for setting_file in settings:
 # setting_file = settings[0]
