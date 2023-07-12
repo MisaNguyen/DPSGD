@@ -159,7 +159,7 @@ def main():
     """
     sigma_discount_on = False
     # mode = None
-    settings_file = "settings_best_settings_new"
+    settings_file = "settings_best_settings_lost_func"
     logging = True
 
     if (mode != None):
@@ -195,6 +195,11 @@ def main():
             args.max_grad_norm = setting_data["max_grad_norm"]
             args.optimizer = setting_data["optimizer"]
             args.enable_diminishing_gradient_norm = False
+            if("loss_multi" in setting_data):
+                args.loss_multi = setting_data["loss_multi"]
+            else:
+                print("loss_multi undefined")
+                args.loss_multi = 1
             # args.enable_individual_clipping = setting_data["is_individual_clipping"]
             # args.enable_batch_clipping = False
             # args.enable_DP = setting_data["enable_DP"]
@@ -202,21 +207,25 @@ def main():
             # args.clip_per_layer = False #TODO: add to setting file
             # args.secure_rng = False #TODO: add to setting file
             args.shuffle_dataset = True
-            # args.is_partition_train = False
             args.mode = setting_data["data_sampling"]
+            ########################################
             # args.clipping = "layerwise"#TODO: add to setting file
             # args.clipping = "all"
             args.clipping = "weight_FGC"
+            ########################################
             args.C_decay = 0.9
+            ########################################
             # args.dataset_name = "MNIST"
             args.dataset_name = "CIFAR10"#TODO: add to setting file
             # args.dataset_name = "Imagenet"#TODO: add to setting file
+            ########################################
             args.opacus_training = False
             args.save_gradient = False
             args.constant_c_i = False
             # args.classicalSGD = False
             args.ci_as_average_norm = False
             # args.brake_C = True
+            ########################################
     if(logging == True):
         print("Clipping method: ", args.clipping)
 

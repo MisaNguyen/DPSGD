@@ -519,6 +519,7 @@ def DP_train(args, model, device, train_loader,optimizer):
             output = model_clone(data)
             # compute loss
             loss = nn.CrossEntropyLoss()(output, target)
+            loss = torch.mul(loss,args.loss_multi)# Adjust losses
             losses.append(loss.item())
             # compute gradient
             loss.backward()

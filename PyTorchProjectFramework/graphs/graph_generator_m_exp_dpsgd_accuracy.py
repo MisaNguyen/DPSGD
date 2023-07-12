@@ -48,10 +48,17 @@ if __name__ == "__main__":
             "ss": [0+ 64*i for i in range(0,31)]
         },
         {
-            # Setting 1
+            # Setting 2
             "settings_path": "settings_best_settings_LeNet",
             "C": 0.2,
             "sigma": 2.5,
+            "ss": [64*i for i in range(0,31)]
+        },
+        {
+            # Setting 3
+            "settings_path": "settings_best_settings_new",
+            "C": 2*0.095,
+            "sigma": 0.01875,
             "ss": [64*i for i in range(0,31)]
         }
 
@@ -69,29 +76,32 @@ if __name__ == "__main__":
     data_folder = "data_neurips"
     # mode = "shuffling"
     mode = "subsampling"
-    clipping_mode = "layerwise"
+    # clipping_mode = "layerwise"
     # clipping_mode = "all"
-    DGN = False
+    clipping_mode = "weight_FGC"
+    # DGN = False
+    DGN = True
     print("DGN:", DGN)
     # DGN = None
     # clipping_mode = ""
-    draw_DPSGD_IC_case = True
+    draw_DPSGD_IC_case = False
     draw_SGD_case = False
-    draw_DPSGD_BC_case = False
+    draw_DPSGD_BC_case = True
     draw_mixing_case = False
     enable_mu = False
     draw_training_acc = False
     constant_ci = False
     draw_AN = False #Zhang setting
-    is_constant_step_size = True
+    is_constant_step_size =True
     # is_sigma_discounted = True
     models = ["Lenet","nor_Lenet" ,"convnet","nor_convnet","BNF_convnet", "AlexNet",
               "resnet18","resnet18_no_BN", "resnet34","resnet50","squarenet"]
     # Get models and settings
-    setting_index = 0 # 0,3,6
+    setting_index = 3# 0,3,6
     s_index =0
     # models_index = 7
-    models_index = 2
+    # models_index = 2
+    models_index = 6
     model_name = models[models_index]
     settings_path, C, sigma, ss = settings[setting_index]["settings_path"], \
                                         settings[setting_index]["C"], \
