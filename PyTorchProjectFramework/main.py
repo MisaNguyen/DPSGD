@@ -159,7 +159,7 @@ def main():
     """
     sigma_discount_on = False
     # mode = None
-    settings_file = "settings_best_settings_lost_func"
+    settings_file = "settings_best_settings_lost_func_new"
     logging = True
 
     if (mode != None):
@@ -209,9 +209,9 @@ def main():
             args.shuffle_dataset = True
             args.mode = setting_data["data_sampling"]
             ########################################
-            # args.clipping = "layerwise"#TODO: add to setting file
+            args.clipping = "layerwise"#TODO: add to setting file
             # args.clipping = "all"
-            args.clipping = "weight_FGC"
+            # args.clipping = "weight_FGC"
             ########################################
             args.C_decay = 0.9
             ########################################
@@ -258,10 +258,10 @@ def main():
     # model = SimpleDLA().to(device)
     # model = nor_convnet(num_classes=10).to(device)
     # model_name = "nor_convnet"
-    model = convnet(num_classes=10).to(device)
-    model_name = "convnet"
-    # model = ResNet18(num_classes=10).to(device)
-    # model_name = "resnet18"
+    # model = convnet(num_classes=10).to(device)
+    # model_name = "convnet"
+    model = ResNet18(num_classes=10).to(device)
+    model_name = "resnet18"
     # model = ResNet18_no_BN(num_classes=10).to(device)
     # model_name = "resnet18_no_BN"
 
