@@ -20,7 +20,7 @@ settings = ["settings_best_settings_lost_func_new"]
 # base_sigma = 0.1
 # C = 1.2
 base_sigma = 0.01875
-C = 2*0.095
+C = 1
 base_loss_multi = 1
 """
 Sampler mode
@@ -38,7 +38,7 @@ is_classical_BC = False
 """
 Stepsize mode
 """
-is_constant_step_size = False
+is_constant_step_size = True
 count = 0
 for setting_file in settings:
 # setting_file = settings[0]
