@@ -76,9 +76,9 @@ if __name__ == "__main__":
     data_folder = "data_neurips"
     # mode = "shuffling"
     mode = "subsampling"
-    # clipping_mode = "layerwise"
+    clipping_mode = "layerwise"
     # clipping_mode = "all"
-    clipping_mode = "weight_FGC"
+    # clipping_mode = "weight_FGC"
     # DGN = False
     DGN = True
     print("DGN:", DGN)

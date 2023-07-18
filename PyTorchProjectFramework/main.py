@@ -159,7 +159,7 @@ def main():
     """
     sigma_discount_on = False
     # mode = None
-    settings_file = "settings_best_settings_lost_func_large_C"
+    settings_file = "settings_best_settings_lost_func_grid_search_1"
     logging = True
 
     if (mode != None):

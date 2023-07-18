@@ -36,9 +36,16 @@ if __name__ == "__main__":
         {
             # Setting 0
             "settings_path": "settings_best_settings_lost_func",
-            "C": 0.095,
+            "Cs": [0.095]*30,
             "sigma": 0.01875,
             "lost_multis": [pow(2,i-15) for i in range(0,31)]
+        },
+        {
+            # Setting 1
+            "settings_path": "settings_best_settings_lost_func_new",
+            "Cs": [2*0.095* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.01875,
+            "lost_multis": [pow(2,i%10-5) for i in range(0,31)]
         }
 
         # {
@@ -82,8 +89,8 @@ if __name__ == "__main__":
     # models_index = 2
     models_index = 6
     model_name = models[models_index]
-    settings_path, C, sigma, lost_multis = settings[setting_index]["settings_path"], \
-                                        settings[setting_index]["C"], \
+    settings_path, Cs, sigma, lost_multis = settings[setting_index]["settings_path"], \
+                                        settings[setting_index]["Cs"], \
                                         settings[setting_index]["sigma"], \
                                         settings[setting_index]["lost_multis"]
 
@@ -105,6 +112,7 @@ if __name__ == "__main__":
     # settings = ["setting_" + str(setting_index)]
     # settings = ["setting_" + str(i) for i in range(1,11)]
     double_batch_size_settings = [1,5,10,15,16,17]
+    # double_batch_size_settings = [5,10,15,20,25]
     # double_batch_size_settings = [1]
     # double_batch_size_settings = [1,3,7,15]
     settings = ["setting_" + str(i) for i in double_batch_size_settings]
@@ -145,9 +153,9 @@ if __name__ == "__main__":
         os.makedirs(graph_path)
         print("The new directory is created: %s" % graph_path)
     count = 0
-
+    # ax = plt.axes(projection='3d')
     for setting_idx, setting in enumerate(settings):
-
+        C = Cs[double_batch_size_settings[setting_idx]]
         # if (setting == "setting_30"):
         #     s=512
         print("Setting:", setting_idx)
@@ -215,8 +223,9 @@ if __name__ == "__main__":
             print("BC_DPSGD_test_accuracy",BC_DPSGD_test_accuracy[-5:-1])
             epochs = len(BC_DPSGD_train_accuracy)
             BC_epochs_idx = [i for i in range(1, epochs+1)]
-            label = "BC, ALC, loss_multi= %s" % (lost_multis[double_batch_size_settings[setting_idx]])
+            label = "BC, ALC, loss_multi= %s, C= %s" % (lost_multis[double_batch_size_settings[setting_idx]],C)
             plt.plot(BC_epochs_idx, BC_DPSGD_test_accuracy, "o-", label=label, color=cmap_color,linewidth=3)
+            # ax.plot3D(xline, yline, zline, 'gray')
 
             # """ TEMP"""
             # clipping_mode= "all"
