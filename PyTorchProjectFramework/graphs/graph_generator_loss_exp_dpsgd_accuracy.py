@@ -46,6 +46,27 @@ if __name__ == "__main__":
             "Cs": [2*0.095* ((i+10)//10) for i in range(0,31)],
             "sigma": 0.01875,
             "lost_multis": [pow(2,i%10-5) for i in range(0,31)]
+        },
+        {
+            # Setting 2
+            "settings_path": "settings_best_settings_lost_func_grid_search_1",
+            "Cs": [0.01* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.01875,
+            "lost_multis": [pow(2,i%10-5) for i in range(0,31)]
+        },
+        {
+            # Setting 3
+            "settings_path": "settings_best_settings_lost_func_grid_search_2",
+            "Cs": [0.08* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.01875,
+            "lost_multis": [pow(2,i%10-5) for i in range(0,31)]
+        },
+        {
+            # Setting 4
+            "settings_path": "settings_best_settings_lost_func_grid_search_3",
+            "Cs": [0.64* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.01875,
+            "lost_multis": [pow(2,i%10-5) for i in range(0,31)]
         }
 
         # {
@@ -83,7 +104,7 @@ if __name__ == "__main__":
     models = ["Lenet","nor_Lenet" ,"convnet","nor_convnet","BNF_convnet", "AlexNet",
               "resnet18","resnet18_no_BN", "resnet34","resnet50","squarenet"]
     # Get models and settings
-    setting_index = 0# 0,3,6
+    setting_index = 4# 0,3,6
     s_index =0
     # models_index = 7
     # models_index = 2
@@ -111,7 +132,8 @@ if __name__ == "__main__":
     # setting_index = 1
     # settings = ["setting_" + str(setting_index)]
     # settings = ["setting_" + str(i) for i in range(1,11)]
-    double_batch_size_settings = [1,5,10,15,16,17]
+    # double_batch_size_settings = [1,5,10,15,16,17]
+    double_batch_size_settings = [16]
     # double_batch_size_settings = [5,10,15,20,25]
     # double_batch_size_settings = [1]
     # double_batch_size_settings = [1,3,7,15]
@@ -309,71 +331,6 @@ if __name__ == "__main__":
     plt.title("$\eta =$ %s, C = %s, $\sigma=%s$, E =%s" %  (lr,C,sigma,epochs))
     # plt.title("$\eta =$ %s, E =%s" %  (lr,epochs))
     plt.legend()
-        # ic_data_path = base_path + '_IC/' + model_name + '/' + experiment + '/IC/' + setting +".json"
-        #
-        #
-        #     if(draw_mixing_case):
-        #         plt.plot(DPSGD_Mixing_epoch_index, Mixing_DPSGD_train_accuracy, "x-", label="mixing, m= %f" % (s), color=cmap_color)
-        #         plt.subplot(1,number_of_subgraphs,number_of_subgraphs)
-        #         mu = [np.sqrt(E)/sigma for E in DPSGD_Mixing_epoch_index]
-        #         mu_index = DPSGD_Mixing_epoch_index
-        #         print("Mixing training acc:", Mixing_DPSGD_train_accuracy[-1])
-        #     plt.legend()
-        # # input(number_of_subgraphs)
-        # if(draw_training_acc):
-        #     plt.subplot(1, number_of_subgraphs, 2)
-        # else:
-        #     plt.subplot(1, number_of_subgraphs, 1)
-        # if(draw_mixing_case or draw_DPSGD_IC_case or draw_DPSGD_BC_case):
-        #     plt.title('Test accuracy, lr = %s, C = %s, sigma = %d' % (str(lr).strip('0'),str(C).strip('0'),sigma))
-        # else:
-        #     plt.title('Test accuracy, lr = %s' % (str(lr).strip('0')))
-        # if(draw_SGD_case):
-        #     plt.plot(SGD_epoch_index, SGD_test_accuracy, label="SGD, s= %d" % (s), color=cmap_color)
-        #     print("SGD test acc:", SGD_test_accuracy[-5:-1])
-        # if(draw_DPSGD_BC_case):
-        #     plt.plot(DPSGD_BC_epoch_index, BC_DPSGD_test_accuracy, "o-", label="BC,", color=cmap_color)
-        #     print("BC test acc:", BC_DPSGD_test_accuracy[-5:-1])
-        # if(draw_DPSGD_IC_case):
-        #     print("HERE")
-        #     plt.plot(DPSGD_IC_epoch_index, IC_DPSGD_test_accuracy, "x-",label="IC, m= %d, %s" % (s,clipping_mode), color=cmap_color)
-        #     print("IC test acc:", IC_DPSGD_test_accuracy[-5:-1])
-        #     # clipping_mode = "all"
-        #     # if(DGN):
-        #     #     ic_data_path  = base_path + '_IC/' + model_name + '/' + experiment \
-        #     #                     + '/' + clipping_mode + '/IC/DGN/' + setting +".json"
-        #     # else:
-        #     #     ic_data_path  = base_path + '_IC/' + model_name + '/' + experiment \
-        #     #                     + '/' + clipping_mode + '/IC/' + setting +".json"
-        #     # print(ic_data_path)
-        #     # if (os.path.exists(ic_data_path)):
-        #     #     print("here")
-        #     #     with open(ic_data_path, "r") as data_file:
-        #     #         data = json.load(data_file)
-        #     #         IC_DPSGD_train_accuracy = data["train_accuracy"]
-        #     #         IC_DPSGD_test_accuracy = data["test_accuracy"]
-        #     #         DPSGD_IC_epochs = len(IC_DPSGD_train_accuracy)
-        #     #         DPSGD_IC_epoch_index = [i for i in range(1, DPSGD_IC_epochs+1)]
-        #     # cmap_color = cmap(4*setting_idx+1)
-        #     # plt.plot(DPSGD_IC_epoch_index, IC_DPSGD_test_accuracy, "o-",label="IC, m= %d, %s" % (s,clipping_mode), color=cmap_color)
-        #
-        # if(draw_mixing_case):
-        #     plt.plot(DPSGD_Mixing_epoch_index, Mixing_DPSGD_test_accuracy, "x-",label="MC, ", color=cmap_color)
-        #     print("Mixing test acc:", Mixing_DPSGD_test_accuracy[-5:-1])
-        # plt.legend()
-        # if(enable_mu):
-        #     if(draw_DPSGD_BC_case or draw_DPSGD_IC_case or draw_mixing_case):
-        #         plt.subplot(1,number_of_subgraphs,3)
-        #         plt.plot(mu_index, mu, label="mu per epoch", color=cmap_color)
-        #         plt.legend()
-        # if(draw_DPSGD_BC_case and draw_DPSGD_IC_case):
-        #     plt.subplot(1,number_of_subgraphs,4)
-        #     test_acc_ratio = [BC_DPSGD_test_accuracy[i]/ IC_DPSGD_test_accuracy[i] for i in range(len(DPSGD_test_accuracy))]
-        #     plt.plot(DPSGD_BC_epoch_index, test_acc_ratio, label="BC/IC,s= %f" % (s), color=cmap_color)
-        #     plt.legend()
-        # plt.xlabel('epoch')
-        # plt.ylabel('accuracy')
-        # s = s*2
     if(draw_SGD_case and draw_DPSGD_BC_case):
         prefix = "SGD_BC"
     elif(draw_SGD_case and draw_DPSGD_IC_case):
