@@ -159,7 +159,7 @@ def main():
     """
     sigma_discount_on = False
     # mode = None
-    settings_file = "settings_best_settings_lost_func_grid_search_1"
+    settings_file = "settings_best_settings_lost_func_grid_search_7"
     logging = True
 
     if (mode != None):
@@ -258,10 +258,10 @@ def main():
     # model = SimpleDLA().to(device)
     # model = nor_convnet(num_classes=10).to(device)
     # model_name = "nor_convnet"
-    # model = convnet(num_classes=10).to(device)
-    # model_name = "convnet"
-    model = ResNet18(num_classes=10).to(device)
-    model_name = "resnet18"
+    model = convnet(num_classes=10).to(device)
+    model_name = "convnet"
+    # model = ResNet18(num_classes=10).to(device)
+    # model_name = "resnet18"
     # model = ResNet18_no_BN(num_classes=10).to(device)
     # model_name = "resnet18_no_BN"
 
