@@ -68,6 +68,69 @@ if __name__ == "__main__":
             "Cs": [0.64* ((i+10)//10) for i in range(0,31)],
             "sigma": 0.01875,
             "lost_multis": [pow(2,i%10-5) for i in range(0,31)]
+        },
+        {
+            # Setting 5
+            "settings_path": "settings_best_settings_lost_func_grid_search_4",
+            "Cs": [0.01* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.01875,
+            "lost_multis": [pow(2,10)*pow(2,i%10-5) for i in range(0,31)]
+        },
+        {
+            # Setting 6
+            "settings_path": "settings_best_settings_lost_func_grid_search_5",
+            "Cs": [0.08* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.01875,
+            "lost_multis": [pow(2,10)*pow(2,i%10-5) for i in range(0,31)]
+        },
+        {
+            # Setting 7
+            "settings_path": "settings_best_settings_lost_func_grid_search_6",
+            "Cs": [0.64* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.01875,
+            "lost_multis": [pow(2,10)*pow(2,i%10-5) for i in range(0,31)]
+        },
+        {
+            # Setting 8
+            "settings_path": "settings_best_settings_lost_func_grid_search_7",
+            "Cs": [3.84* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.01875,
+            "lost_multis": [pow(2,i%10-5) for i in range(0,31)]
+        },
+        {
+            # Setting 9
+            "settings_path": "settings_best_settings_lost_func_grid_search_8",
+            "Cs": [23.04* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.01875,
+            "lost_multis": [pow(2,i%10-5) for i in range(0,31)]
+        },
+        {
+            # Setting 10
+            "settings_path": "settings_best_settings_lost_func_grid_search_9",
+            "Cs": [138.24* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.01875,
+            "lost_multis": [pow(2,i%10-5) for i in range(0,31)]
+        },
+        {
+            # Setting 11
+            "settings_path": "settings_best_settings_lost_func_grid_search_10",
+            "Cs": [3.84* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.01875,
+            "lost_multis": [pow(2,10)*pow(2,i%10-5) for i in range(0,31)]
+        },
+        {
+            # Setting 12
+            "settings_path": "settings_best_settings_lost_func_grid_search_11",
+            "Cs": [23.04* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.01875,
+            "lost_multis": [pow(2,10)*pow(2,i%10-5) for i in range(0,31)]
+        },
+        {
+            # Setting 13
+            "settings_path": "settings_best_settings_lost_func_grid_search_12",
+            "Cs": [138.24* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.01875,
+            "lost_multis": [pow(2,10)*pow(2,i%10-5) for i in range(0,31)]
         }
 
         # {
@@ -116,13 +179,17 @@ if __name__ == "__main__":
     models = ["Lenet","nor_Lenet" ,"convnet","nor_convnet","BNF_convnet", "AlexNet",
               "resnet18","resnet18_no_BN", "resnet34","resnet50","squarenet"]
     # Get models and settings
-    setting_indexes = [2,3,4]# 0,3,6
+    # setting_indexes = [2,3,4] # Top left
+    setting_indexes = [5,6,7] # Top Right
+    # setting_indexes = [8,9,10] # Bottom left
+    # setting_indexes = [11,12,13] # Bottom Right
     s_index =0
-    models_index = 6
+    models_index = 3
+    # models_index = 6
     model_name = models[models_index]
     heatmap_data = []
     C_data = []
-    double_batch_size_settings = [i for i in range(1,31)]
+    double_batch_size_settings = [i for i in range(0,30)]
     settings = ["setting_" + str(i) for i in double_batch_size_settings]
     lr = 0.025
     for setting_index in setting_indexes:
@@ -148,15 +215,18 @@ if __name__ == "__main__":
             print("The new directory is created: %s" % graph_path)
         count = 0
         heatmap_count = 0
-        sub_heatmap_data = [0]
+        sub_heatmap_data = []
         for setting_idx, setting in enumerate(settings):
             C = Cs[double_batch_size_settings[setting_idx]]
-            heatmap_count = heatmap_count + 1
+
             if(heatmap_count % 10 == 0):
-                heatmap_data.append(sub_heatmap_data)
+                if (heatmap_count > 0):
+                    # print(len(sub_heatmap_data))
+                    # input()
+                    heatmap_data.append(sub_heatmap_data)
                 sub_heatmap_data = []
                 C_data.append(C)
-            print("Setting:", setting_idx+1)
+            print("Setting:", setting_idx)
             """
             Load experiments data
             """
@@ -215,13 +285,19 @@ if __name__ == "__main__":
                                     + '/' + clipping_mode + '/BC/' + setting +".json"
                 # bc_data_path  = base_path + '_BC/' + model_name + '/' + experiment \
                 #                  + '/BC/' + setting +".json"
-                print("bc_data_path:",bc_data_path)
-                BC_DPSGD_train_accuracy,BC_DPSGD_test_accuracy = get_data(bc_data_path)
-                print("BC_DPSGD_test_accuracy",BC_DPSGD_test_accuracy[-5:-1])
-                epochs = len(BC_DPSGD_train_accuracy)
-                BC_epochs_idx = [i for i in range(1, epochs+1)]
-                label = "BC, ALC, loss_multi= %s, C= %s" % (lost_multis[double_batch_size_settings[setting_idx]],C)
-                sub_heatmap_data.append(max(BC_DPSGD_test_accuracy[-5:-1])*100)
+                isExist = os.path.exists(bc_data_path)
+                if not isExist:
+                    # Create a new directory because it does not exist
+                    sub_heatmap_data.append(0)
+                    print("File missing: %s" % bc_data_path)
+                else:
+                    print("bc_data_path:",bc_data_path)
+                    BC_DPSGD_train_accuracy,BC_DPSGD_test_accuracy = get_data(bc_data_path)
+                    print("BC_DPSGD_test_accuracy",BC_DPSGD_test_accuracy[-5:-1])
+                    epochs = len(BC_DPSGD_train_accuracy)
+                    BC_epochs_idx = [i for i in range(1, epochs+1)]
+                    label = "BC, ALC, loss_multi= %s, C= %s" % (lost_multis[double_batch_size_settings[setting_idx]],C)
+                    sub_heatmap_data.append(max(BC_DPSGD_test_accuracy[-5:-1])*100)
                 # plt.plot(BC_epochs_idx, BC_DPSGD_test_accuracy, "o-", label=label, color=cmap_color,linewidth=3)
 
 
@@ -250,18 +326,33 @@ if __name__ == "__main__":
                 IC_epochs_idx = [i for i in range(1, epochs+1)]
                 label = "IC, ALC, loss_multi= %s" % (lost_multis[double_batch_size_settings[setting_idx]])
                 plt.plot(IC_epochs_idx, IC_DPSGD_test_accuracy, "x--", label=label, color=cmap_color,linewidth=3)
-        """
-        Draw graphs
-        """
+            heatmap_count = heatmap_count + 1
+        # Add padding for extra data
+        if(sub_heatmap_data != []):
+            sub_heatmap_data += [0] * (len(lost_multis[:10]) - len(sub_heatmap_data))
+        heatmap_data.append(sub_heatmap_data)
+    """
+    Draw graphs
+    """
+
     heatmap_data = np.array(heatmap_data)
+    print(heatmap_data.shape)
+    # for item in heatmap_data:
+    #     print(len(item))
+    #     print(item)
+    # print(heatmap_data)
     # import calendar
     # months = [month[:3] for month in calendar.month_name[1:]]
     sns.set()
-    lost_multi_label = [pow(2,i%10-5) for i in range(0,11)]
+    # lost_multi_label = [pow(2,i%10-5) for i in range(0,11)]
+    lost_multi_label = lost_multis[:10]
+    print(C_data)
+    print(lost_multi_label)
     cmap = sns.color_palette("coolwarm", 128)
     ax = sns.heatmap(heatmap_data, vmin=0, vmax=100,
                      cmap=cmap,annot=True,
-                     xticklabels=lost_multi_label, yticklabels=C_data)
+                     xticklabels=lost_multi_label, yticklabels=C_data
+                     )
     ax.set(xlabel='Loss_multi', ylabel='C')
     plt.show()
 
@@ -291,5 +382,5 @@ if __name__ == "__main__":
     fig.set_size_inches((22, 11), forward=False)
     print("saving to ", graph_path + file_name +".png")
     plt.savefig(graph_path + file_name +".png")
-    plt.show()
+    # plt.show()
 
