@@ -159,7 +159,7 @@ def main():
     """
     sigma_discount_on = False
     # mode = None
-    settings_file = "settings_best_settings_lost_func_grid_search_7"
+    settings_file = "settings_lost_func_grid_search_sigma1_1"
     logging = True
 
     if (mode != None):
@@ -256,10 +256,10 @@ def main():
     # model = AlexNet(num_classes=10).to(device)
     # model_name = "AlexNet"
     # model = SimpleDLA().to(device)
-    # model = nor_convnet(num_classes=10).to(device)
-    # model_name = "nor_convnet"
-    model = convnet(num_classes=10).to(device)
-    model_name = "convnet"
+    model = nor_convnet(num_classes=10).to(device)
+    model_name = "nor_convnet"
+    # model = convnet(num_classes=10).to(device)
+    # model_name = "convnet"
     # model = ResNet18(num_classes=10).to(device)
     # model_name = "resnet18"
     # model = ResNet18_no_BN(num_classes=10).to(device)
@@ -405,7 +405,7 @@ def main():
         out_file_path = out_file_path + "/SGD"
 
     # epochs = math.ceil(args.iterations* args.batch_size / dataset_size)
-    epochs = 50 #TODO: remove to calculated based on iterations
+    epochs = 30 #TODO: remove to calculated based on iterations
     print("Total epochs: %f" % epochs)
     print("Saving data to: %s" % out_file_path)
     # print("Saving data to: %s" % out_file_path)
