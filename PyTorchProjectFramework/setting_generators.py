@@ -15,21 +15,22 @@ settings = ["settings_clipping_exp_cifar10_dpsgd",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_p5",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_1p5",]
 # settings = ["settings_best_settings_lost_func_grid_search_6"]
-settings = ["settings_lost_func_grid_search_sigma1_6"]
+settings = ["settings_lost_func_grid_search_sigma2_7"]
 # .json
 # settings = ["settings_clipping_exp_cifar10_dpsgd_opacus_test"]
 
 # base_sigma = 0.1
 # C = 1.2
-base_sigma = 0.5
-# C = 0.01
+# base_sigma = 0.5
+base_sigma = 0.25
+C = 0.01
 # C = 0.08
 # C = 0.64
 # C = 3.84
 # C = 23.04
-C = 138.24
-base_loss_multi = 1
-# base_loss_multi = pow(2,10)
+# C = 138.24
+# base_loss_multi = 1
+base_loss_multi = pow(2,10)
 """
 Sampler mode
 """
