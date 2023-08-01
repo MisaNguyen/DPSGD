@@ -139,84 +139,170 @@ if __name__ == "__main__":
             # Setting 0
             "settings_path": "settings_lost_func_grid_search_sigma1_1",
             "Cs": [0.01* ((i+10)//10) for i in range(0,31)],
-            "sigma": 0.5,
+            "sigma": 0.25,
             "lost_multis": [pow(2,i%10-5) for i in range(0,31)]
         },
         {
             # Setting 1
             "settings_path": "settings_lost_func_grid_search_sigma1_2",
             "Cs": [0.08* ((i+10)//10) for i in range(0,31)],
-            "sigma": 0.5,
+            "sigma": 0.25,
             "lost_multis": [pow(2,i%10-5) for i in range(0,31)]
         },
         {
             # Setting 2
             "settings_path": "settings_lost_func_grid_search_sigma1_3",
             "Cs": [0.64* ((i+10)//10) for i in range(0,31)],
-            "sigma": 0.5,
+            "sigma": 0.25,
             "lost_multis": [pow(2,i%10-5) for i in range(0,31)]
         },
         {
             # Setting 3
             "settings_path": "settings_lost_func_grid_search_sigma1_4",
-            "Cs": [0.01* ((i+10)//10) for i in range(0,31)],
-            "sigma": 0.5,
-            "lost_multis": [pow(2,10)*pow(2,i%10-5) for i in range(0,31)]
+            "Cs": [3.84* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.25,
+            "lost_multis": [pow(2,i%10-5) for i in range(0,31)]
         },
         {
             # Setting 4
             "settings_path": "settings_lost_func_grid_search_sigma1_5",
-            "Cs": [0.08* ((i+10)//10) for i in range(0,31)],
-            "sigma": 0.5,
-            "lost_multis": [pow(2,10)*pow(2,i%10-5) for i in range(0,31)]
+            "Cs": [23.04* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.25,
+            "lost_multis": [pow(2,i%10-5) for i in range(0,31)]
         },
         {
             # Setting 5
             "settings_path": "settings_lost_func_grid_search_sigma1_6",
-            "Cs": [0.64* ((i+10)//10) for i in range(0,31)],
-            "sigma": 0.5,
-            "lost_multis": [pow(2,10)*pow(2,i%10-5) for i in range(0,31)]
+            "Cs": [138.24* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.25,
+            "lost_multis": [pow(2,i%10-5) for i in range(0,31)]
         },
         {
             # Setting 6
             "settings_path": "settings_lost_func_grid_search_sigma1_7",
-            "Cs": [3.84* ((i+10)//10) for i in range(0,31)],
-            "sigma": 0.5,
-            "lost_multis": [pow(2,i%10-5) for i in range(0,31)]
+            "Cs": [0.01* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.25,
+            "lost_multis": [pow(2,10)*pow(2,i%10-5) for i in range(0,31)]
         },
         {
             # Setting 7
             "settings_path": "settings_lost_func_grid_search_sigma1_8",
-            "Cs": [23.04* ((i+10)//10) for i in range(0,31)],
-            "sigma": 0.5,
-            "lost_multis": [pow(2,i%10-5) for i in range(0,31)]
+            "Cs": [0.08* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.25,
+            "lost_multis": [pow(2,10)*pow(2,i%10-5) for i in range(0,31)]
         },
         {
             # Setting 8
             "settings_path": "settings_lost_func_grid_search_sigma1_9",
-            "Cs": [138.24* ((i+10)//10) for i in range(0,31)],
-            "sigma": 0.5,
-            "lost_multis": [pow(2,i%10-5) for i in range(0,31)]
+            "Cs": [0.64* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.25,
+            "lost_multis": [pow(2,10)*pow(2,i%10-5) for i in range(0,31)]
         },
         {
             # Setting 9
             "settings_path": "settings_lost_func_grid_search_sigma1_10",
             "Cs": [3.84* ((i+10)//10) for i in range(0,31)],
-            "sigma": 0.5,
+            "sigma": 0.25,
             "lost_multis": [pow(2,10)*pow(2,i%10-5) for i in range(0,31)]
         },
         {
             # Setting 10
             "settings_path": "settings_lost_func_grid_search_sigma1_11",
             "Cs": [23.04* ((i+10)//10) for i in range(0,31)],
-            "sigma": 0.5,
+            "sigma": 0.25,
             "lost_multis": [pow(2,10)*pow(2,i%10-5) for i in range(0,31)]
         },
         {
             # Setting 11
             "settings_path": "settings_lost_func_grid_search_sigma1_12",
             "Cs": [138.24* ((i+10)//10) for i in range(0,31)],
-            "sigma": 0.5,
+            "sigma": 0.25,
+            "lost_multis": [pow(2,10)*pow(2,i%10-5) for i in range(0,31)]
+        }
+    ]
+    settings_description_3 = [
+        {
+            # Setting 0
+            "settings_path": "settings_lost_func_grid_search_sigma2_1",
+            "Cs": [0.01* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.25,
+            "lost_multis": [pow(2,i%10-5) for i in range(0,31)]
+        },
+        {
+            # Setting 1
+            "settings_path": "settings_lost_func_grid_search_sigma2_2",
+            "Cs": [0.08* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.25,
+            "lost_multis": [pow(2,i%10-5) for i in range(0,31)]
+        },
+        {
+            # Setting 2
+            "settings_path": "settings_lost_func_grid_search_sigma2_3",
+            "Cs": [0.64* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.25,
+            "lost_multis": [pow(2,i%10-5) for i in range(0,31)]
+        },
+        {
+            # Setting 3
+            "settings_path": "settings_lost_func_grid_search_sigma2_4",
+            "Cs": [3.84* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.25,
+            "lost_multis": [pow(2,i%10-5) for i in range(0,31)]
+        },
+        {
+            # Setting 4
+            "settings_path": "settings_lost_func_grid_search_sigma2_5",
+            "Cs": [23.04* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.25,
+            "lost_multis": [pow(2,i%10-5) for i in range(0,31)]
+        },
+        {
+            # Setting 5
+            "settings_path": "settings_lost_func_grid_search_sigma2_6",
+            "Cs": [138.24* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.25,
+            "lost_multis": [pow(2,i%10-5) for i in range(0,31)]
+        },
+        {
+            # Setting 6
+            "settings_path": "settings_lost_func_grid_search_sigma2_7",
+            "Cs": [0.01* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.25,
+            "lost_multis": [pow(2,10)*pow(2,i%10-5) for i in range(0,31)]
+        },
+        {
+            # Setting 7
+            "settings_path": "settings_lost_func_grid_search_sigma2_8",
+            "Cs": [0.08* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.25,
+            "lost_multis": [pow(2,10)*pow(2,i%10-5) for i in range(0,31)]
+        },
+        {
+            # Setting 8
+            "settings_path": "settings_lost_func_grid_search_sigma2_9",
+            "Cs": [0.64* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.25,
+            "lost_multis": [pow(2,10)*pow(2,i%10-5) for i in range(0,31)]
+        },
+        {
+            # Setting 9
+            "settings_path": "settings_lost_func_grid_search_sigma2_10",
+            "Cs": [3.84* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.25,
+            "lost_multis": [pow(2,10)*pow(2,i%10-5) for i in range(0,31)]
+        },
+        {
+            # Setting 10
+            "settings_path": "settings_lost_func_grid_search_sigma2_11",
+            "Cs": [23.04* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.25,
+            "lost_multis": [pow(2,10)*pow(2,i%10-5) for i in range(0,31)]
+        },
+        {
+            # Setting 11
+            "settings_path": "settings_lost_func_grid_search_sigma2_12",
+            "Cs": [138.24* ((i+10)//10) for i in range(0,31)],
+            "sigma": 0.25,
             "lost_multis": [pow(2,10)*pow(2,i%10-5) for i in range(0,31)]
         }
     ]
@@ -258,17 +344,18 @@ if __name__ == "__main__":
               "resnet18","resnet18_no_BN", "resnet34","resnet50","squarenet"]
     # Get models and settings
     #------------------------------------
-    # settings_description = settings_description
+    settings_description = settings_description
     # setting_indexes = [2,3,4] # Top left
     # setting_indexes = [5,6,7] # Top Right
     # setting_indexes = [8,9,10] # Bottom left
     # setting_indexes = [11,12,13] # Bottom Right
     #------------------------------------
-    settings_description = settings_description_2
+    # settings_description = settings_description_2 # sigma = 0.5
+    settings_description = settings_description_3 # sigma = 0.25
     # setting_indexes = [0,1,2] # Top left
-    # setting_indexes = [3,4,5] # Top Right
-    # setting_indexes = [6,7,8] # Bottom left
-    setting_indexes = [9,10,11] # Bottom Right
+    # setting_indexes = [3,4,5] # Btm Left
+    setting_indexes = [6,7,8] # Top Right
+    # setting_indexes = [9,10,11] # Bottom Right
     #------------------------------------
     s_index =0
     models_index = 3

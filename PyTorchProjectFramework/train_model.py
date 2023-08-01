@@ -346,10 +346,6 @@ def DP_train_weighted_FGC(args, model, device, train_loader,optimizer):
 def DP_train_classical(args, model, device, train_loader,optimizer):
     model.train()
     print("Training using %s optimizer" % optimizer.__class__.__name__)
-    train_loss = 0
-    train_correct = 0
-    total = 0
-    loss = 0
     # Get optimizer
 
     iteration = 0
@@ -372,29 +368,32 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
                                    )
         batch = TensorDataset(batch_data,batch_target)
         # print("micro batch size =", args.microbatch_size) ### args.microbatch_size = 1 => Input each data sample
-        micro_train_loader = torch.utils.data.DataLoader(batch, batch_size=args.microbatch_size,
-                                                         shuffle=True) # Load each data
+        mini_epochs = 20
+        for mini_epoch in range(mini_epochs):
+            micro_train_loader = torch.utils.data.DataLoader(batch, batch_size=args.microbatch_size,
+                                                             shuffle=True) # Load each data
+            """ Classical SGD updates"""
 
-        """ Classical SGD updates"""
-        for sample_idx, (data,target) in enumerate(micro_train_loader):
-            optimizer_clone.zero_grad()
-            iteration += 1
-            data, target = data.to(device), target.to(device)
 
-            # compute output
-            output = model_clone(data)
-            # compute loss
-            loss = nn.CrossEntropyLoss()(output, target)
-            losses.append(loss.item())
-            # compute gradient
-            loss.backward()
-            # Gradient Descent step
-            optimizer_clone.step()
-            #####
+            for sample_idx, (data,target) in enumerate(micro_train_loader):
+                optimizer_clone.zero_grad()
+                iteration += 1
+                data, target = data.to(device), target.to(device)
+
+                # compute output
+                output = model_clone(data)
+                # compute loss
+                loss = nn.CrossEntropyLoss()(output, target)
+                losses.append(loss.item())
+                # compute gradient
+                loss.backward()
+                # Gradient Descent step
+                optimizer_clone.step()
+                #####
         # Computing aH
         for param1, param2 in zip(model.parameters(), model_clone.parameters()):
-            param1.grad= torch.sub(param2.data,param1.data).div(args.lr) #aH = (W_m - W_0)/eta
-
+            # param1.grad= torch.sub(param2.data,param1.data).div(args.lr) #aH = (W_m - W_0)/eta
+            param1.grad= torch.sub(param2.data,param1.data) #aH = (W_m - W_0)
             """
             Batch clipping each "batch"
             """
@@ -413,13 +412,14 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
             """
             Compute flat list of gradient tensors and its norm
             """
-            flat_grad_norm = calculate_full_gradient_norm(model)
+            # flat_grad_norm = calculate_full_gradient_norm(model)
             """
             Clip all gradients
             """
-            if (flat_grad_norm > args.max_grad_norm):
-                for param in model.parameters():
-                    param.grad = param.grad / flat_grad_norm * args.max_grad_norm
+            torch.nn.utils.clip_grad_norm_(optimizer.param_groups[0]['params'],args.max_grad_norm)
+            # if (flat_grad_norm > args.max_grad_norm):
+            #     for param in model.parameters():
+            #         param.grad = param.grad / flat_grad_norm * args.max_grad_norm
         else:
             raise ValueError("Invalid clipping mode, available options: all, layerwise")
 
