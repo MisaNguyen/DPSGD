@@ -15,7 +15,7 @@ settings = ["settings_clipping_exp_cifar10_dpsgd",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_p5",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_1p5",]
 # settings = ["settings_best_settings_lost_func_grid_search_6"]
-settings = ["settings_lost_func_grid_search_sigma2_7"]
+settings = ["settings_lost_func_grid_search_sigma2_6"]
 # .json
 # settings = ["settings_clipping_exp_cifar10_dpsgd_opacus_test"]
 
@@ -23,14 +23,15 @@ settings = ["settings_lost_func_grid_search_sigma2_7"]
 # C = 1.2
 # base_sigma = 0.5
 base_sigma = 0.25
-C = 0.01
+
+# C = 0.01
 # C = 0.08
 # C = 0.64
 # C = 3.84
 # C = 23.04
-# C = 138.24
-# base_loss_multi = 1
-base_loss_multi = pow(2,10)
+C = 138.24
+base_loss_multi = 1
+# base_loss_multi = pow(2,10)
 """
 Sampler mode
 """
@@ -40,9 +41,9 @@ data_processing = "subsampling"
 """
 Clipping mode
 """
-is_batch_clipping = True
+is_batch_clipping = False
 is_individual_clipping = False
-is_classical_BC = False
+is_classical_BC = True
 
 """
 Stepsize mode
@@ -57,13 +58,16 @@ for setting_file in settings:
     f.close()
     """Update elements"""
     for (k, v) in data.items():
-        data[k]['batch_size'] = 64
+
         data[k]['loss_multi'] = base_loss_multi * pow(2,count%10-5)
         if(is_batch_clipping):
+            data[k]['batch_size'] = 64
             data[k]['microbatch_size'] = data[k]['batch_size']
         elif(is_individual_clipping):
+            data[k]['batch_size'] = 64
             data[k]['microbatch_size'] = 1
         elif(is_classical_BC):
+            data[k]['batch_size'] = 1024
             data[k]['microbatch_size'] = 64
 
         if(is_constant_step_size):
