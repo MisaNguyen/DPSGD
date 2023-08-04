@@ -159,7 +159,9 @@ def main():
     """
     sigma_discount_on = False
     # mode = None
-    settings_file = "settings_lost_func_grid_search_sigma2_1"
+    # settings_file = "settings_lost_func_grid_search_sigma2_1"
+    settings_file = "settings_best_settings_lost_func_grid_search_1"
+
     logging = True
 
     if (mode != None):
@@ -339,7 +341,7 @@ def main():
     C_dataset_loader, train_loader, test_loader, dataset_size = dataset_preprocessing(args.dataset_name, train_kwargs,
                                                                      test_kwargs,mode
                                                                      )
-
+    print("dataset_size=", dataset_size)
     if (args.enable_DP and not args.opacus_training):
         if(args.clipping == "layerwise" or args.clipping == "weight_FGC"):
             if (args.constant_c_i):
