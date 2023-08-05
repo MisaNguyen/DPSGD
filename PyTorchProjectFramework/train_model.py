@@ -368,7 +368,7 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
                                    )
         batch = TensorDataset(batch_data,batch_target)
         # print("micro batch size =", args.microbatch_size) ### args.microbatch_size = 1 => Input each data sample
-        mini_epochs = 20
+        mini_epochs = 5
         for mini_epoch in range(mini_epochs):
             micro_train_loader = torch.utils.data.DataLoader(batch, batch_size=args.microbatch_size,
                                                              shuffle=True) # Load each data
@@ -397,54 +397,54 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
             """
             Batch clipping each "batch"
             """
-        if(args.clipping == "layerwise"):
-            """
-            Clip each layer gradients with args.max_grad_norm
-            """
-            for layer_idx, param in enumerate(model.parameters()):
-                # print("Before clipping, grad_norm =", param.grad.data.norm(2))
-                torch.nn.utils.clip_grad_norm_(param, max_norm=args.each_layer_C[layer_idx]) # in-place computation, layerwise clipping
-
-        elif (args.clipping == "all"):
-            """
-            Clip entire gradients with args.max_grad_norm
-            """
-            """
-            Compute flat list of gradient tensors and its norm
-            """
-            # flat_grad_norm = calculate_full_gradient_norm(model)
-            """
-            Clip all gradients
-            """
-            torch.nn.utils.clip_grad_norm_(optimizer.param_groups[0]['params'],args.max_grad_norm)
-            # if (flat_grad_norm > args.max_grad_norm):
-            #     for param in model.parameters():
-            #         param.grad = param.grad / flat_grad_norm * args.max_grad_norm
-        else:
-            raise ValueError("Invalid clipping mode, available options: all, layerwise")
-
-        # Update model
-        for layer_idx, param in enumerate(model.parameters()):
-
-            """
-            Add Gaussian noise to gradients
-            """
-            """--------------STATIC NOISE-----------------"""
-            # dist = torch.distributions.normal.Normal(torch.tensor(0.0),
-            #                                          torch.tensor((2 * args.noise_multiplier *  args.max_grad_norm)))
-            """--------------LAYERWISE NOISE-----------------"""
-            if(args.clipping=="layerwise"):
-                dist = torch.distributions.normal.Normal(torch.tensor(0.0),
-                                                         torch.tensor((2 * args.each_layer_C[layer_idx] *  args.noise_multiplier)))
-            elif(args.clipping=="all"):
-                dist = torch.distributions.normal.Normal(torch.tensor(0.0),
-                                                         torch.tensor((2 * args.max_grad_norm *  args.noise_multiplier)))
-            # print(param.grad.shape)
-            noise = dist.rsample(param.grad.shape).to(device=device)
-
-            # Compute noisy grad
-            param.grad = (param.grad + noise).div(len(micro_train_loader)) # len(micro_train_loader) = number of microbatches
-            # param.grad = param.grad + noise.div(len(micro_train_loader))
+        # if(args.clipping == "layerwise"):
+        #     """
+        #     Clip each layer gradients with args.max_grad_norm
+        #     """
+        #     for layer_idx, param in enumerate(model.parameters()):
+        #         # print("Before clipping, grad_norm =", param.grad.data.norm(2))
+        #         torch.nn.utils.clip_grad_norm_(param, max_norm=args.each_layer_C[layer_idx]) # in-place computation, layerwise clipping
+        #
+        # elif (args.clipping == "all"):
+        #     """
+        #     Clip entire gradients with args.max_grad_norm
+        #     """
+        #     """
+        #     Compute flat list of gradient tensors and its norm
+        #     """
+        #     # flat_grad_norm = calculate_full_gradient_norm(model)
+        #     """
+        #     Clip all gradients
+        #     """
+        #     torch.nn.utils.clip_grad_norm_(optimizer.param_groups[0]['params'],args.max_grad_norm)
+        #     # if (flat_grad_norm > args.max_grad_norm):
+        #     #     for param in model.parameters():
+        #     #         param.grad = param.grad / flat_grad_norm * args.max_grad_norm
+        # else:
+        #     raise ValueError("Invalid clipping mode, available options: all, layerwise")
+        #
+        # # Update model
+        # for layer_idx, param in enumerate(model.parameters()):
+        #
+        #     """
+        #     Add Gaussian noise to gradients
+        #     """
+        #     """--------------STATIC NOISE-----------------"""
+        #     # dist = torch.distributions.normal.Normal(torch.tensor(0.0),
+        #     #                                          torch.tensor((2 * args.noise_multiplier *  args.max_grad_norm)))
+        #     """--------------LAYERWISE NOISE-----------------"""
+        #     if(args.clipping=="layerwise"):
+        #         dist = torch.distributions.normal.Normal(torch.tensor(0.0),
+        #                                                  torch.tensor((2 * args.each_layer_C[layer_idx] *  args.noise_multiplier)))
+        #     elif(args.clipping=="all"):
+        #         dist = torch.distributions.normal.Normal(torch.tensor(0.0),
+        #                                                  torch.tensor((2 * args.max_grad_norm *  args.noise_multiplier)))
+        #     # print(param.grad.shape)
+        #     noise = dist.rsample(param.grad.shape).to(device=device)
+        #
+        #     # Compute noisy grad
+        #     param.grad = (param.grad + noise).div(len(micro_train_loader)) # len(micro_train_loader) = number of microbatches
+        #     # param.grad = param.grad + noise.div(len(micro_train_loader))
 
         # Update model with noisy grad
         optimizer.step()
