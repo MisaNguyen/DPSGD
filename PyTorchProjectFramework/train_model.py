@@ -369,6 +369,7 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
         batch = TensorDataset(batch_data,batch_target)
         # print("micro batch size =", args.microbatch_size) ### args.microbatch_size = 1 => Input each data sample
         mini_epochs = 1
+        top1_acc_clone=[]
         for mini_epoch in range(mini_epochs):
             print("mini_epochs:", mini_epochs)
             micro_train_loader = torch.utils.data.DataLoader(batch, batch_size=args.microbatch_size,
@@ -385,12 +386,26 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
                 output = model_clone(data)
                 # compute loss
                 loss = nn.CrossEntropyLoss()(output, target)
-                # losses.append(loss.item())
+                losses.append(loss.item())
                 print("loss=",loss)
                 # compute gradient
                 loss.backward()
                 # Gradient Descent step
                 optimizer_clone.step()
+                preds = np.argmax(output.detach().cpu().numpy(), axis=1)
+                acc1_clone = accuracy(preds, labels)
+                top1_acc_clone.append(acc1_clone)
+                if batch_idx % (args.log_interval*len(train_loader)) == 0:
+                    # train_loss += loss.item()
+                    # prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
+                    #
+                    # total += batch_target.size(0)
+                    #
+                    # train_correct += np.sum(prediction[1].cpu().numpy() == batch_target.cpu().numpy())
+                    print(
+                        f"Loss: {np.mean(losses):.6f} "
+                        f"Acc@1: {np.mean(top1_acc_clone):.6f} "
+                    )
                 #####
         # Computing aH
         for param1, param2 in zip(model.parameters(), model_clone.parameters()):
