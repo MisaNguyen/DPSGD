@@ -368,8 +368,9 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
                                    )
         batch = TensorDataset(batch_data,batch_target)
         # print("micro batch size =", args.microbatch_size) ### args.microbatch_size = 1 => Input each data sample
-        mini_epochs = 5
+        mini_epochs = 1
         for mini_epoch in range(mini_epochs):
+            print("mini_epochs:", mini_epochs)
             micro_train_loader = torch.utils.data.DataLoader(batch, batch_size=args.microbatch_size,
                                                              shuffle=True) # Load each data
             """ Classical SGD updates"""
@@ -384,7 +385,8 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
                 output = model_clone(data)
                 # compute loss
                 loss = nn.CrossEntropyLoss()(output, target)
-                losses.append(loss.item())
+                # losses.append(loss.item())
+                print("loss=",loss)
                 # compute gradient
                 loss.backward()
                 # Gradient Descent step
