@@ -397,7 +397,7 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
                 labels = target.detach().cpu().numpy()
                 acc1_clone = accuracy(preds, labels)
                 top1_acc_clone.append(acc1_clone)
-                if batch_idx % (args.log_interval*len(train_loader)) == 0:
+                if sample_idx == mini_epochs:
 
                     # train_loss += loss.item()
                     # prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
@@ -406,8 +406,10 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
                     #
                     # train_correct += np.sum(prediction[1].cpu().numpy() == batch_target.cpu().numpy())
                     print(
+                        f"Model Clone: "
                         f"Loss: {np.mean(losses):.6f} "
                         f"Acc@1: {np.mean(top1_acc_clone):.6f} "
+                        f"---------------------------------"
                     )
                 #####
         # Computing aH
@@ -489,7 +491,7 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
             #
             # train_correct += np.sum(prediction[1].cpu().numpy() == batch_target.cpu().numpy())
             print(
-                f"Loss: {np.mean(losses):.6f} "
+                # f"Loss: {np.mean(losses):.6f} "
                 f"Acc@1: {np.mean(top1_acc):.6f} "
             )
         if args.dry_run:
