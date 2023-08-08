@@ -71,7 +71,8 @@ for setting_file in settings:
             data[k]['microbatch_size'] = 1
         elif(is_classical_BC):
             # data[k]['batch_size'] = 1024
-            data[k]['batch_size'] = 45000
+            data[k]['batch_size'] = 5120
+            # data[k]['batch_size'] = 45000
             data[k]['microbatch_size'] = 64
 
         if(is_constant_step_size):

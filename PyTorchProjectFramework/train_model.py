@@ -368,7 +368,7 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
                                    )
         batch = TensorDataset(batch_data,batch_target)
         # print("micro batch size =", args.microbatch_size) ### args.microbatch_size = 1 => Input each data sample
-        mini_epochs = 1
+        mini_epochs = 10
         top1_acc_clone=[]
         for mini_epoch in range(mini_epochs):
             print("mini_epochs:", mini_epochs)
@@ -393,6 +393,7 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
                 # Gradient Descent step
                 optimizer_clone.step()
                 preds = np.argmax(output.detach().cpu().numpy(), axis=1)
+                labels = target.detach().cpu().numpy()
                 acc1_clone = accuracy(preds, labels)
                 top1_acc_clone.append(acc1_clone)
                 if batch_idx % (args.log_interval*len(train_loader)) == 0:
