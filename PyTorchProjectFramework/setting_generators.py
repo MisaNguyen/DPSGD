@@ -73,7 +73,7 @@ for setting_file in settings:
             # data[k]['batch_size'] = 1024
             data[k]['batch_size'] = 5120
             # data[k]['batch_size'] = 45000
-            data[k]['microbatch_size'] = 64
+            data[k]['microbatch_size'] = 64*count
 
         if(is_constant_step_size):
             data[k]['gamma'] = 1

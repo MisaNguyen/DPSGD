@@ -392,11 +392,13 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
                 loss.backward()
                 # Gradient Descent step
                 optimizer_clone.step()
+
                 preds = np.argmax(output.detach().cpu().numpy(), axis=1)
                 labels = target.detach().cpu().numpy()
                 acc1_clone = accuracy(preds, labels)
                 top1_acc_clone.append(acc1_clone)
                 if batch_idx % (args.log_interval*len(train_loader)) == 0:
+
                     # train_loss += loss.item()
                     # prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
                     #
