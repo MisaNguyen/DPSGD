@@ -417,9 +417,12 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
             # param1.grad= torch.sub(param2.data,param1.data).div(args.lr) #aH = (W_m - W_0)/eta
             param1.grad= torch.sub(param2.data,param1.data) #aH = (W_m - W_0)
             if (batch_idx == len(train_loader) -1):
-                print("model grad!")
-                print(param1.grad)
-
+                print("model clone grad norm!")
+                # print(param2.grad)
+                print(calculate_full_gradient_norm(model_clone))
+                print("model grad norm!")
+                # print(param1.grad)
+                print(calculate_full_gradient_norm(model))
             """
             Batch clipping each "batch"
             """
