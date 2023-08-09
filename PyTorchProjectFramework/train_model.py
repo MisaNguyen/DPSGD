@@ -397,7 +397,7 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
                 labels = target.detach().cpu().numpy()
                 acc1_clone = accuracy(preds, labels)
                 top1_acc_clone.append(acc1_clone)
-                if sample_idx == mini_epochs:
+                if sample_idx == mini_epochs -1 :
 
                     # train_loss += loss.item()
                     # prediction = torch.max(output, 1)  # second param "1" represents the dimension to be reduced
@@ -416,6 +416,10 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
         for param1, param2 in zip(model.parameters(), model_clone.parameters()):
             # param1.grad= torch.sub(param2.data,param1.data).div(args.lr) #aH = (W_m - W_0)/eta
             param1.grad= torch.sub(param2.data,param1.data) #aH = (W_m - W_0)
+            if (batch_idx == len(train_loader) -1):
+                print("model grad!")
+                print(param1.grad)
+
             """
             Batch clipping each "batch"
             """
