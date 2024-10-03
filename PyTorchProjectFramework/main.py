@@ -13,6 +13,7 @@ import os
 # from models.simple_dla import SimpleDLA
 from models.convnet_model import convnet
 from models.nor_convnet_model import nor_convnet
+from models.group_nor_convnet_model import group_nor_convnet
 from models.Lenet_model import LeNet
 from models.nor_Lenet_model import nor_LeNet
 from models.resnet_model import ResNet18
@@ -148,19 +149,21 @@ def main():
     Define clipping mode here
     """
     enable_individual_clipping = False
-    enable_batch_clipping = False
-    enable_classical_BC = True
+    enable_batch_clipping = True
+    enable_classical_BC = False
     """
     Define stepsize mode here
     """
-    train_with_constant_step_size = True
+    train_with_constant_step_size = False
     """
     Toggle on/off noise multiplier (sigma) discount for full gradient clipping
     """
     sigma_discount_on = False
     # mode = None
+    setting_folder = "settings" # Path to setting folder
     # settings_file = "settings_lost_func_grid_search_sigma2_1"
-    settings_file = "settings_best_settings_lost_func_grid_search_1"
+    # settings_file = "settings_best_settings_lost_func_grid_search_1"
+    settings_file = "settings_clipping_exp_cifar10_dpsgd_opacus" #Setting file name
 
     logging = True
 
@@ -177,7 +180,7 @@ def main():
         settings_file = settings_file + "_css"
     print("Running setting: %s.json" % settings_file)
     if(args.load_setting != ""):
-        with open(settings_file +".json", "r") as json_file:
+        with open(setting_folder + "/" + settings_file +".json", "r") as json_file:
             json_data = json.load(json_file)
             setting_data = json_data[args.load_setting]
             # Loading data
@@ -258,12 +261,14 @@ def main():
     # model = AlexNet(num_classes=10).to(device)
     # model_name = "AlexNet"
     # model = SimpleDLA().to(device)
-    # model = nor_convnet(num_classes=10).to(device)
-    # model_name = "nor_convnet"
+    # model = group_nor_convnet(num_classes=10).to(device)
+    # model_name = "group_nor_convnet"
+    model = nor_convnet(num_classes=10).to(device)
+    model_name = "nor_convnet"
     # model = convnet(num_classes=10).to(device)
     # model_name = "convnet"
-    model = ResNet18(num_classes=10).to(device)
-    model_name = "resnet18"
+    # model = ResNet18(num_classes=10).to(device)
+    # model_name = "resnet18"
     # model = ResNet18_no_BN(num_classes=10).to(device)
     # model_name = "resnet18_no_BN"
 
@@ -298,6 +303,7 @@ def main():
     # model = BNF_convnet(num_classes=10).to(device)
     # model_name = "BNF_convnet"
     print("Training with model:", model_name)
+    print("Opimizer:", args.optimizer)
     optimizer = get_optimizer(args.optimizer,model ,args.lr)
     """VGG 16 """
     # arch = [64, 64, 'M',
@@ -333,7 +339,7 @@ def main():
             out_file_path = out_file_path + "/constant_c_i"
     else:
         out_file_path = "./graphs/data_neurips/" + settings_file +  "/" + model_name + "/" + args.optimizer
-    # Get training and testing data loaders
+    # Get training and teopasting data loaders
     # train_batches, test_loader, dataset_size = dataset_preprocessing(args.dataset_name, train_kwargs,
     #                                                                  test_kwargs,
     #                                                                 )
@@ -357,9 +363,8 @@ def main():
                 else:
                     args.each_layer_C = compute_layerwise_C(C_dataset_loader, dummy_model, at_epoch, device,
                                                         dummy_optimizer, args.max_grad_norm,True)
-        print(args.each_layer_C)
-    # DP settings:
-    print(args.microbatch_size)
+            print("c_i = ", args.each_layer_C)
+
     if args.enable_DP:
         if(args.opacus_training):
             privacy_engine = PrivacyEngine()
@@ -383,9 +388,11 @@ def main():
                 max_grad_norm=max_grad_norm,
                 clipping=clipping,
             )
-            print("Opacus")
+            # print("Opacus")
             out_file_path = out_file_path + "/opacus"
         else:
+            # DP settings:
+            print("Microbatch size",args.microbatch_size)
             if (args.microbatch_size == 1):
                 print("Individual clipping")
                 out_file_path = out_file_path + "/IC"
@@ -419,6 +426,11 @@ def main():
         if args.enable_DP:
             if(args.opacus_training):
                 print("Opacus training")
+                print("len train_loader", len(train_loader))
+                for item in enumerate(train_loader):
+                    print(item)
+                    input()
+
                 train_acc, gradient_stats = train_model.train(args, model, device, train_loader, optimizer,epoch)
                 train_accuracy.append(train_acc)
             elif(enable_classical_BC):

@@ -31,4 +31,6 @@ PytorchProjectFramework/graphs/old_data_3/*
 PytorchProjectFramework/graphs/data_marten_algo/*
 
 PytorchProjectFramework/*.tar
+PytorchProjectFramework/*.pt
 PytorchProjectFramework/cifar10
+

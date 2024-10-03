@@ -371,7 +371,7 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
         mini_epochs = 10
         top1_acc_clone=[]
         for mini_epoch in range(mini_epochs):
-            print("mini_epochs:", mini_epochs)
+            print("mini_epoch:", mini_epoch)
             micro_train_loader = torch.utils.data.DataLoader(batch, batch_size=args.microbatch_size,
                                                              shuffle=True) # Load each data
             """ Classical SGD updates"""
@@ -387,7 +387,7 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
                 # compute loss
                 loss = nn.CrossEntropyLoss()(output, target)
                 losses.append(loss.item())
-                print("loss=",loss)
+                # print("loss=",loss)
                 # compute gradient
                 loss.backward()
                 # Gradient Descent step
@@ -416,13 +416,13 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
         for param1, param2 in zip(model.parameters(), model_clone.parameters()):
             # param1.grad= torch.sub(param2.data,param1.data).div(args.lr) #aH = (W_m - W_0)/eta
             param1.grad= torch.sub(param2.data,param1.data) #aH = (W_m - W_0)
-            if (batch_idx == len(train_loader) -1):
-                print("model clone grad norm!")
-                # print(param2.grad)
-                print(calculate_full_gradient_norm(model_clone))
-                print("model grad norm!")
-                # print(param1.grad)
-                print(calculate_full_gradient_norm(model))
+            # if (batch_idx == len(train_loader) -1):
+            #     print("model clone grad norm!")
+            #     # print(param2.grad)
+            #     print(calculate_full_gradient_norm(model_clone))
+            #     print("model grad norm!")
+            #     # print(param1.grad)
+            #     print(calculate_full_gradient_norm(model))
             """
             Batch clipping each "batch"
             """
@@ -643,7 +643,11 @@ def DP_train(args, model, device, train_loader,optimizer):
                 # dist = torch.distributions.normal.Normal(torch.tensor(0.0),
                 #                                          torch.tensor((2 * args.noise_multiplier *  args.max_grad_norm)))
                 """--------------LAYERWISE NOISE-----------------"""
+
                 if(args.clipping=="layerwise"):
+                    # if (args.each_layer_C[layer_idx] *  args.noise_multiplier == 0):
+                    # print("args.each_layer_C[layer_idx]", args.each_layer_C[layer_idx])
+                    # print("args.noise_multiplier", args.noise_multiplier)
                     dist = torch.distributions.normal.Normal(torch.tensor(0.0),
                                                          torch.tensor((2 * args.each_layer_C[layer_idx] *  args.noise_multiplier)))
                 elif(args.clipping=="all"):
@@ -710,7 +714,7 @@ def train(args, model, device, train_loader,
     losses = []
     top1_acc = []
     loss = None
-    for batch_idx, (data,target) in enumerate(tqdm(train_loader)):
+    for batch_idx, (data,target) in enumerate(train_loader):
         optimizer.zero_grad()
         iteration += 1
         data, target = data.to(device), target.to(device)

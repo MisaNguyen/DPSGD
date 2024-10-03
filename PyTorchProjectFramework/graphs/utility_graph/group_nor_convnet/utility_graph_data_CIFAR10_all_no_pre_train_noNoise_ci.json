@@ -1,0 +1,7 @@
+[
+  {
+    "base_model_test_acc": 0.0986,
+    "sigma": 0,
+    "private_epochs": 30
+  }
+]

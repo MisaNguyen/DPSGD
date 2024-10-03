@@ -97,6 +97,7 @@ if __name__ == "__main__":
     # label = "BC sigma = %f, s = %f" if draw_BC_case else "IC sigma = %f, s = %f"
     # setup_plot('epoch' , 'accuracy',lr ,C)
     settings = ["setting_" + str(i) for i in range(13,25)]
+    settings = ["setting_1"]
     test_acc_IC_DGN = []
     test_acc_IC_original = []
     test_acc_IC_AN = []

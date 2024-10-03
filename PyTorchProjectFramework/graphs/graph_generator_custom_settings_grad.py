@@ -165,13 +165,18 @@ if __name__ == "__main__":
     draw_BC_case = False
     label = "BC sigma = %f, s = %f" if draw_BC_case else "IC sigma = %f, s = %f"
     # setup_plot('epoch' , 'accuracy',lr ,C)
+    # """SGD DATA 512"""
+    # model_name = "resnet18"
+    # setting_path = "settings_sigma_dpsgd_super_sigma_subsampling_BC"
+    # s = 512
+    # setting_name = "setting_2"
+    # experiment = "SGD"
     """SGD DATA 512"""
-    model_name = "resnet18"
-    setting_path = "settings_sigma_dpsgd_super_sigma_subsampling_BC"
-    s = 512
-    setting_name = "setting_2"
+    model_name = "LeNet"
+    setting_path = "settings_clipping_exp_cifar10_dpsgd_opacus_test_subsampling_BC_css"
+    s = 64
+    setting_name = "setting_1"
     experiment = "SGD"
-
     train_accuracy, test_accuracy, epochs = get_data_from_settings(
         setting_path,setting_name,
         model_name,experiment,

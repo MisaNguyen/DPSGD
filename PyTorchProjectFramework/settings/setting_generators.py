@@ -15,6 +15,8 @@ settings = ["settings_clipping_exp_cifar10_dpsgd",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_p5",
             "settings_clipping_exp_cifar10_dpsgd_opacus_sigma_1p5",]
 settings = ["settings_best_settings_lost_func_grid_search_1"]
+settings = ["settings_clipping_exp_cifar10_dpsgd_opacus"]
+
 # settings = ["settings_lost_func_grid_search_sigma2_6"]
 # .json
 # settings = ["settings_clipping_exp_cifar10_dpsgd_opacus_test"]
@@ -26,10 +28,12 @@ base_sigma = 0.25
 
 # C = 0.01
 # C = 0.08
-C = 0.64
+# C = 0.64
+
 # C = 3.84
 # C = 23.04
 # C = 138.24
+C = 1.2
 enable_loss_multi = False
 base_loss_multi = 1
 # base_loss_multi = pow(2,10)
@@ -42,9 +46,9 @@ data_processing = "subsampling"
 """
 Clipping mode
 """
-is_batch_clipping = False
+is_batch_clipping = True
 is_individual_clipping = False
-is_classical_BC = True
+is_classical_BC = False
 
 """
 Stepsize mode
