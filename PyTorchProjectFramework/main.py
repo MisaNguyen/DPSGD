@@ -101,7 +101,7 @@ def save_number_of_layer(model_name, number_of_layer):
 
 def main():
     # Training settings
-    parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
+    parser = argparse.ArgumentParser(description='PyTorch DPSGD Example')
     parser.add_argument('--batch-size', type=int, default=64, metavar='N',
                         help='input batch size for training (default: 64)')
     parser.add_argument('--microbatch-size', type=int, default=1, metavar='MS',

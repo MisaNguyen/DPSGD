@@ -1,10 +1,6 @@
 from __future__ import print_function
-
 import torch
-
-
 from torchvision import datasets, transforms
-
 import os
 import sys
 
@@ -31,6 +27,13 @@ class MyDataset(Dataset):
         self.transform = transform
 
     def __getitem__(self, index):
+        """
+        Args:
+            index (int): Index
+
+        Returns:
+            tuple: (sample, target) where target is class_index of the target class.
+        """
         x, y = self.subset[index]
         if self.transform:
             x = self.transform(x)

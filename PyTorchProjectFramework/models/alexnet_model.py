@@ -45,31 +45,7 @@ class AlexNet(nn.Module):
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=2),
         )
-        # self.features = nn.Sequential(
-        #     # Block 1
-        #     nn.BatchNorm2d(3),
-        #     nn.Conv2d(3, 64, kernel_size=11, stride=4, padding=2),
-        #     nn.ReLU(inplace=True),
-        #     nn.MaxPool2d(kernel_size=3, stride=2, dilation=1, ceil_mode=False),
-        #     # Block 2
-        #     nn.BatchNorm2d(64),
-        #     nn.Conv2d(64, 192, kernel_size=5, padding=2),
-        #     nn.ReLU(inplace=True),
-        #     nn.MaxPool2d(kernel_size=3, stride=2, dilation=1, ceil_mode=False),
-        #     # Block 3
-        #     nn.BatchNorm2d(192),
-        #     nn.Conv2d(192, 384, kernel_size=3, padding=1),
-        #     nn.ReLU(inplace=True),
-        #     # Block 4
-        #     nn.BatchNorm2d(384),
-        #     nn.Conv2d(384, 256, kernel_size=3, padding=1),
-        #     nn.ReLU(inplace=True),
-        #     # Block 5
-        #     nn.BatchNorm2d(256),
-        #     nn.Conv2d(256, 256, kernel_size=3, padding=1),
-        #     nn.ReLU(inplace=True),
-        #     nn.MaxPool2d(kernel_size=3, stride=2, dilation=1, ceil_mode=False),
-        # )
+        
         # self.avgpool = nn.AdaptiveAvgPool2d((6, 6))
         self.classifier = nn.Sequential(
             nn.Dropout(0.5),
@@ -84,20 +60,20 @@ class AlexNet(nn.Module):
         )
 
     def forward(self, x):
-        # print(x.shape)
+        """Forward pass through the network.
+        
+        Args:
+            x: input data
+            
+        Returns:
+            torch.Tensor: raw logits from the classifier
+        """
         x = self.layer0(x)
-
         x = self.layer2(x)
         x = self.layer3(x)
         x = self.layer4(x)
         x = self.layer5(x)
-        # input(x.shape)
-        # x = self.avgpool(x)
-        # input(x.shape)
-        # x = x.view(x.size(0), 384 * 4 * 4)
-        # x = x.view(x.size(0), 256 * 4 * 4)
         x = x.view(x.size(0), 256 * 2 * 2)
-        # input(x.shape)
 
         logits = self.classifier(x)
         # probas = F.softmax(logits, dim=1)

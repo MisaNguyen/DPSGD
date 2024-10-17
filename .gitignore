@@ -11,24 +11,10 @@ PytorchProjectFramework/accountants/graphs/old_data/*
 PytorchProjectFramework/accountants/graphs/graph/*
 
 PytorchProjectFramework/graphs/graph/*
+PytorchProjectFramework/graphs/utility_graph/*
 PytorchProjectFramework/graphs/data/*
-PytorchProjectFramework/graphs/data_sum/*
 PytorchProjectFramework/graphs/data_neurips/*
-PytorchProjectFramework/graphs/data_neurips_old/*
-PytorchProjectFramework/graphs/data_neurips_incorrect/*
-PytorchProjectFramework/graphs/data_neurips_clipping_error/*
-PytorchProjectFramework/graphs/data_sum_flaw/*
-PytorchProjectFramework/graphs/data_sum_old/*
-PytorchProjectFramework/graphs/data_sum_FINAL/*
-PytorchProjectFramework/graphs/data_sum_concluded/*
-PytorchProjectFramework/graphs/data_sum_no_noise/*
-PytorchProjectFramework/graphs/data_avg/*
-PytorchProjectFramework/graphs/data_client/*
-PytorchProjectFramework/graphs/data_mixing/*
-PytorchProjectFramework/graphs/old_data/*
-PytorchProjectFramework/graphs/old_data_2/*
-PytorchProjectFramework/graphs/old_data_3/*
-PytorchProjectFramework/graphs/data_marten_algo/*
+
 
 PytorchProjectFramework/*.tar
 PytorchProjectFramework/*.pt

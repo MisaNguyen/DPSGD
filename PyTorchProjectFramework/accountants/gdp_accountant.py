@@ -9,6 +9,13 @@ class GaussianAccountant(IAccountant):
         self.steps = 0
 
     def step(self, *, noise_multiplier: float, sample_rate: float):
+        """
+        Signal one optimization step
+        Args:
+            noise_multiplier: Current noise multiplier
+            sample_rate: Current sample rate
+        """
+
         if self.noise_multiplier is None:
             self.noise_multiplier = noise_multiplier
 

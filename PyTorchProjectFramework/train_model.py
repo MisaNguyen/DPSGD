@@ -1,80 +1,49 @@
 import argparse
-# import numpy as np
-# import torch
-# import torchvision
-# import torch.nn.functional as F
 import copy
+import matplotlib.pyplot as plt
 
 import torch.nn as nn
-# from torch.optim.lr_scheduler import StepLR
-# from utils.progression_bar import progress_bar
-# from datasets import create_dataset
-# from utils import parse_configuration
-# import math
-# from models import create_model
-# import time
-
-import matplotlib.pyplot as plt
 from torch.utils.data import TensorDataset
 
-from tqdm import tqdm
-import validate_model
-
-# from opt_einsum.contract import contract
-from datetime import datetime, timedelta
-import copy
 """ Schedulers """
-from scheduler.learning_rate_scheduler import StepLR
-from scheduler.gradient_norm_scheduler import StepGN_normal
+# from scheduler.learning_rate_scheduler import StepLR
+# from scheduler.gradient_norm_scheduler import StepGN_normal
 # from scheduler.noise_multiplier_scheduler import StepLR
 # from torch.optim.lr_scheduler import ReduceLROnPlateau
 """ Optimizers """
 from optimizers import *
 """ Utils"""
 from utils.utils import compute_layerwise_C
-"""Create learning_rate sequence generator
-    
-Input params:
-    decay: learning rate decay
-    lr: base learning rate
-    epoch: number of training epoch
-export: Learning rate generator
 
-"""
 def Lr_generator(decay,lr,epoch):
+    """
+    Create learning_rate sequence generator
+    
+    Input params:
+        decay: learning rate decay
+        lr: base learning rate
+        epoch: number of training epoch
+    Output: Learning rate generator
+    """
     lr_sequence = range(epoch)
     for index in lr_sequence:
         yield lr*pow(decay,index)
 
 
-"""Create sample_rate sequence generator
-    
-Input params:
-    multi: sample rate multiplier
-    sample_rate: base sample rate
-    epoch: number of training epoch
-export: sample rate generator
-
-"""
 def sample_rate_generator(multi,lr,epoch):
+    """
+    Create sample_rate sequence generator
+        
+    Input params:
+        multi: sample rate multiplier
+        sample_rate: base sample rate
+        epoch: number of training epoch
+    Output: sample rate generator
+    """
     sr_sequence = range(epoch)
     for index in sr_sequence:
         yield lr*pow(multi,index)
 
-
-"""Create sigma sequence generator
-    
-Input params:
-    multi: sample rate multiplier
-    sample_rate: base sample rate
-    epoch: number of training epoch
-export: sample rate generator
-
-"""
-# def sample_rate_generator(multi,lr,epoch):
-#     sr_sequence = range(epoch)
-#     for index in sr_sequence:
-#         yield lr*pow(multi,index)
 """Performs training of a specified model.
     
 Input params:
@@ -108,12 +77,21 @@ def Compute_S_sens(model, data, target):
         S_sens.append(LHS_norm/RHS_norm)
     return S_sens
 def imshow(img):
+    """
+    Shows an image (tensor) using matplotlib
+    
+    Input:
+        img: A tensor of shape (3,H,W) to be displayed
+    """
     img = img / 2 + 0.5     # unnormalize
     npimg = img.numpy()
     plt.imshow(np.transpose(npimg, (1, 2, 0)))
     plt.show()
+    
 """
+--------------------------------
 OPACUS code
+--------------------------------
 """
 
 def _get_flat_grad_sample(param: torch.Tensor):
@@ -174,13 +152,33 @@ def params(optimizer: Optimizer) -> List[nn.Parameter]:
     return ret
 
 def accuracy(preds, labels):
+    """
+    Calculate the accuracy of predictions against labels.
+
+    Parameters:
+        preds (torch.Tensor): tensor of predictions
+        labels (torch.Tensor): tensor of labels
+
+    Returns:
+        float: accuracy of predictions against labels
+    """
     return (preds == labels).mean()
 
 def calculate_full_gradient_norm(model):
-    ### sqrt(a^2+b^2) = A sqrt(c^2+d^2) = B, sqrt( a^2+b^2 + c^2+d^2) = sqrt(A^2 + B^2)
-    ### sqrt(a^2+b^2) = X > C
-    ### sqrt(a^2+b^2)/X*C = C
-    ### sqrt(a^2 C^2/X^2 + b^2 C^2/X^2) = C
+    """
+    Calculate the full gradient norm of the model by flattening the gradient of each layer
+    and taking the Euclidean norm of the resulting tensor.
+    The gradient of each layer is either a sample gradient (if the layer is a DPM module) or
+    a batch gradient (if the layer is a regular PyTorch module).
+
+    Steps:
+    1) sqrt(a^2+b^2) = A sqrt(c^2+d^2) = B, sqrt( a^2+b^2 + c^2+d^2) = sqrt(A^2 + B^2)
+    2) sqrt(a^2+b^2) = X > C
+    3) sqrt(a^2+b^2)/X*C = C
+    4) sqrt(a^2 C^2/X^2 + b^2 C^2/X^2) = C
+    Returns:
+        The full gradient norm of the model
+    """
     flat_grad = []
     for param in model.parameters():
         if isinstance(param.grad, torch.Tensor):
@@ -344,6 +342,19 @@ def DP_train_weighted_FGC(args, model, device, train_loader,optimizer):
 
 
 def DP_train_classical(args, model, device, train_loader,optimizer):
+    """
+    Train a model using the classical DP-SGD algorithm.
+
+    Parameters:
+        args (argparse.Namespace): command line arguments.
+        model (nn.Module): the model to be trained.
+        device (torch.device): the device to use for training.
+        train_loader (DataLoader): the training data loader.
+        optimizer (Optimizer): the optimizer to use.
+
+    Returns:
+        The mean accuracy of the model on the training data.
+    """
     model.train()
     print("Training using %s optimizer" % optimizer.__class__.__name__)
     # Get optimizer
@@ -506,11 +517,20 @@ def DP_train_classical(args, model, device, train_loader,optimizer):
     return np.mean(top1_acc)
 
 def DP_train(args, model, device, train_loader,optimizer):
+    """
+    Train a model using the DP-SGD algorithm.
+
+    Args:
+        model: The model to be trained.
+        device: The device to use for training.
+        train_loader: The data loader for the training data.
+        optimizer: The optimizer to use.
+
+    Returns:
+        The mean accuracy of the model on the training data.
+    """
     model.train()
     print("Training using %s optimizer" % optimizer.__class__.__name__)
-    train_loss = 0
-    train_correct = 0
-    total = 0
     loss = 0
     # Get optimizer
 
@@ -522,7 +542,7 @@ def DP_train(args, model, device, train_loader,optimizer):
         optimizer.zero_grad()
         # copy current model
         model_clone = copy.deepcopy(model)
-
+        # TODO: Remove clone models
         optimizer_clone= optim.SGD(model_clone.parameters(),
                                    # [
                                    #     {"params": model_clone.layer1.parameters(), "lr": args.lr},
@@ -534,10 +554,8 @@ def DP_train(args, model, device, train_loader,optimizer):
                                    )
         # batch = train_batches[indice]
         batch = TensorDataset(batch_data,batch_target)
-        # print("micro batch size =", args.microbatch_size) ### args.microbatch_size = s/m
         micro_train_loader = torch.utils.data.DataLoader(batch, batch_size=args.microbatch_size,
                                                          shuffle=True) # Load each data
-        # print("Minibatch shape", batch_data.shape)
         """ Original SGD updates"""
         for sample_idx, (data,target) in enumerate(micro_train_loader):
             # print("microbatch shape", data.shape)
@@ -557,45 +575,26 @@ def DP_train(args, model, device, train_loader,optimizer):
             """
             Batch clipping each "microbatch"
             """
+            print("Clipping method:", args.clipping)
             if(args.clipping == "layerwise"):
                 """------------------------------------------------"""
-                # for layer_idx, (name, param) in enumerate(model_clone.named_parameters()):
-                    # if("test_layer" in name):
-                    #     print("layer:", name)
-                    #     print("Before clipping, grad_norm =", param.grad.data.norm(2))
-                    #     print("Before clipping, grad =", param.grad.data)
-                    #     print("Before clipping, c_i =", args.each_layer_C[layer_idx])
-                    #     torch.nn.utils.clip_grad_norm_(param, max_norm=args.each_layer_C[layer_idx])
-                    #     print("After clipping, grad_norm =", param.grad.data.norm(2))
-                    #     print("After clipping, grad =", param.grad.data)
-                    #     print("After clipping, c_i =", args.each_layer_C[layer_idx])
-                        # input()
                 for layer_idx, param in enumerate(model_clone.parameters()):
                     """
                     Clip each layer gradients with args.max_grad_norm
                     """
-                    # print("-"*20)
-                    # print("Before clipping, grad_norm =", param.grad.data.norm(2))
-                    # print("Before clipping, c_i =", args.each_layer_C[layer_idx])
-                    # torch.nn.utils.clip_grad_norm_(param.grad, max_norm=args.each_layer_C[layer_idx]) # in-place computation, layerwise clipping
                     torch.nn.utils.clip_grad_norm_(param, max_norm=args.each_layer_C[layer_idx])
-                    # print("After clipping, grad_norm =", param.grad.data.norm(2))
-                    # print("-"*20)
+
                     """ 
                     Accumulate gradients
                     """
                     if not hasattr(param, "sum_grad"):
                         param.sum_grad = param.grad
-                        # print(param.sum_grad)
+
                     else:
                         param.sum_grad = param.sum_grad.add(param.grad)
-                        # print(param.sum_grad)
+
 
             elif (args.clipping == "all"):
-                # print("Clipping method: all")
-                """
-                Clip entire gradients with args.max_grad_norm
-                """
                 """
                 Compute flat list of gradient tensors and its norm 
                 """
@@ -604,22 +603,16 @@ def DP_train(args, model, device, train_loader,optimizer):
                 """
                 Clip all gradients
                 """
-                # if (flat_grad_norm > args.max_grad_norm):
-                #     for param in model_clone.parameters():
-                #         param.grad = param.grad / flat_grad_norm * args.max_grad_norm
                 torch.nn.utils.clip_grad_norm_(optimizer_clone.param_groups[0]['params'],args.max_grad_norm)
+
                 """
                 Accumulate gradients
                 """
                 for param in model_clone.parameters():
-                    # param.grad = param.grad / flat_grad_norm * args.max_grad_norm
                     if not hasattr(param, "sum_grad"):
                         param.sum_grad = param.grad
-                        # print(param.sum_grad)
                     else:
                         param.sum_grad = param.sum_grad.add(param.grad)
-                        # print(param.sum_grad)
-
             else:
                 raise ValueError("Invalid clipping mode, available options: all, layerwise")
 
@@ -705,6 +698,20 @@ def DP_train(args, model, device, train_loader,optimizer):
 
 def train(args, model, device, train_loader,
           optimizer,epoch):
+    """
+    Train a model for one epoch. (No clipping, no noise multiplier)
+
+    Parameters:
+        args (argparse.Namespace): command line arguments.
+        model (nn.Module): the model to train.
+        device (torch.device): the device to train on.
+        train_loader (DataLoader): the training data loader.
+        optimizer (Optimizer): the optimizer to use.
+        epoch (int): the current epoch number.
+
+    Returns:
+        tuple: a tuple of the mean accuracy and a dictionary of gradient statistics.
+    """
     model.train()
     print("Training using %s optimizer" % optimizer.__class__.__name__)
 
@@ -773,6 +780,7 @@ def train(args, model, device, train_loader,
             break
 
     return np.mean(top1_acc), gradient_stats
+
 if __name__ == '__main__':
     import multiprocessing
     multiprocessing.set_start_method('spawn', True)
