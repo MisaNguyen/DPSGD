@@ -106,8 +106,9 @@ def shuffling_preprocessing(train_kwargs,test_kwargs):
         print(labels[:10])
         break
     # return train_loader, test_loader
-    dataset_size = len(trainset)
-    return C_dataset_loader, train_loader, test_loader, dataset_size
+    trainset_size = len(trainset)
+    testset_size = len (testset)
+    return C_dataset_loader, train_loader, test_loader, trainset_size, testset_size
     # return train_batches, test_loader, dataset_size
 
 def subsampling_preprocessing(train_kwargs,test_kwargs):
@@ -208,7 +209,7 @@ def data_preprocessing(train_kwargs,test_kwargs):
     print("Finished normalizing dataset.")
     training_len = 9*len(trainset)//10
 
-    trainset , C_dataset = torch.utils.data.random_split(trainset, [training_len,len(trainset)-training_len])
+    trainset , _ = torch.utils.data.random_split(trainset, [training_len,len(trainset)-training_len])
     train_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)
     C_dataset_loader = torch.utils.data.DataLoader(trainset, **train_kwargs)
     print('\nTraining Set:')

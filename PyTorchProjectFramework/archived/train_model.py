@@ -215,7 +215,7 @@ def DP_train_weighted_FGC(args, model, device, train_loader,optimizer):
     total = 0
     loss = 0
     # Get optimizer
-
+    
     iteration = 0
     losses = []
     top1_acc = []
